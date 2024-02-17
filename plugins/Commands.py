@@ -114,6 +114,11 @@ async def start(client, message):
 
     if data.split("-", 1)[0] == "all_eps_files":
         userid = data.split("all_eps_files-")[1]
+        if str(message.from_user.id) != str(userid):
+            alert_msg = await message.reply_text("<i>This is not your batch Request</i>")
+            await asyncio.sleep(5)
+            await alert_msg.delete()
+            return
         if IS_VERIFY and not await check_verification(client, message.from_user.id):
                 pw_msg = await message.reply_text("Pʟᴇᴀsᴇ Wᴀɪᴛ..")
                 btn = [[
@@ -129,9 +134,7 @@ async def start(client, message):
                 await asyncio.sleep(DLT)
                 await verify_btn.delete()
                 return
-        
-        if str(message.from_user.id) != str(userid):
-            return
+
         search = await db.retrieve_latest_search(int(userid))
         await send_eps_files(userid,search,client,message)
         return
