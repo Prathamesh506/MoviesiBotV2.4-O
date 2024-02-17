@@ -167,7 +167,7 @@ async def auto_filter(client, msg):
 async def popularity_store(client, msg):
     try:
         cpu_usage = check_cpu_usage()
-        print(f"current cpu usage: {cpu_usage}%")
+        # print(f"current cpu usage: {cpu_usage}%")
         if cpu_usage >= 50:
             return
     except Exception as e:
