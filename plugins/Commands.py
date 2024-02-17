@@ -250,6 +250,7 @@ async def start(client, message):
         await asyncio.sleep(DLT)
         await verify_btn.delete()
         return
+    
     await client.send_cached_media(
         chat_id=message.from_user.id,
         file_id=file_id,
@@ -540,8 +541,9 @@ async def send_eps_files(user_id, query, client, message):
             suc = await send_filex(query_comn, user_id, client)
         if suc == False:
             comb = await comb.edit_text("<b>Fɪʟᴇ Nᴏᴛ Fᴏᴜɴᴅ</b>")
+        await comb.delete()
         await asyncio.sleep(2)
-        await comb.edit_text("<i><b>Note:</b> This Feature is in <b>Beta Stage</b>\nYou might receive wrong files</i>")
+        await comb.reply_text("<i><b>Note:</b> This Feature is in <b>Beta Stage</b>\nYou might receive wrong files</i>")
     except Exception as e:
         await message.reply_text(f"<i><b>ERROR:</b> {str(e)}</i>")
     return
