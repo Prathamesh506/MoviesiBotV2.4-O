@@ -1,0 +1,18 @@
+[02/17/2024 03:55:44 PM:asyncio:1729:ERROR] Future exception was never retrieved
+future: <Future finished exception=OperationFailure("Index build failed: f4b199c9-3967-445a-bdbd-b46005b5cff7: Collection Cluster0.search_data ( 4721417d-6f9e-40ef-b892-2d6bfccdb376 ) :: caused by :: operation was interrupted, full error: {'ok': 0.0, 'errmsg': 'Index build failed: f4b199c9-3967-445a-bdbd-b46005b5cff7: Collection Cluster0.search_data ( 4721417d-6f9e-40ef-b892-2d6bfccdb376 ) :: caused by :: operation was interrupted', 'code': 276, 'codeName': 'IndexBuildAborted', '$clusterTime': {'clusterTime': Timestamp(1708165544, 24), 'signature': {'hash': b'\\x12-Z\\x82\\xc9lG70\\xf8\\x95\\xdd\\x03Yc4\\x0cC\\x12!', 'keyId': 7286567847667433493}}, 'operationTime': Timestamp(1708165544, 23)}")>
+Traceback (most recent call last):
+  File "C:\Users\Prath\AppData\Local\Programs\Python\Python310\lib\concurrent\futures\thread.py", line 52, in run
+    result = self.fn(*self.args, **self.kwargs)
+  File "D:\Code\Telegram Bots\MoviesiBotV1.8.2\myenv\lib\site-packages\pymongo\collection.py", line 2101, in create_index
+    return self.__create_indexes([index], session, **cmd_options)[0]
+  File "D:\Code\Telegram Bots\MoviesiBotV1.8.2\myenv\lib\site-packages\pymongo\collection.py", line 1991, in __create_indexes
+    self._command(
+  File "D:\Code\Telegram Bots\MoviesiBotV1.8.2\myenv\lib\site-packages\pymongo\collection.py", line 238, in _command
+    return sock_info.command(
+  File "D:\Code\Telegram Bots\MoviesiBotV1.8.2\myenv\lib\site-packages\pymongo\pool.py", line 710, in command
+    return command(self, dbname, spec, secondary_ok,
+  File "D:\Code\Telegram Bots\MoviesiBotV1.8.2\myenv\lib\site-packages\pymongo\network.py", line 161, in command
+    helpers._check_command_response(
+  File "D:\Code\Telegram Bots\MoviesiBotV1.8.2\myenv\lib\site-packages\pymongo\helpers.py", line 167, in _check_command_response
+    raise OperationFailure(errmsg, code, response, max_wire_version)
+pymongo.errors.OperationFailure: Index build failed: f4b199c9-3967-445a-bdbd-b46005b5cff7: Collection Cluster0.search_data ( 4721417d-6f9e-40ef-b892-2d6bfccdb376 ) :: caused by :: operation was interrupted, full error: {'ok': 0.0, 'errmsg': 'Index build failed: f4b199c9-3967-445a-bdbd-b46005b5cff7: Collection Cluster0.search_data ( 4721417d-6f9e-40ef-b892-2d6bfccdb376 ) :: caused by :: operation was interrupted', 'code': 276, 'codeName': 'IndexBuildAborted', '$clusterTime': {'clusterTime': Timestamp(1708165544, 24), 'signature': {'hash': b'\x12-Z\x82\xc9lG70\xf8\x95\xdd\x03Yc4\x0cC\x12!', 'keyId': 7286567847667433493}}, 'operationTime': Timestamp(1708165544, 23)}
