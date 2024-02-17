@@ -880,15 +880,15 @@ def check_cpu_usage():
     return cpu_percent
 
 async def loading_msg(query):
-    await asyncio.sleep(0.2)
+    await asyncio.sleep(0.1)
     await query.edit_message_text(
                 text="▰▱▱"
             )
-    await asyncio.sleep(0.1)
+    await asyncio.sleep(0.08)
     await query.edit_message_text(
                 text="▰▰▱"
             )
-    await asyncio.sleep(0.08)
+    await asyncio.sleep(0.05)
     await query.edit_message_text(
                 text="▰▰▰"
             )
