@@ -50,7 +50,7 @@ auth_users = [int(user) if id_pattern.search(user) else user for user in environ
 AUTH_USERS = (auth_users + ADMINS) if auth_users else []
 AUTH_GROUPS = [int(ch) for ch in auth_grp.split()] if auth_grp else None
 
-PICS = (environ.get('PICS', 'https://telegra.ph/file/5301373445a1c47f5da41.jpg')).split()
+PICS = (environ.get('PICS', 'https://telegra.ph/file/5301373445a1c47f5da41.jpg https://telegra.ph/file/29c4d84b01b933e72bdea.jpg https://telegra.ph/file/2336034b8c89c6bba8958.jpg https://telegra.ph/file/a72bfd5f53d57dfa9d9d3.jpg https://telegra.ph/file/df0b1f3cf8ff883b919ee.jpg https://telegra.ph/file/9293454b1ff4115e4dfd3.jpg https://telegra.ph/file/45162159d9b57fe6b270c.jpg https://telegra.ph/file/931798c653da0fa85b182.jpg https://telegra.ph/file/cb6eb779144d2489298f4.jpg https://telegra.ph/file/ee158e51adb17160b462b.jpg https://telegra.ph/file/b9ed75fcef91d7edd629b.jpg https://telegra.ph/file/b3ac4b1003755cca1c7b1.jpg https://telegra.ph/file/9203de86a8e55d14fa304.jpg https://telegra.ph/file/e3eb828c0f908b11fe08a.jpg https://telegra.ph/file/450128f32891aa488d985.jpg https://telegra.ph/file/dcc44f75c1f1fbe012919.jpg')).split()
 NOR_IMG = environ.get("NOR_IMG", "https://telegra.ph/file/46443096bc6895c74a716.jpg")
 MELCOW_VID = environ.get("MELCOW_VID", "https://telegra.ph/file/406961f53ed2b6f3735c4.gif")
 SPELL_IMG = environ.get("SPELL_IMG", "https://telegra.ph/file/5e2d4418525832bc9a1b9.jpg")
