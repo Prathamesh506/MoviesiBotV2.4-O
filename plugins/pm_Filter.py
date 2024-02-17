@@ -1158,7 +1158,7 @@ async def cb_handler(client: Client, query: CallbackQuery):
         ]]
         cap = """<B>───[ ᴅᴇᴛᴀɪʟꜱ ]───
 
-‣ ᴍʏ ɴᴀᴍᴇ : [ᴜʟᴛʀᴏɴ 〄](https://t.me/VegaMoviesXBot)
+‣ ᴍʏ ɴᴀᴍᴇ : [POWER 〄](https://t.me/VegaMoviesiBot)
 ‣ ᴅᴇᴠᴇʟᴏᴘᴇʀ : [sʜᴀᴅᴏᴡ](https://t.me/Shadow506)
 ‣ ʟɪʙʀᴀʀʏ : [ᴘʏʀᴏɢʀᴀᴍ](https://docs.pyrogram.org/)
 ‣ ʟᴀɴɢᴜᴀɢᴇ : [ᴘʏᴛʜᴏɴ 3](https://www.python.org/download/releases/3.0/)
