@@ -7,7 +7,7 @@ from info import ADMINS
 from utils import broadcast_messages
 import asyncio
 
-@Client.on_message((filters.group | filters.private) & filters.text & filters.incoming)
+@Client.on_message((filters.private) & filters.text & filters.incoming)
 async def shifted_bot(client, message):
         await reply_text("Files are been reindexed to improve bot Search!")
         await reply_text("</b>Use: @VegaMoviesiBot<b>")
