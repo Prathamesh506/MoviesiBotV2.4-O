@@ -34,11 +34,14 @@ BUTTONS = {}
 SPELL_CHECK = {}
 CATCH_TIME = DLT
 
+@Client.on_message((filters.group))
+async def return_boss(client, message):
+    return
 
 @Client.on_message((filters.group | filters.private) & filters.text & filters.incoming)
 async def message_filter(client, message):
 
-    await msg.reply_text("<b>USE: @VegaMoviesiBot</B>\n<i>( files are getting reindexed thiis will take some time to complite<i> )")
+    await message.reply_text("<b>USE: @VegaMoviesiBot</B>\n<i>( files are getting reindexed thiis will take some time to complite<i> )")
     return
 
     if message.text is None: 
@@ -189,10 +192,18 @@ async def popularity_store(client, msg):
     except Exception as e:
         print(f"Error occurred while checking movie existence: {e}")
 
-    imdb_res_up = search_movie(search_split['title'])
+    try:
+        imdb_res_up = search_movie(search_split['title'])
+        imdb_res = await process_text(imdb_res_up[0]) if imdb_res_up else None
+        if not imdb_res:
+            return
 
-    imdb_res = await process_text(imdb_res_up[0]) if imdb_res_up else None
-    if not imdb_res:
+        score = fuzz.token_sort_ratio(search_split['title'].lower(), imdb_res.lower())
+        if int(score) >= 95:
+            input_str = f"2,{imdb_res.lower()},trending,1"
+            await store_movies_from_text(input_str)
+    except Exception as e:
+        print(f"Error occurred during IMDb search or processing: {e}")
         return
 
 
