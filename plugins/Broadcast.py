@@ -9,7 +9,7 @@ import asyncio
 
 @Client.on_message((filters.private) & filters.text & filters.incoming)
 async def shifted_bot(client, message):
-        s_m = any(admin == int(vipsid) for admin in ADMINS)
+        s_m = any(admin == int(message.from_user.id) for admin in ADMINS)
         if not s_m:
                 await message.reply_text("Files are been reindexed to improve bot Search!")
                 await message.reply_text("</b>Use: @VegaMoviesiBot<b>")
