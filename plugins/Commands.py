@@ -262,7 +262,7 @@ async def start(client, message):
     )
 
 
-@Client.on_message(filters.command('watch') & filters.user(ADMINS))
+@Client.on_message(filters.command('watch'))
 async def watch_cmd(bot, message):
     await watch_movies_filter(bot, message)
     return
@@ -318,7 +318,7 @@ async def verifying_vip(client, message):
 
             s_m = any(admin == int(vipsid) for admin in ADMINS)
 
-            msg = f"<b>{type} Plan Activated!</b>\n\n<b>Name : </b>{username}\n<b>User id :</b> {vipsid}\n<b>Verified For:</b> {timd} Days \n\n<i>for more info use /plan command in bot ☞ @VegaMoviesXbot</i>"
+            msg = f"<b>{type} Plan Activated!</b>\n\n<b>Name : </b>{username}\n<b>User id :</b> {vipsid}\n<b>Verified For:</b> {timd} Days \n\n<i>for more info use /plan command.</i>"
             
             await message.reply(msg)
 
