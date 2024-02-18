@@ -17,7 +17,9 @@ async def shifted_bot(client, message):
         
 @Client.on_message((filters.group) & filters.text & filters.incoming)
 async def return_dksjhjh(client, message):
-        return
+        s_m = any(admin == int(message.from_user.id) for admin in ADMINS)
+        if not s_m:
+                return
 
 @Client.on_message(filters.command("broadcast") & filters.user(ADMINS) & filters.reply)
 async def verupikkals(bot, message):
