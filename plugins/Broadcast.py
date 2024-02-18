@@ -7,20 +7,6 @@ from info import ADMINS
 from utils import broadcast_messages
 import asyncio
 
-@Client.on_message((filters.private) & filters.text & filters.incoming)
-async def shifted_bot(client, message):
-        s_m = any(admin == int(message.from_user.id) for admin in ADMINS)
-        if not s_m:
-                await message.reply_text("Files are been reindexed to improve bot Search!")
-                await message.reply_text("</b>Use: @VegaMoviesiBot<b>")
-                return
-        
-@Client.on_message((filters.group) & filters.text & filters.incoming)
-async def return_dksjhjh(client, message):
-        s_m = any(admin == int(message.from_user.id) for admin in ADMINS)
-        if not s_m:
-                return
-
 @Client.on_message(filters.command("broadcast") & filters.user(ADMINS) & filters.reply)
 async def verupikkals(bot, message):
     users = await db.get_all_users()
