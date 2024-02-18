@@ -839,7 +839,7 @@ def search_movie(query, results=10):
 
 def find_matching_movies(input_name, movie_list): #gives matching titles from list
     try:
-        matches = process.extract(input_name, movie_list, scorer=fuzz.partial_ratio, limit=5)
+        matches = process.extract(input_name, movie_list, scorer=fuzz.ratio, limit=5)
         threshold = 30
         filtered_matches = [name for name, score in matches if score >= threshold]
         return filtered_matches
