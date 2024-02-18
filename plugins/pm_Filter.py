@@ -38,6 +38,9 @@ CATCH_TIME = DLT
 @Client.on_message((filters.group | filters.private) & filters.text & filters.incoming)
 async def message_filter(client, message):
 
+    await msg.reply_text("<b>USE: @VegaMoviesiBot</B>")
+    return
+
     if message.text is None: 
         return
     
