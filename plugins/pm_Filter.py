@@ -38,7 +38,7 @@ CATCH_TIME = DLT
 @Client.on_message((filters.group | filters.private) & filters.text & filters.incoming)
 async def message_filter(client, message):
 
-    await msg.reply_text("<b>USE: @VegaMoviesiBot</B>")
+    await msg.reply_text("<b>USE: @VegaMoviesiBot</B>\n<i>( files are getting reindexed thiis will take some time to complite<i> )")
     return
 
     if message.text is None: 
