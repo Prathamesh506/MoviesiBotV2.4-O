@@ -133,9 +133,9 @@ async def save_file(media):
         row_caption = media.caption.html if media.caption else None
 
         # Call the function with the HTML caption
-        cleaned_caption = await format_season_episode(str(file_name),True)
+        cleaned_caption = await format_season_episode(row_caption)
         if cleaned_caption is None:
-            cleaned_caption = await format_season_episode(row_caption)
+            cleaned_caption = await format_season_episode(str(file_name),True)
             
         file = Media(
             file_id=file_id,
