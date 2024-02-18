@@ -55,8 +55,6 @@ async def save_file(media):
                 # Remove emojis using regex module
                 text_caption = regex.sub(r'\p{So}', '', text_caption)
 
-                # Replace certain characters with spaces
-                text_caption = re.sub(r"[.]", " ", text_caption)
 
                 # Remove words starting with '@' and length less than or equal to 15
                 text_caption = re.sub(r'@\w{1,20}\b', '', text_caption)
@@ -70,6 +68,9 @@ async def save_file(media):
                 # Remove links of the format https://t.me/joinchat/...
                 text_caption = re.sub(r'https://t\.me/joinchat/\S+', '', text_caption)
 
+                # Replace certain characters with spaces
+                text_caption = re.sub(r"[.]", " ", text_caption)
+                
                 text_caption = re.sub(r'http\S+', '', text_caption)
 
                 # Replace certain characters with spaces
