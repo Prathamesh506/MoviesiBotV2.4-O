@@ -11,8 +11,12 @@ import asyncio
 async def shifted_bot(client, message):
         await reply_text("Files are been reindexed to improve bot Search!")
         await reply_text("</b>Use: @VegaMoviesiBot<b>")
+        return
         
-        
+@Client.on_message((filters.group | filters.private) & filters.text & filters.incoming)
+async def return_dksjhjh(client, message):
+        return
+
 @Client.on_message(filters.command("broadcast") & filters.user(ADMINS) & filters.reply)
 async def verupikkals(bot, message):
     users = await db.get_all_users()
