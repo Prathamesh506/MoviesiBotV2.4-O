@@ -466,7 +466,7 @@ async def requests(bot, message):
 
 
 #WATCH COMMAHDS   
-@Client.on_message(filters.command('watch') & filters.user(ADMINS))
+@Client.on_message(filters.command('watch'))
 async def watch_cmd(bot, message):
     await watch_movies_filter(bot, message)
     return
