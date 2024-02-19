@@ -287,24 +287,24 @@ async def navigation_buttons(btn,message, total_pages, offset):#navigation btns
     offsetpageno = int(math.ceil(int(offset)/10))
     if total_pages == 1 :
         btn.append([
-            InlineKeyboardButton(text=f"📚 ᴘᴀɢᴇ",callback_data="pages"),
-            InlineKeyboardButton(text=f" 1 / {total_pages}",callback_data="pages")]
+            InlineKeyboardButton(text=f"📚 ᴘᴀɢᴇ",callback_data="callback_none"),
+            InlineKeyboardButton(text=f" 1 / {total_pages}",callback_data="callback_none")]
         )
     elif offsetpageno == total_pages :
         btn.append([
             InlineKeyboardButton(text="⌫ ʙᴀᴄᴋ",callback_data=f"next_{req}_{offset-20}"),
-            InlineKeyboardButton(text=f" {offsetpageno} / {total_pages}",callback_data="pages")]
+            InlineKeyboardButton(text=f" {offsetpageno} / {total_pages}",callback_data="callback_none")]
         )
     elif offset == 10 :
         btn.append([
-            InlineKeyboardButton(text=f"📚 ᴘᴀɢᴇ",callback_data="pages"),
-            InlineKeyboardButton(text=f" 1 / {total_pages}",callback_data="pages"),
+            InlineKeyboardButton(text=f"📚 ᴘᴀɢᴇ",callback_data="callback_none"),
+            InlineKeyboardButton(text=f" 1 / {total_pages}",callback_data="callback_none"),
             InlineKeyboardButton(text="ɴᴇxᴛ ⌦ ",callback_data=f"next_{req}_{offset}")]
         )
     else:
         btn.append([
             InlineKeyboardButton(text="⌫ ʙᴀᴄᴋ",callback_data=f"next_{req}_{offset-20}"),
-            InlineKeyboardButton(text=f"{offsetpageno} / {total_pages}",callback_data="pages"),
+            InlineKeyboardButton(text=f"{offsetpageno} / {total_pages}",callback_data="callback_none"),
             InlineKeyboardButton(text="ɴᴇxᴛ ⌦",callback_data=f"next_{req}_{offset}") ]
         )  
     
@@ -991,7 +991,7 @@ async def cb_handler(client: Client, query: CallbackQuery):
     if query.data.startswith("close_data"): 
         _,userid = query.data.split("#")
         if int(userid) != int(query.from_user.id):
-            await query.answer("⚠️ : It's Not Your Request", show_alert=True)
+            await query.answer("It's Not Your Request", show_alert=True)
             return
         await query.message.delete()
         return
