@@ -9,13 +9,13 @@ import regex
 import time
 from Script import script
 import pyrogram
-from info import ADMINS,VTIME, AUTH_CHANNEL, NO_RES_CNL,GRP1,SUPPORT_CHAT_ID,DOWNLOAD_TIPS, CUSTOM_FILE_CAPTION, MSG_ALRT, SUP_LNK, CHNL_LNK, IS_VERIFY, HOW_TO_VERIFY, DLT
+from info import ADMINS,VTIME, AUTH_CHANNEL, NO_RES_CNL,GRP1,SUPPORT_CHAT_ID,DOWNLOAD_TIPS, CUSTOM_FILE_CAPTION, MSG_ALRT, SUP_LNK, CHNL_LNK, IS_VERIFY, HOW_TO_VERIFY,VTIME, DLT
 from pyrogram.types import InlineKeyboardMarkup, InlineKeyboardButton, CallbackQuery
 from pyrogram import Client, filters, enums
 from pyrogram.errors import UserIsBlocked, MessageNotModified, PeerIdInvalid
 from utils import get_size, is_subscribed, temp, send_all, check_verification, get_token
 from database.users_chats_db import db
-from database.ia_filterdb import Media, get_file_details,search_db,total_results_count
+from database.ia_filterdb import Media, get_file_details,search_db,total_results_count,send_filex
 from fuzzywuzzy import fuzz, process
 import imdb
 import logging
@@ -34,15 +34,9 @@ BUTTONS = {}
 SPELL_CHECK = {}
 CATCH_TIME = DLT
 
-@Client.on_message((filters.group))
-async def return_boss(client, message):
-    return
 
 @Client.on_message((filters.group | filters.private) & filters.text & filters.incoming)
 async def message_filter(client, message):
-
-    await message.reply_text("<b>USE: @VegaMoviesiBot</B>\n<i>( files are getting reindexed thiis will take some time to complite<i> )")
-    return
 
     if message.text is None: 
         return
@@ -88,6 +82,13 @@ async def auto_filter(client, msg):
 
     # Invalid message checks
     if is_invalid_message(msg):
+        return
+    
+    if contains_url(msg.text):
+        await msg.delete()
+        warn_msg = await msg.reply_text("<i>Urls Not Allowed!</i>")
+        await asyncio.sleep(5)
+        await warn_msg.delete()
         return
 
     #  Fetch last search
@@ -173,7 +174,7 @@ async def auto_filter(client, msg):
 async def popularity_store(client, msg):
     try:
         cpu_usage = check_cpu_usage()
-        # print(f"current cpu usage: {cpu_usage}%")
+        print(f"current cpu usage: {cpu_usage}%")
         if cpu_usage >= 50:
             return
     except Exception as e:
@@ -197,7 +198,6 @@ async def popularity_store(client, msg):
         imdb_res = await process_text(imdb_res_up[0]) if imdb_res_up else None
         if not imdb_res:
             return
-
         score = fuzz.token_sort_ratio(search_split['title'].lower(), imdb_res.lower())
         if int(score) >= 95:
             input_str = f"2,{imdb_res.lower()},trending,1"
@@ -894,31 +894,99 @@ def check_cpu_usage():
     return cpu_percent
 
 async def loading_msg(query):
-    await asyncio.sleep(0.1)
+    await asyncio.sleep(0.2)
     await query.edit_message_text(
                 text="▰▱▱"
             )
-    await asyncio.sleep(0.08)
+    await asyncio.sleep(0.1)
     await query.edit_message_text(
                 text="▰▰▱"
             )
-    await asyncio.sleep(0.05)
+    await asyncio.sleep(0.08)
     await query.edit_message_text(
                 text="▰▰▰"
             )
-    
-#DEFAULT CALLBACKS 
+
+def contains_url(message):
+    url_pattern = re.compile(r'https?://\S+')
+    match = re.search(url_pattern, message)
+    return bool(match)
+
+async def send_eps_files(user_id, query, client, message):
+    try:
+        details, search = detail_extraction(query)
+        if not details['season']:
+            details['season'] = "s01"
+        details['comb'] = None
+        details['episode'] = None
+        search = str_to_string(details)
+
+        if search is None:
+            await message.reply_text("<b>No search terms provided</b>")
+            return
+        wait_msg = await message.reply_text("<b>Fᴇᴛᴄʜɪɴɢ Fɪʟᴇs..</b>")
+        await asyncio.sleep(2)
+        wait_msg = await wait_msg.edit_text("<b>Uᴘʟᴏᴀᴅɪɴɢ..</b>")
+        await asyncio.sleep(1)
+        await wait_msg.delete()
+        for i in range(1, 26):
+
+            if i < 10:
+                query_ep = f"{search} e0{i}"
+            else:
+                query_ep = f"{search} e{i}"
+
+            suc = await send_filex(query_ep, user_id, client)
+
+            if suc == False :
+                if i == 1:
+                    await message.reply_text("<b>Nᴏ ғɪʟᴇs Wʜᴇʀᴇ Fᴏᴜɴᴅ</b>")
+                    return
+                else:
+                    break
+        comb = await message.reply_text("<b>Sᴇᴀʀᴄʜɪɴɢ Fᴏʀ Cᴏᴍʙɪɴᴇᴅ Fɪʟᴇ..</b>")
+        await asyncio.sleep(2)
+        if details['quality']:
+            query_comn = f"{search} combined"
+            suc = await send_filex(query_comn, user_id, client)
+            if suc == False:
+                details['quality'] = None
+                query_comn = str_to_string(details)
+                suc = await send_filex(query_comn, user_id, client)
+        else:
+            query_comn = f"{search} combined"
+            suc = await send_filex(query_comn, user_id, client)
+        if suc == False:
+            comb = await comb.edit_text("<b>Fɪʟᴇ Nᴏᴛ Fᴏᴜɴᴅ</b>")
+        await comb.delete()
+        await asyncio.sleep(2)
+        await comb.reply_text("<i><b>Note:</b> This Feature is in <b>Beta Stage</b>\nYou might receive wrong files</i>")
+    except Exception as e:
+        await message.reply_text(f"<i><b>ERROR:</b> {str(e)}</i>")
+    return
+
+async def verify_msg(query, client,file_id):
+    pw_msg = await query.message.reply_text("Pʟᴇᴀsᴇ Wᴀɪᴛ..")
+    btn = [[
+        InlineKeyboardButton("Vᴇʀɪғʏ", url=await get_token(client, query.from_user.id, f"https://telegram.me/{temp.U_NAME}?start=", file_id)),
+        InlineKeyboardButton("Hᴏᴡ Tᴏ Vᴇʀɪғʏ", url=HOW_TO_VERIFY)
+    ]]
+    await pw_msg.delete()
+    verify_btn = await query.message.reply_text(
+        text="<b>Yᴏᴜ ᴀʀᴇ ɴᴏᴛ ᴠᴇʀɪғɪᴇᴅ!\nKɪɴᴅʟʏ ᴠᴇʀɪғʏ ᴛᴏ ᴄᴏɴᴛɪɴᴜᴇ Sᴏ ᴛʜᴀᴛ ʏᴏᴜ ᴄᴀɴ ɢᴇᴛ ᴀᴄᴄᴇss ᴛᴏ ᴜɴʟɪᴍɪᴛᴇᴅ ᴍᴏᴠɪᴇs ᴜɴᴛɪʟ 16 ʜᴏᴜʀs ғʀᴏᴍ ɴᴏᴡ !</b>\n<i>or just buy /premium Membership</i>",
+        protect_content=False,
+        reply_markup=InlineKeyboardMarkup(btn)
+    )
+    await asyncio.sleep(DLT)
+    await verify_btn.delete()
+    return
+
+#CALLBACKS 
 @Client.on_callback_query()
 async def cb_handler(client: Client, query: CallbackQuery):
     
     if query.data == "callback_none":
         await query.answer() 
-
-    if query.data == "private_source":
-        await query.answer(f"Project isn't Open Source!", show_alert=True)
-    
-    if query.data == "start_dmca":
-        await query.answer(f"Bot Disclaimer: Files here are freely available or posted by others online. Original creators, if you want your files removed, contact us.", show_alert=True)
 
     if query.data.startswith("close_data"): 
         _,userid = query.data.split("#")
@@ -987,102 +1055,33 @@ async def cb_handler(client: Client, query: CallbackQuery):
             alert = alert.replace("\\n", "\n").replace("\\t", "\t")
             await query.answer(alert, show_alert=True)
     
-    if query.data.startswith("file"):
-        
-        clicked = query.from_user.id
-        try:
-            typed = query.message.reply_to_message.from_user.id
-        except:
-            typed = query.from_user.id
-        ident, file_id = query.data.split("#")
-        files_ = await get_file_details(file_id)
-        if not files_:
-            return await query.answer('Nᴏ sᴜᴄʜ ғɪʟᴇ ᴇxɪsᴛ.')
-        files = files_[0]
-        title = files.file_name
-        size = get_size(files.file_size)
-        f_caption = files.caption
-        if CUSTOM_FILE_CAPTION:
-            try:
-                f_caption = CUSTOM_FILE_CAPTION.format(file_name='' if title is None else title,
-                                                       file_size='' if size is None else size,
-                                                       file_caption='' if f_caption is None else f_caption)
-            except Exception as e:
-                logger.exception(e)
-            f_caption = f_caption
-        if f_caption is None:
-            f_caption = f"{files.file_name}"
-
-        try:
-            if AUTH_CHANNEL and not await is_subscribed(client, query):
-                if clicked == typed:
-                    await query.answer(url=f"https://t.me/{temp.U_NAME}?start={ident}_{file_id}")
-                    return
-                else:
-                    await query.answer(f"Hᴇʏ {query.from_user.first_name}, Tʜɪs Is Nᴏᴛ Yᴏᴜʀ Mᴏᴠɪᴇ Rᴇǫᴜᴇsᴛ. Rᴇǫᴜᴇsᴛ Yᴏᴜʀ's !", show_alert=True)
-            else:
-                if clicked == typed:
-                    if IS_VERIFY and not await check_verification(client, query.from_user.id):
-                        m = await query.reply_text("Please Wait . .")
-                        await asyncio.sleep(VTIME)
-                        await m.delete()
-                        btn = [[
-                            InlineKeyboardButton("Vᴇʀɪғʏ", url=await get_token(client, query.from_user.id, f"https://telegram.me/{temp.U_NAME}?start=", file_id)),
-                            InlineKeyboardButton("Hᴏᴡ Tᴏ Vᴇʀɪғʏ", url=HOW_TO_VERIFY)
-                        ]]
-                        
-                        await client.send_message(
-                            chat_id=query.from_user.id,
-                            text="<b>Yᴏᴜ ᴀʀᴇ ɴᴏᴛ ᴠᴇʀɪғɪᴇᴅ!\nKɪɴᴅʟʏ ᴠᴇʀɪғʏ ᴛᴏ ᴄᴏɴᴛɪɴᴜᴇ Sᴏ ᴛʜᴀᴛ ʏᴏᴜ ᴄᴀɴ ɢᴇᴛ ᴀᴄᴄᴇss ᴛᴏ ᴜɴʟɪᴍɪᴛᴇᴅ ᴍᴏᴠɪᴇs ᴜɴᴛɪʟ 24 ʜᴏᴜʀs ғʀᴏᴍ ɴᴏᴡ !\n\nआप verified नहीं हैं ! \nकृपया जारी रखने के लिए verify करें ताकि आप अब से 16 घंटे तक unlimited फिल्मों  प्राप्त कर सकें</b>",
-                            protect_content=True if ident == 'checksubp' else False,
-                            disable_web_page_preview=True,
-                            parse_mode=enums.ParseMode.HTML,
-                            reply_markup=InlineKeyboardMarkup(btn)
-                        )
-                        return await query.answer("Hᴇʏ, Yᴏᴜ ʜᴀᴠᴇ ɴᴏᴛ ᴠᴇʀɪғɪᴇᴅ ᴛᴏᴅᴀʏ. Yᴏᴜ ʜᴀᴠᴇ ᴛᴏ ᴠᴇʀɪғʏ ᴛᴏ ᴄᴏɴᴛɪɴᴜᴇ. Cʜᴇᴄᴋ ᴍʏ PM ᴛᴏ ᴠᴇʀɪғʏ ᴀɴᴅ ɢᴇᴛ ғɪʟᴇs !", show_alert=True)
-                    else:
-                        try:
-                            query.message.delete()
-                        except: pass
-                        await client.send_cached_media(
-                            chat_id=query.from_user.id,
-                            file_id=file_id,
-                            caption=f_caption,
-                            protect_content=True if ident == "filep" else False
-                            )
-                        return await query.answer('Cʜᴇᴄᴋ PM, I ʜᴀᴠᴇ sᴇɴᴛ ғɪʟᴇs ɪɴ PM', show_alert=True)
-                else:
-                    return await query.answer(f"Hᴇʏ {query.from_user.first_name}, Tʜɪs Is Nᴏᴛ Yᴏᴜʀ Mᴏᴠɪᴇ Rᴇǫᴜᴇsᴛ. Rᴇǫᴜᴇsᴛ Yᴏᴜʀ's !", show_alert=True)
-        except UserIsBlocked:
-            await query.answer('Uɴʙʟᴏᴄᴋ ᴛʜᴇ ʙᴏᴛ ᴍᴀʜɴ !', show_alert=True)
-        except PeerIdInvalid:
-            await query.answer(url=f"https://t.me/{temp.U_NAME}?start={ident}_{file_id}")
-        except Exception as e:
-            await query.answer(url=f"https://t.me/{temp.U_NAME}?start={ident}_{file_id}")
-    
     elif query.data.startswith("checksub"):
         if AUTH_CHANNEL and not await is_subscribed(client, query):
-            await query.answer("Jᴏɪɴ ᴏᴜʀ Bᴀᴄᴋ-ᴜᴘ ᴄʜᴀɴɴᴇʟ ᴍᴀʜɴ! 😒", show_alert=True)
+            await query.answer("First Join My Channel", show_alert=True)
             return
+        
+        await query.message.delete()
+
         ident, file_id = query.data.split("#")
-        if file_id == "send_all":
-            send_files = temp.SEND_ALL_TEMP.get(query.from_user.id)
-            is_over = await send_all(client, query.from_user.id, send_files, ident)
-            if is_over == 'done':
-                return await query.answer(f"Hᴇʏ {query.from_user.first_name}, Aʟʟ ғɪʟᴇs ᴏɴ ᴛʜɪs ᴘᴀɢᴇ ʜᴀs ʙᴇᴇɴ sᴇɴᴛ sᴜᴄᴄᴇssғᴜʟʟʏ ᴛᴏ ʏᴏᴜʀ PM !", show_alert=True)
-            elif is_over == 'fsub':
-                return await query.answer("Hᴇʏ, Yᴏᴜ ᴀʀᴇ ɴᴏᴛ ᴊᴏɪɴᴇᴅ ɪɴ ᴍʏ ʙᴀᴄᴋ ᴜᴘ ᴄʜᴀɴɴᴇʟ. Cʜᴇᴄᴋ ᴍʏ PM ᴛᴏ ᴊᴏɪɴ ᴀɴᴅ ɢᴇᴛ ғɪʟᴇs !", show_alert=True)
-            elif is_over == 'verify':
-                return await query.answer("Hᴇʏ, Yᴏᴜ ʜᴀᴠᴇ ɴᴏᴛ ᴠᴇʀɪғɪᴇᴅ ᴛᴏᴅᴀʏ. Yᴏᴜ ʜᴀᴠᴇ ᴛᴏ ᴠᴇʀɪғʏ ᴛᴏ ᴄᴏɴᴛɪɴᴜᴇ. Cʜᴇᴄᴋ ᴍʏ PM ᴛᴏ ᴠᴇʀɪғʏ ᴀɴᴅ ɢᴇᴛ ғɪʟᴇs !", show_alert=True)
-            else:
-                return await query.answer(f"Eʀʀᴏʀ: {is_over}", show_alert=True)
+
+        if file_id == "all_eps":
+            if IS_VERIFY and not await check_verification(client, query.from_user.id):
+                await verify_msg(query,client,"all_eps")
+            else: 
+                search = await db.retrieve_latest_search(int(userid))
+                await send_eps_files(userid,search,client,query)
+            return
+        
         files_ = await get_file_details(file_id)
+
         if not files_:
             return await query.answer('Nᴏ sᴜᴄʜ ғɪʟᴇ ᴇxɪsᴛ.')
+        
         files = files_[0]
         title = files.file_name
         size = get_size(files.file_size)
         f_caption = files.caption
+
         if CUSTOM_FILE_CAPTION:
             try:
                 f_caption = CUSTOM_FILE_CAPTION.format(file_name='' if title is None else title,
@@ -1094,45 +1093,17 @@ async def cb_handler(client: Client, query: CallbackQuery):
         if f_caption is None:
             f_caption = f"{title}"
         await query.answer()
+        
         if IS_VERIFY and not await check_verification(client, query.from_user.id):
-            # Rest of your code
-            btn = [
-                [
-                    InlineKeyboardButton("Vᴇʀɪғʏ", url=await get_token(client, query.from_user.id, f"https://telegram.me/{temp.U_NAME}?start=", file_id)),
-                    InlineKeyboardButton("Hᴏᴡ Tᴏ Vᴇʀɪғʏ", url=HOW_TO_VERIFY)
-                ]
-            ]
-
-            await client.send_message(
-                chat_id=query.from_user.id,
-                text="<b>Yᴏᴜ ᴀʀᴇ ɴᴏᴛ ᴠᴇʀɪғɪᴇᴅ!\nKɪɴᴅʟʏ ᴠᴇʀɪғʏ ᴛᴏ ᴄᴏɴᴛɪɴᴜᴇ Sᴏ ᴛʜᴀᴛ ʏᴏᴜ ᴄᴀɴ ɢᴇᴛ ᴀᴄᴄᴇss ᴛᴏ ᴜɴʟɪᴍɪᴛᴇᴅ ᴍᴏᴠɪᴇs ᴜɴᴛɪʟ 16 ʜᴏᴜʀs ғʀᴏᴍ ɴᴏᴡ !\n\nआप verified नहीं हैं ! \nकृपया जारी रखने के लिए verify करें ताकि आप अब से 16 घंटे तक unlimited फिल्मों  प्राप्त कर सकें</b>",
-                protect_content=True if ident == 'checksubp' else False,
-                disable_web_page_preview=True,
-                parse_mode=enums.ParseMode.HTML,
-                reply_markup=InlineKeyboardMarkup(btn)
-            )
-            return
+            await verify_msg(query,client,file_id)
+            return 
+        
         await client.send_cached_media(
             chat_id=query.from_user.id,
             file_id=file_id,
             caption=f_caption,
-            protect_content=True if ident == 'checksubp' else False
+            protect_content=False
         )
-
-    elif query.data.startswith("send_fall"):
-        temp_var, ident, offset, userid = query.data.split("#")
-        if int(userid) not in [query.from_user.id, 0]:
-            return await query.answer(script.ALRT_TXT.format(query.from_user.first_name), show_alert=True)
-        files = temp.SEND_ALL_TEMP.get(query.from_user.id)
-        is_over = await send_all(client, query.from_user.id, files, ident)
-        if is_over == 'done':
-            return await query.answer(f"Hᴇʏ {query.from_user.first_name}, Aʟʟ ғɪʟᴇs ᴏɴ ᴛʜɪs ᴘᴀɢᴇ ʜᴀs ʙᴇᴇɴ sᴇɴᴛ sᴜᴄᴄᴇssғᴜʟʟʏ ᴛᴏ ʏᴏᴜʀ PM !", show_alert=True)
-        elif is_over == 'fsub':
-            return await query.answer("Hᴇʏ, Yᴏᴜ ᴀʀᴇ ɴᴏᴛ ᴊᴏɪɴᴇᴅ ɪɴ ᴍʏ ʙᴀᴄᴋ ᴜᴘ ᴄʜᴀɴɴᴇʟ. Cʜᴇᴄᴋ ᴍʏ PM ᴛᴏ ᴊᴏɪɴ ᴀɴᴅ ɢᴇᴛ ғɪʟᴇs !", show_alert=True)
-        elif is_over == 'verify':
-            return await query.answer("Hᴇʏ, Yᴏᴜ ʜᴀᴠᴇ ɴᴏᴛ ᴠᴇʀɪғɪᴇᴅ ᴛᴏᴅᴀʏ. Yᴏᴜ ʜᴀᴠᴇ ᴛᴏ ᴠᴇʀɪғʏ ᴛᴏ ᴄᴏɴᴛɪɴᴜᴇ. Cʜᴇᴄᴋ ᴍʏ PM ᴛᴏ ᴠᴇʀɪғʏ ᴀɴᴅ ɢᴇᴛ ғɪʟᴇs !", show_alert=True)
-        else:
-            return await query.answer(f"Eʀʀᴏʀ: {is_over}", show_alert=True)
 
     elif query.data.startswith("killfilesdq"):
         ident, keyword = query.data.split("#")
@@ -1160,6 +1131,12 @@ async def cb_handler(client: Client, query: CallbackQuery):
             else:
                 await query.message.edit_text(f"<b>Pʀᴏᴄᴇss Cᴏᴍᴘʟᴇᴛᴇᴅ ғᴏʀ ғɪʟᴇ ᴅᴇʟᴇᴛɪᴏɴ !\n\nSᴜᴄᴄᴇssғᴜʟʟʏ ᴅᴇʟᴇᴛᴇᴅ {str(deleted)} ғɪʟᴇs ғʀᴏᴍ DB ғᴏʀ ʏᴏᴜʀ ᴏ̨ᴜᴇʀʏ {keyword}.</b>")
 
+    elif query.data == "private_source":
+        await query.answer(f"Project isn't Open Source!", show_alert=True)
+    
+    elif query.data == "start_dmca":
+        await query.answer(f"Bot Disclaimer: Files here are freely available or posted by others online. Original creators, if you want your files removed, contact us.", show_alert=True)
+
     elif query.data == "about_bot":
         await loading_msg(query)
         await asyncio.sleep(0.3)
@@ -1172,7 +1149,7 @@ async def cb_handler(client: Client, query: CallbackQuery):
         ]]
         cap = """<B>───[ ᴅᴇᴛᴀɪʟꜱ ]───
 
-‣ ᴍʏ ɴᴀᴍᴇ : [POWER 〄](https://t.me/VegaMoviesiBot)
+‣ ᴍʏ ɴᴀᴍᴇ : [ᴜʟᴛʀᴏɴ 〄](https://t.me/VegaMoviesXBot)
 ‣ ᴅᴇᴠᴇʟᴏᴘᴇʀ : [sʜᴀᴅᴏᴡ](https://t.me/Shadow506)
 ‣ ʟɪʙʀᴀʀʏ : [ᴘʏʀᴏɢʀᴀᴍ](https://docs.pyrogram.org/)
 ‣ ʟᴀɴɢᴜᴀɢᴇ : [ᴘʏᴛʜᴏɴ 3](https://www.python.org/download/releases/3.0/)
