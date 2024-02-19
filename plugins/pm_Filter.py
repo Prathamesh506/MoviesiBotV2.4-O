@@ -849,11 +849,12 @@ def search_movie(query, results=10):
 
         filtered_results = []
         for movie in movie_ids:
-            if movie.get('kind') in ['movie', 'tv series','anime']:
+            if movie.get('kind') in ['movie', 'tv series', 'anime']:
                 filtered_results.append(movie['title'])
 
         return filtered_results
-    except:
+    except imdb.IMDbDataAccessError as e:
+        print("Error accessing IMDb data:", e)
         return None
 
 def find_matching_movies(input_name, movie_list): #gives matching titles from list
