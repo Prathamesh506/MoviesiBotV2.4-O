@@ -24,7 +24,7 @@ pay_msg = """<b>› PREMIUM PLANS !</b>
 ₹299 - Get Verified for <b>Year</b>
 ₹499 - Get Verified for <b>Life Time</b></i>
 
-<b>UPI ID:</b><code> mrnova@hdfcbank</code><i>
+<b>UPI ID:</b><code>mrnova@hdfcbank</code><i>
 
 You can make payments using either the <b>UPI ID </b>or by scanning the <b>QR code</b>.
 
