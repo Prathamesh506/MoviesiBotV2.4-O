@@ -11,7 +11,7 @@ from database.users_chats_db import db
 from info import CHANNELS,DLT, ADMINS, GRP2,GRP1,REQST_CHANNEL,AUTH_CHANNEL, LOG_CHANNEL, PICS, CUSTOM_FILE_CAPTION, PROTECT_CONTENT, CHNL_LNK, IS_VERIFY, HOW_TO_VERIFY,SUP_LNK
 from utils import  get_size, is_subscribed, temp, verify_user, check_token, check_verification, get_token,verify_VIP,verify_new
 import re
-from  plugins.pm_Filter import detail_extraction,str_to_string,watch_movies_filter,check_cpu_usage
+from  plugins.pm_Filter import send_eps_files,watch_movies_filter,check_cpu_usage
 import base64
 from database.watch import store_movies_from_text,delete_category,get_all_movies
 logger = logging.getLogger(__name__)
@@ -74,14 +74,13 @@ async def start(client, message):
             try:
                 kk, file_id = message.command[1].split("_", 1)
                 pre = 'checksubp' if kk == 'filep' else 'checksub' 
-                btn.append([InlineKeyboardButton("Try Again  💫", callback_data=f"{pre}#{file_id}")])
+                btn.append([InlineKeyboardButton("Try Again", callback_data=f"{pre}#{file_id}")])
             except (IndexError, ValueError):
-                btn.append([InlineKeyboardButton("Try Again  💫", url=f"https://t.me/{temp.U_NAME}?start={message.command[1]}")])
+                btn.append([InlineKeyboardButton("Try Again", url=f"https://t.me/{temp.U_NAME}?start={message.command[1]}")])
         await client.send_message(
             chat_id=message.from_user.id,
-            text="**Please Join My Channel To Use Me.**\n__(once you are joined click on try again you will get files)__",
-            reply_markup=InlineKeyboardMarkup(btn),
-            parse_mode=enums.ParseMode.MARKDOWN
+            text=f"<b>Hey {message.from_user.mention},\n\nPlease Join My Channel To Use Me!</b>\nonce you are joined click on try again you will get files.",
+            reply_markup=InlineKeyboardMarkup(btn)
             )
         return
     
@@ -261,12 +260,6 @@ async def start(client, message):
         protect_content=True if pre == 'filep' else False
     )
 
-
-@Client.on_message(filters.command('watch'))
-async def watch_cmd(bot, message):
-    await watch_movies_filter(bot, message)
-    return
-
 @Client.on_message(filters.command('channel') & filters.user(ADMINS))
 async def channel_info(bot, message):
            
@@ -318,7 +311,7 @@ async def verifying_vip(client, message):
 
             s_m = any(admin == int(vipsid) for admin in ADMINS)
 
-            msg = f"<b>{type} Plan Activated!</b>\n\n<b>Name : </b>{username}\n<b>User id :</b> {vipsid}\n<b>Verified For:</b> {timd} Days \n\n<i>for more info use /plan command.</i>"
+            msg = f"<b>{type} Plan Activated!</b>\n\n<b>Name : </b>{username}\n<b>User id :</b> {vipsid}\n<b>Verified For:</b> {timd} Days \n\n<i>for more info use /plan command in bot ☞ @VegaMoviesXbot</i>"
             
             await message.reply(msg)
 
@@ -416,27 +409,6 @@ async def delete(bot, message):
             else:
                 await msg.edit('Fɪʟᴇ ɴᴏᴛ ғᴏᴜɴᴅ ɪɴ ᴅᴀᴛᴀʙᴀsᴇ')
 
-# @Client.on_message(filters.command('deleteall') & filters.user(ADMINS))
-# async def delete_all_index(bot, message):
-#     await message.reply_text(
-#         'Tʜɪs ᴡɪʟʟ ᴅᴇʟᴇᴛᴇ ᴀʟʟ ɪɴᴅᴇxᴇᴅ ғɪʟᴇs.\nDᴏ ʏᴏᴜ ᴡᴀɴᴛ ᴛᴏ ᴄᴏɴᴛɪɴᴜᴇ ?',
-#         reply_markup=InlineKeyboardMarkup(
-#             [
-#                 [
-#                     InlineKeyboardButton(
-#                         text="Yᴇs", callback_data="autofilter_delete_all"
-#                     )
-#                 ],
-#                 [
-#                     InlineKeyboardButton(
-#                         text="Cᴀɴᴄᴇʟ", callback_data=f"close_data#{message.from_user.id}"
-#                     )
-#                 ],
-#             ]
-#         ),
-#         quote=True,
-#     )
-
 @Client.on_message(filters.command('stats') & filters.user(ADMINS))
 async def get_ststs(bot, message):
     rju = await message.reply('Fetching stats..')
@@ -450,13 +422,7 @@ async def get_ststs(bot, message):
     cpu = check_cpu_usage()
     await rju.edit(script.STATUS_TXT.format(cpu,files, total_users, totl_chats, size, free))
 
-@Client.on_callback_query(filters.regex(r'^autofilter_delete_all'))
-async def delete_all_index_confirm(bot, message):
-    await Media.collection.drop()
-    await message.answer("Eᴠᴇʀʏᴛʜɪɴɢ's Gᴏɴᴇ")
-    await message.message.edit('Sᴜᴄᴄᴇsғᴜʟʟʏ Dᴇʟᴇᴛᴇᴅ Aʟʟ Tʜᴇ Iɴᴅᴇxᴇᴅ Fɪʟᴇs.')    
-
-@Client.on_message(filters.command("deletefiles") & filters.user(ADMINS))
+@Client.on_message(filters.command("kill") & filters.user(ADMINS))
 async def deletemultiplefiles(bot, message):
     chat_type = message.chat.type
     if chat_type != enums.ChatType.PRIVATE:
@@ -498,57 +464,11 @@ async def requests(bot, message):
                       ]]
     await message.reply_text("<b>Yᴏᴜʀ ʀᴇᴏ̨ᴜᴇsᴛ ʜᴀs ʙᴇᴇɴ ᴀᴅᴅᴇᴅ! Pʟᴇᴀsᴇ ᴡᴀɪᴛ ғᴏʀ sᴏᴍᴇ ᴛɪᴍᴇ.</b>", reply_markup=InlineKeyboardMarkup(btn2))
 
-async def send_eps_files(user_id, query, client, message):
-    try:
-        details, search = detail_extraction(query)
-        if not details['season']:
-            details['season'] = "s01"
-        details['comb'] = None
-        details['episode'] = None
-        search = str_to_string(details)
 
-        if search is None:
-            await message.reply_text("<b>No search terms provided</b>")
-            return
-        wait_msg = await message.reply_text("<b>Fᴇᴛᴄʜɪɴɢ Fɪʟᴇs..</b>")
-        await asyncio.sleep(2)
-        wait_msg = await wait_msg.edit_text("<b>Uᴘʟᴏᴀᴅɪɴɢ..</b>")
-        await asyncio.sleep(1)
-        await wait_msg.delete()
-        for i in range(1, 26):
-
-            if i < 10:
-                query_ep = f"{search} e0{i}"
-            else:
-                query_ep = f"{search} e{i}"
-
-            suc = await send_filex(query_ep, user_id, client)
-
-            if suc == False :
-                if i == 1:
-                    await message.reply_text("<b>Nᴏ ғɪʟᴇs Wʜᴇʀᴇ Fᴏᴜɴᴅ</b>")
-                    return
-                else:
-                    break
-        comb = await message.reply_text("<b>Sᴇᴀʀᴄʜɪɴɢ Fᴏʀ Cᴏᴍʙɪɴᴇᴅ Fɪʟᴇ..</b>")
-        await asyncio.sleep(2)
-        if details['quality']:
-            query_comn = f"{search} combined"
-            suc = await send_filex(query_comn, user_id, client)
-            if suc == False:
-                details['quality'] = None
-                query_comn = str_to_string(details)
-                suc = await send_filex(query_comn, user_id, client)
-        else:
-            query_comn = f"{search} combined"
-            suc = await send_filex(query_comn, user_id, client)
-        if suc == False:
-            comb = await comb.edit_text("<b>Fɪʟᴇ Nᴏᴛ Fᴏᴜɴᴅ</b>")
-        await comb.delete()
-        await asyncio.sleep(2)
-        await comb.reply_text("<i><b>Note:</b> This Feature is in <b>Beta Stage</b>\nYou might receive wrong files</i>")
-    except Exception as e:
-        await message.reply_text(f"<i><b>ERROR:</b> {str(e)}</i>")
+#WATCH COMMAHDS   
+@Client.on_message(filters.command('watch') & filters.user(ADMINS))
+async def watch_cmd(bot, message):
+    await watch_movies_filter(bot, message)
     return
 
 @Client.on_message(filters.command('store') & filters.user(ADMINS))
@@ -568,3 +488,30 @@ async def cat_get_all(bot, message):
     movies_list = await get_all_movies()
     await message.reply_text(f"Deleted: {movies_list}")
 
+
+# @Client.on_message(filters.command('deleteall') & filters.user(ADMINS))
+# async def delete_all_index(bot, message):
+#     await message.reply_text(
+#         'Tʜɪs ᴡɪʟʟ ᴅᴇʟᴇᴛᴇ ᴀʟʟ ɪɴᴅᴇxᴇᴅ ғɪʟᴇs.\nDᴏ ʏᴏᴜ ᴡᴀɴᴛ ᴛᴏ ᴄᴏɴᴛɪɴᴜᴇ ?',
+#         reply_markup=InlineKeyboardMarkup(
+#             [
+#                 [
+#                     InlineKeyboardButton(
+#                         text="Yᴇs", callback_data="autofilter_delete_all"
+#                     )
+#                 ],
+#                 [
+#                     InlineKeyboardButton(
+#                         text="Cᴀɴᴄᴇʟ", callback_data=f"close_data#{message.from_user.id}"
+#                     )
+#                 ],
+#             ]
+#         ),
+#         quote=True,
+#     )
+    
+# @Client.on_callback_query(filters.regex(r'^autofilter_delete_all'))
+# async def delete_all_index_confirm(bot, message):
+#     await Media.collection.drop()
+#     await message.answer("Eᴠᴇʀʏᴛʜɪɴɢ's Gᴏɴᴇ")
+#     await message.message.edit('Sᴜᴄᴄᴇsғᴜʟʟʏ Dᴇʟᴇᴛᴇᴅ Aʟʟ Tʜᴇ Iɴᴅᴇxᴇᴅ Fɪʟᴇs.')    
