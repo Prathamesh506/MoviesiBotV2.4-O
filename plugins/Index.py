@@ -67,8 +67,9 @@ async def send_for_index(bot, message):
         return
     try:
         await bot.get_chat(chat_id)
-    except ChannelInvalid:
-        return await message.reply('This may be a private channel / group. Make me an admin over there to index the files.')
+    except (ChannelInvalid):
+        return await message.reply('This may be a private channel / group or the chat does not exist. Make me an admin over there to index the files.')
+
     except (UsernameInvalid, UsernameNotModified):
         return await message.reply('Invalid Link specified.')
     except Exception as e:
