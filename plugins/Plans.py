@@ -134,6 +134,6 @@ def pay_btn2(bot, update):
   userid= update.from_user.id
   buttons = [[
    pyrogram.types.InlineKeyboardButton("ᴏʀ ᴄᴏᴅᴇ ▣", url=f"https://telegra.ph/file/a2d3a48d65c5bb675e8c1.jpg"),
-   pyrogram.types.InlineKeyboardButton("Close ",callback_data="close#{userid}" ),
+   pyrogram.types.InlineKeyboardButton("Close ",callback_data="close_data#{userid}" ),
    ]]
   return pyrogram.types.InlineKeyboardMarkup(buttons)
