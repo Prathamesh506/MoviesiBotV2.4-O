@@ -355,7 +355,12 @@ def watch_btn(userid,start_btn):
 
 @Client.on_callback_query(filters.regex(r"^next"))
 async def next_page(bot, query):
-    _, req, offset = query.data.split("_")
+    try:
+        _, req, offset = query.data.split("_")
+        offset = int(offset)
+    except ValueError:
+        logger.exception('ERROR: #NEXT BUTTON')
+        return
 
     search = await db.retrieve_latest_search(query.from_user.id)
 
