@@ -220,7 +220,7 @@ async def watch_movies_filter(client, msg,type=False,start_btn=False):
     if type:
         result_msg = await msg.edit_message_text(text=cap,reply_markup=InlineKeyboardMarkup(btn))
     else:
-        result_msg = await msg.reply_photo(photo="https://telegra.ph/file/1b8c6b0c39f1090f13162.jpg", caption=cap,
+        result_msg = await msg.reply_photo(photo="https://telegra.ph/file/b9ed75fcef91d7edd629b.jpg", caption=cap,
         
                                         reply_markup=InlineKeyboardMarkup(btn))
     await asyncio.sleep(DLT)
