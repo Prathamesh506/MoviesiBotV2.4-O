@@ -420,7 +420,8 @@ async def get_ststs(bot, message):
     size = get_size(size)
     free = get_size(free)
     cpu = check_cpu_usage()
-    await rju.edit(script.STATUS_TXT.format(cpu,files, total_users, totl_chats, size, free))
+    total_count = await db.get_verify_count()
+    await rju.edit(script.STATUS_TXT.format(cpu,total_count,files, total_users, totl_chats, size, free))
 
 @Client.on_message(filters.command("kill") & filters.user(ADMINS))
 async def deletemultiplefiles(bot, message):
@@ -488,6 +489,21 @@ async def cat_get_all(bot, message):
     movies_list = await get_all_movies()
     await message.reply_text(f"Deleted: {movies_list}")
 
+#VERIFY COUNT
+@Client.on_message(filters.command('mreport') & filters.user(ADMINS))
+async def verify_month(bot, message):
+    total_count = await db.get_verify_count()
+    month_data = await db.get_month_verify_count()
+
+    # Calculate total count for the month
+    total_count_month = sum(month_data.values())
+
+    # Format the month data
+    formatted_month_data = "\n".join([f"{date}: {count}" for date, count in month_data.items()])
+
+    response_message = f"<b>Month Report!</b>\n\n<b> Total : </b><code>{total_count_month}<code>\n\n{formatted_month_data}"
+
+    await message.reply_text(response_message)
 
 # @Client.on_message(filters.command('deleteall') & filters.user(ADMINS))
 # async def delete_all_index(bot, message):
