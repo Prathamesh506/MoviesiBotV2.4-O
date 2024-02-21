@@ -17,7 +17,7 @@ async def search_movie_db(title_query):
     async for movie in db.movies.find({}, {"title": 1}):
         movie_title = movie['title']
         score = fuzz.partial_ratio(title_query, movie_title)
-        if score > 85 and score > best_score:
+        if score > 80 and score > best_score:
             best_match = movie_title
             best_score = score
     return best_match
