@@ -11,6 +11,17 @@ class Movie:
         self.rating = rating
         self.popularity = popularity
 
+async def search_movie_db(title_query):
+    best_match = None
+    best_score = 0
+    async for movie in db.movies.find({}, {"title": 1}):
+        movie_title = movie['title']
+        score = fuzz.partial_ratio(title_query, movie_title)
+        if score > 85 and score > best_score:
+            best_match = movie_title
+            best_score = score
+    return best_match
+    
 async def get_watch_movies(movie_type, offset=1, limit=10):
     movies_collection = db['movies']
 
