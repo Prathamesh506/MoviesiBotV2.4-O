@@ -13,7 +13,7 @@ from info import ADMINS,VTIME, AUTH_CHANNEL, NO_RES_CNL,GRP1,SUPPORT_CHAT_ID,DOW
 from pyrogram.types import InlineKeyboardMarkup, InlineKeyboardButton, CallbackQuery
 from pyrogram import Client, filters, enums
 from pyrogram.errors import UserIsBlocked, MessageNotModified, PeerIdInvalid
-from utils import get_size, is_subscribed, temp, send_all, check_verification, get_token
+from utils import get_size, is_subscribed, temp, check_verification, get_token
 from database.users_chats_db import db
 from database.ia_filterdb import Media, get_file_details,search_db,total_results_count,send_filex
 from fuzzywuzzy import fuzz, process
