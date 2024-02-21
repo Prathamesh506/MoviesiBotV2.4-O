@@ -9,7 +9,7 @@ import regex
 import time
 from Script import script
 import pyrogram
-from info import ADMINS,VTIME, AUTH_CHANNEL, NO_RES_CNL,GRP1,SUPPORT_CHAT_ID,DOWNLOAD_TIPS, CUSTOM_FILE_CAPTION, MSG_ALRT, SUP_LNK, CHNL_LNK, IS_VERIFY, HOW_TO_VERIFY,VTIME, DLT
+from info import ADMINS,VTIME, AUTH_CHANNEL, NO_RES_CNL,GRP1,SUPPORT_CHAT_ID,DOWNLOAD_TIPS, CUSTOM_FILE_CAPTION, IS_VERIFY, HOW_TO_VERIFY, DLT
 from pyrogram.types import InlineKeyboardMarkup, InlineKeyboardButton, CallbackQuery
 from pyrogram import Client, filters, enums
 from pyrogram.errors import UserIsBlocked, MessageNotModified, PeerIdInvalid
@@ -114,24 +114,19 @@ async def auto_filter(client, msg):
         files, offset, total_pages = await search_db(search.lower(), offset=0)
         if files:
             await db.store_search(msg.from_user.id, search)
-    
-    #LOCAL AUTOCORRRECT
-    if not files:
-        as_msg = await msg.reply_text("<b>Optimizing Search ⚡</b>")
-        try:
-            temp_search = await search_movie_db(search)
-            if temp_search is not None:
-                files, offset, total_pages = await search_db(temp_search.lower(), offset=0)
-                if files:
-                    search = temp_search
-                    await db.store_search(msg.from_user.id, search)
-                    await as_msg.delete()
-        except Exception as e:
-            # Log or report the exception for debugging
-            print(f"An error occurred: {e}")
 
+    if not files:
+        temp_search = await search_movie_db(search)
+        if temp_search is not None:
+            files, offset, total_pages = await search_db(temp_search.lower(), offset=0)
+            if files:
+                search = temp_search
+                await db.store_search(msg.from_user.id, search)
+                await as_msg.delete()
+    
     #IMDb AUTOCORRECT
     if not files:
+        as_msg = await msg.reply_text("<b>Oᴘᴛɪᴍɪᴢɪɴɢ Sᴇᴀʀᴄʜ ⚡</b>")
         try:
             temp_details = search_split
             temp_details['title'], imdb_res_list = await imdb_S1(temp_details['title'].lower())
@@ -234,7 +229,7 @@ async def watch_movies_filter(client, msg,type=False,start_btn=False):
     if type:
         result_msg = await msg.edit_message_text(text=cap,reply_markup=InlineKeyboardMarkup(btn))
     else:
-        result_msg = await msg.reply_photo(photo="https://telegra.ph/file/1b8c6b0c39f1090f13162.jpg", caption=cap,
+        result_msg = await msg.reply_photo(photo="https://telegra.ph/file/b9ed75fcef91d7edd629b.jpg", caption=cap,
         
                                         reply_markup=InlineKeyboardMarkup(btn))
     await asyncio.sleep(DLT)
@@ -375,7 +370,7 @@ async def next_page(bot, query):
         req = int(req)
     except ValueError:
         logger.exception('ERROR: #NEXT BUTTON')
-        return await query.answer("An error occurred while processing your request.")
+        return 
 
     search = await db.retrieve_latest_search(query.from_user.id)
 
@@ -409,8 +404,6 @@ async def next_page(bot, query):
     except MessageNotModified:
         pass
     await query.answer()
-
-
 
 @Client.on_callback_query(filters.regex(r"^select_lang"))
 async def select_language(bot, query):
@@ -1088,7 +1081,7 @@ async def cb_handler(client: Client, query: CallbackQuery):
         await query.message.delete()
 
         ident, file_id = query.data.split("#")
-        await query.message.reply_text(f"{ident} : {file_id} :{query.data}")
+
         if file_id.startswith("eps_files"):
             if IS_VERIFY and not await check_verification(client, query.from_user.id):
                 await verify_msg(query,client,"all_eps")
@@ -1174,7 +1167,7 @@ async def cb_handler(client: Client, query: CallbackQuery):
         ]]
         cap = """<B>───[ ᴅᴇᴛᴀɪʟꜱ ]───
 
-‣ ᴍʏ ɴᴀᴍᴇ : [sᴄᴀʀʟᴇᴛ ᴡɪᴛᴄʜ 〄](https://t.me/VegaMoviesiBot)
+‣ ᴍʏ ɴᴀᴍᴇ : [ᴜʟᴛʀᴏɴ 〄](https://t.me/VegaMoviesXBot)
 ‣ ᴅᴇᴠᴇʟᴏᴘᴇʀ : [sʜᴀᴅᴏᴡ](https://t.me/Shadow506)
 ‣ ʟɪʙʀᴀʀʏ : [ᴘʏʀᴏɢʀᴀᴍ](https://docs.pyrogram.org/)
 ‣ ʟᴀɴɢᴜᴀɢᴇ : [ᴘʏᴛʜᴏɴ 3](https://www.python.org/download/releases/3.0/)
