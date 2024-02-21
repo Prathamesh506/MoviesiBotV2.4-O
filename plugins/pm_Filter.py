@@ -116,8 +116,10 @@ async def auto_filter(client, msg):
             await db.store_search(msg.from_user.id, search)
 
     if not files:
-        temp_search = await search_movie_db(search)
-        if temp_search is not None:
+        temp_details = search_split
+        temp_details['title'] = await search_movie_db(temp_details['title'].lower())
+        if temp_details['title'] is not None:
+            temp_search = str_to_string(temp_details)
             files, offset, total_pages = await search_db(temp_search.lower(), offset=0)
             if files:
                 search = temp_search
