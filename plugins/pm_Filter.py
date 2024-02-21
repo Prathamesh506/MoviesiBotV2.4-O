@@ -358,37 +358,37 @@ async def next_page(bot, query):
     try:
         _, req, offset = query.data.split("_")
         offset = int(offset)
+        req = int(req)
     except ValueError:
         logger.exception('ERROR: #NEXT BUTTON')
-        return
+        return 
 
     search = await db.retrieve_latest_search(query.from_user.id)
 
-    if int(req) != int(query.from_user.id):
+    if req != query.from_user.id:
         return await query.answer(script.ALRT_TXT.format(query.from_user.first_name), show_alert=True)
 
     try:
         offset = int(offset)
-    except:
+    except ValueError:
         offset = 0
 
     if not search:
-        await query.answer(script.OLD_ALRT_TXT.format(query.from_user.first_name),show_alert=True)
+        await query.answer(script.OLD_ALRT_TXT.format(query.from_user.first_name), show_alert=True)
         return
-    
+
     files, n_offset, total_pages = await search_db(search, offset)
 
     if not files:
         return
-        
-    btn = await result_btn(files,req,bot,search)
+
+    btn = await result_btn(files, req, bot, search)
     query.text = search
-    btn = await navigation_buttons(btn,query, total_pages, n_offset)
+    btn = await navigation_buttons(btn, query, total_pages, n_offset)
     try:
         await query.edit_message_reply_markup(reply_markup=InlineKeyboardMarkup(btn))
     except pyrogram.errors.exceptions.flood_420.FloodWait as e:
         await query.answer("Flood Wait 15s ⌛")
-        pass
     except MessageNotModified:
         pass
     await query.answer()
