@@ -543,8 +543,8 @@ async def verify_user(bot, userid, token):
     date_var = datetime.now(tz)+timedelta(hours=16)
     temp_time = date_var.strftime("%H:%M:%S")
     date_var, time_var = str(date_var).split(" ")
-    await update_verify_status(user.id, date_var, temp_time)
     await db.count_verify()
+    await update_verify_status(user.id, date_var, temp_time)
 
 async def verify_VIP(bot, userid,plan):
     userid1 = int(userid)
