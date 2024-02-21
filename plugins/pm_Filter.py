@@ -1070,7 +1070,7 @@ async def cb_handler(client: Client, query: CallbackQuery):
 
         ident, file_id = query.data.split("#")
 
-        if file_id == "all_eps":
+        if file_id.startswith("eps_files"):
             if IS_VERIFY and not await check_verification(client, query.from_user.id):
                 await verify_msg(query,client,"all_eps")
             else: 
