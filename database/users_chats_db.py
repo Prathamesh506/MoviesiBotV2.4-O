@@ -1,12 +1,15 @@
 import motor.motor_asyncio
 from info import DATABASE_NAME, DATABASE_URI, IMDB, IMDB_TEMPLATE, MELCOW_NEW_USERS, P_TTI_SHOW_OFF, SINGLE_BUTTON, SPELL_CHECK_REPLY, PROTECT_CONTENT, AUTO_DELETE, MAX_BTN, AUTO_FFILTER, SHORTLINK_API, SHORTLINK_URL, IS_SHORTLINK
-from datetime import datetime
+from datetime import datetime, timedelta
 import pymongo
+import pytz
 
 class Database:
     def __init__(self, uri, database_name):
         self._client = motor.motor_asyncio.AsyncIOMotorClient(uri)
         self.db = self._client[database_name]
+        self.verif_col = self.db.verification_counts
+        self.timezone = pytz.timezone('Asia/Kolkata') 
         self.col = self.db.users
         self.grp = self.db.groups
         self.search_col = self.db.search_data
@@ -17,7 +20,7 @@ class Database:
         except pymongo.errors.OperationFailure as e:
             print(f"Error dropping index 'timestamp_1': {e}")
         try:
-            self.search_col.create_index("timestamp", expireAfterSeconds=600)
+            self.search_col.create_index("timestamp", expireAfterSeconds=6000)
             print("Created index 'timestamp' successfully.")
         except pymongo.errors.OperationFailure as e:
             print(f"Error creating index 'timestamp': {e}")
@@ -168,5 +171,69 @@ class Database:
 
     async def get_db_size(self):
         return (await self.db.command("dbstats"))['dataSize']
+
+    #VERIFICATION COUNT 
+    async def count_verify(self, date_str=None):
+        """
+        Records a verification for the given date.
+        
+        Args:
+            date_str (str): Date in "YYYY-MM-DD" format.
+        """
+        if date_str is None:
+            # Get current date in Indian Calcutta timezone
+            current_date = datetime.now(self.timezone)
+            date_str = current_date.strftime("%Y-%m-%d")
+
+        await self.verif_col.update_one({"date": date_str}, {"$inc": {"count": 1}}, upsert=True)
+
+    async def get_verify_count(self, date_str=None):
+        """
+        Retrieves the verification count for a specific date.
+        If no date is provided, retrieves the verification count for the present day in Indian Calcutta time.
+        
+        Args:
+            date_str (str, optional): Date in "YYYY-MM-DD" format. Defaults to None.
+        
+        Returns:
+            int: Verification count for the specified day.
+        """
+        if date_str is None:
+            # Get current date in Indian Calcutta timezone
+            current_date = datetime.now(self.timezone)
+            date_str = current_date.strftime("%Y-%m-%d")
+        
+        document = await self.verif_col.find_one({"date": date_str})
+        return document["count"] if document else 0
+
+    async def get_month_verify_count(self, year=None, month=None):
+        """
+        Retrieves the verification counts for a specific month.
+        
+        Args:
+            year (int): Year.
+            month (int): Month.
+        
+        Returns:
+            dict: Dictionary containing verification counts for each day in the month.
+        """
+        if year is None or month is None:
+            # Get current year and month
+            current_date = datetime.now(self.timezone)
+            year = current_date.year if year is None else year
+            month = current_date.month if month is None else month
+
+        start_date = datetime(year, month, 1).strftime("%Y-%m-%d")
+        end_date = (datetime(year, month, 1) + timedelta(days=32)).replace(day=1) - timedelta(days=1)
+        end_date_str = end_date.strftime("%Y-%m-%d")
+        
+        cursor = self.verif_col.find({
+            "date": {"$gte": start_date, "$lte": end_date_str}
+        })
+        
+        verification_counts = {}
+        async for document in cursor:
+            verification_counts[document["date"]] = document["count"]
+        return verification_counts
 
 db = Database(DATABASE_URI, DATABASE_NAME)
