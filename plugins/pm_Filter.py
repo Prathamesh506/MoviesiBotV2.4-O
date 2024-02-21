@@ -117,18 +117,19 @@ async def auto_filter(client, msg):
             
     #LOCAL AUTOCORRECT
     if not files:
+        as_msg = await msg.reply_text("<b>Optimizing Search ⚡</b>")
         temp_details = search_split
         temp_details['title'] = await search_movie_db(temp_details['title'].lower())
         if temp_details['title'] is not None:
             temp_search = str_to_string(temp_details)
             files, offset, total_pages = await search_db(temp_search.lower(), offset=0)
             if files:
+                await as_msg.delete()
                 search = temp_search
                 await db.store_search(msg.from_user.id, search)
     
     #IMDb AUTOCORRECT
     if not files:
-        as_msg = await msg.reply_text("<b>Oᴘᴛɪᴍɪᴢɪɴɢ Sᴇᴀʀᴄʜ ⚡</b>")
         imdb_res_list = None
         try:
             temp_details = search_split
