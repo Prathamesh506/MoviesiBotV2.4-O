@@ -129,6 +129,7 @@ async def auto_filter(client, msg):
     #IMDb AUTOCORRECT
     if not files:
         as_msg = await msg.reply_text("<b>Oᴘᴛɪᴍɪᴢɪɴɢ Sᴇᴀʀᴄʜ ⚡</b>")
+        imdb_res_list = None
         try:
             temp_details = search_split
             temp_details['title'], imdb_res_list = await imdb_S1(temp_details['title'].lower())
