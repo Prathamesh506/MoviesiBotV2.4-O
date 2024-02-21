@@ -389,6 +389,9 @@ async def next_page(bot, query):
         await query.edit_message_reply_markup(reply_markup=InlineKeyboardMarkup(btn))
     except pyrogram.errors.exceptions.flood_420.FloodWait as e:
         await query.answer("Flood Wait 15s ⌛")
+    except pyrogram.errors.exceptions.bad_request_400.QueryIdInvalid as e:
+        logger.error("Query ID is invalid or expired.")
+        return  # Don't proceed further if the query ID is invalid
     except MessageNotModified:
         pass
     await query.answer()
