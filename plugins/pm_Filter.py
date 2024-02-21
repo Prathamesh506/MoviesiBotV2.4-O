@@ -125,7 +125,6 @@ async def auto_filter(client, msg):
             if files:
                 search = temp_search
                 await db.store_search(msg.from_user.id, search)
-                await as_msg.delete()
     
     #IMDb AUTOCORRECT
     if not files:
