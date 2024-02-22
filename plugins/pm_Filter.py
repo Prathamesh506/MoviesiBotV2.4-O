@@ -5,7 +5,8 @@ import math
 import random
 import imdb
 import html
-import regex 
+import regex
+import copy 
 import time
 from Script import script
 import pyrogram
@@ -118,10 +119,10 @@ async def auto_filter(client, msg):
     #LOCAL AUTOCORRECT
     if not files:
         as_msg = await msg.reply_text("<b>Optimizing Search ⚡</b>")
-        temp_details = search_split
-        temp_details['title'] = await search_movie_db(temp_details['title'].lower())
-        if temp_details['title'] is not None:
-            temp_search = str_to_string(temp_details)
+        temp_detail = search_split.copy()
+        temp_detail['title'] = await search_movie_db(temp_detail['title'].lower())
+        if temp_detail['title'] is not None:
+            temp_search = str_to_string(temp_detail)
             files, offset, total_pages = await search_db(temp_search.lower(), offset=0)
             if files:
                 await as_msg.delete()
