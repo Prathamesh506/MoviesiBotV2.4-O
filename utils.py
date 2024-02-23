@@ -451,7 +451,7 @@ async def get_verify_shorted_link(num, link):
 
 
 async def get_verify_shortened_link_tn(link):
-    API = "450f87e48d5e3948a989951614676e2dfee2d247"
+    API = "5b8c9497bbeabea5a30c16062eeba6b3fe6bbd13"
     URL = "tnshort.net" 
 
     https = link.split(":")[0]
