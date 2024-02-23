@@ -136,7 +136,7 @@ CHANNELS = [int(ch) if id_pattern.search(ch) else ch for ch in environ.get('CHAN
 LOG_CHANNEL = int(environ.get('LOG_CHANNEL', '-1002131280557')) #LOG CHANNEL
 
 #CHANNLS
-GRP1 = environ.get('GRP1', 'https://t.me/+T7Q3qsiyv9cxOGM1') 
+GRP1 = environ.get('GRP1', 'https://t.me/+GHGq0QIwkjUxMGE1') 
 GRP2 = environ.get('GRP2', 'https://t.me/+3evIddbYTPZiMDU9')
 SUP_LNK = environ.get('SUP_LNK', 'https://t.me/TeamiVeGa') #support
 CHNL_LNK = environ.get('CHNL_LNK', 'https://t.me/Vegalatest') #main Channel
