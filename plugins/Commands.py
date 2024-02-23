@@ -492,7 +492,6 @@ async def cat_get_all(bot, message):
 #VERIFY COUNT
 @Client.on_message(filters.command('mreport') & filters.user(ADMINS))
 async def verify_month(bot, message):
-    await db.count_verify()
     total_count = await db.get_verify_count()
     month_data = await db.get_month_verify_count()
 
