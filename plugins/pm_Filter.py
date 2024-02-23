@@ -798,10 +798,9 @@ async def no_resultx(msg,text="<i>No Results Found Please Provide Correct Title!
     await asyncio.sleep(7)
     await k.delete()
     return
-
 async def imdb_S1(search):
     try:
-        imdb_list = await search_movie(search)
+        imdb_list = search_movie(search)
 
         if not imdb_list:
             return None, None
@@ -814,40 +813,27 @@ async def imdb_S1(search):
         else:
             return None, imdb_list
 
-    except imdb.IMDbDataAccessError as e:
-        print("Error accessing IMDb data:", e)
-        return None, None
     except Exception as e:
-        print("An error occurred:", e)
-        return None, None
-
-async def search_movie(query, results=10, retry_count=3):
+        return None ,None
+    
+def search_movie(query, results=10):
     try:
         query = query.strip().lower()
-        for attempt in range(retry_count):
-            try:
-                movie_ids = ia.search_movie(query, results)
+        movie_ids = ia.search_movie(query, results)
 
-                filtered_results = []
-                for movie in movie_ids:
-                    if movie.get('kind') in ['movie', 'tv series', 'anime']:
-                        filtered_results.append(movie['title'])
+        filtered_results = []
+        for movie in movie_ids:
+            if movie.get('kind') in ['movie', 'tv series', 'anime']:
+                filtered_results.append(movie['title'])
 
-                return filtered_results
-            except imdb.IMDbDataAccessError as e:
-                print("Error accessing IMDb data:", e)
-                if attempt < retry_count - 1:
-                    print("Retrying...")
-                else:
-                    print("Reached maximum retry attempts.")
-                    return None
-            except Exception as e:
-                print("An error occurred during search:", e)
-                return None
+        return filtered_results
+    except imdb.IMDbDataAccessError as e:
+        print("Error accessing IMDb data:", e)
+        return None
     except Exception as e:
         print("An error occurred:", e)
         return None
-
+        
 def find_matching_movies(input_name, movie_list):
     try:
         matches = process.extract(input_name, movie_list, scorer=fuzz.ratio, limit=5)
