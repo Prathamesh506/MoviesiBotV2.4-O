@@ -806,30 +806,28 @@ async def imdb_S1(search):
         if not imdb_list:
             return None, None
 
-        imdb_list = list(set(await process_movie_titles(imdb_list)))
+        imdb_list = [await process_text(str(movie)) for movie in imdb_list]
+        imdb_list = list(set(imdb_list))
         match_movie, score = process.extractOne(search.lower(), imdb_list)
-        
-        return (match_movie, imdb_list) if score >= 75 else (None, imdb_list)
-    
+        if int(score) >= 75:
+            return match_movie, imdb_list
+        else:
+            return None, imdb_list
+
     except Exception as e:
-        print(f"Error in imdb_S1: {e}")
-        return None, None
-
-async def process_movie_titles(movie_list):
-    return [await process_text(str(movie)) for movie in movie_list]
-
-async def search_movie(query, results=10):
+        return None ,None
+    
+def search_movie(query, results=10):
     try:
         query = query.strip().lower()
-        movie_ids = await asyncio.to_thread(ia.search_movie, query, results)
+        movie_ids = ia.search_movie(query, results)
 
-        filtered_results = [
-            movie['title'] for movie in movie_ids 
-            if movie.get('kind') in ['movie', 'tv series', 'anime']
-        ]
+        filtered_results = []
+        for movie in movie_ids:
+            if movie.get('kind') in ['movie', 'tv series', 'anime']:
+                filtered_results.append(movie['title'])
 
         return filtered_results
-    
     except imdb.IMDbDataAccessError as e:
         print("Error accessing IMDb data:", e)
         return None
