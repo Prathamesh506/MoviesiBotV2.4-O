@@ -441,7 +441,8 @@ async def get_verify_shorted_link(num, link):
                         else:
                             return f'https://{URL}/api?api={API}&link={link}'
         except Exception as e:
-            logger.error(e)
+            # logger.error(e)
+            logger.error("EASYSKY FAILED!")
             if URL == 'clicksfly.com':
                 return f'https://{URL}/api?api={API}&url={link}'
             else:
