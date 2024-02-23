@@ -1,29 +1,30 @@
-import asyncio
 import re
 import ast
 import math
-import random
 import imdb
 import html
-import regex
 import copy 
 import time
-from Script import script
+import imdb
+import regex
+import psutil
+import random
+import asyncio
+import logging
 import pyrogram
-from info import ADMINS,VTIME, AUTH_CHANNEL, NO_RES_CNL,GRP1,SUPPORT_CHAT_ID,DOWNLOAD_TIPS, CUSTOM_FILE_CAPTION, IS_VERIFY, HOW_TO_VERIFY, DLT
+
 from pyrogram.types import InlineKeyboardMarkup, InlineKeyboardButton, CallbackQuery
 from pyrogram import Client, filters, enums
 from pyrogram.errors import UserIsBlocked, MessageNotModified, PeerIdInvalid
-from utils import get_size, is_subscribed, temp, check_verification, get_token
-from database.users_chats_db import db
-from database.ia_filterdb import Media, get_file_details,search_db,total_results_count,send_filex
 from fuzzywuzzy import fuzz, process
-import imdb
-import logging
+
+from Script import script
+from utils import get_size, is_subscribed, temp, check_verification, get_token
+from info import ADMINS, AUTH_CHANNEL, NO_RES_CNL,GRP1,SUPPORT_CHAT_ID,DOWNLOAD_TIPS, CUSTOM_FILE_CAPTION, IS_VERIFY, HOW_TO_VERIFY, DLT,IMDB_IMG
 from database.watch import get_watch_movies
-from info import REQST_CHANNEL
+from database.users_chats_db import db
 from database.watch import store_movies_from_text,does_movie_exxists,search_movie_db
-import psutil
+from database.ia_filterdb import Media, get_file_details,search_db,total_results_count,send_filex
 
 lock = asyncio.Lock()
 ia = imdb.IMDb()
@@ -35,210 +36,152 @@ BUTTONS = {}
 SPELL_CHECK = {}
 CATCH_TIME = DLT
 
-
 @Client.on_message((filters.group | filters.private) & filters.text & filters.incoming)
 async def message_filter(client, message):
 
-    if message.text is None: 
+    if message.text is None or message.text.startswith(("/", "#")):
         return
     
-    if message.text.startswith("/") or message.text.startswith("#"): 
-        return
-    
-    if message.chat.id == SUPPORT_CHAT_ID: 
-        await support_grp_filter(client, message)
+    if message.chat.id == SUPPORT_CHAT_ID:
+        await support_grp_filter(message)
         return
     
     await auto_filter(client, message)
 
 #SUPPORT FILTER
-async def support_grp_filter(client, msg):
+async def support_grp_filter(msg):
     try:
         search = await process_text(msg.text)
         total_results = await total_results_count(search)
         
-        if not total_results:
-            return
-        
-        btn = [
-            [InlineKeyboardButton('Movies Group 🍿', url=GRP1)],
-        ]
-        cap = (f"<b>Hey {msg.from_user.mention},\n\nFound {total_results} Results\nSearch:</b> {search.title()}\n\n"
-               "<i><b>NOTE: </b>To get the movies, please search in the movies group.</i>")
-        
-        result_msg = await msg.reply_text(cap, reply_markup=InlineKeyboardMarkup(btn))
-        await asyncio.sleep(DLT)
-        await result_msg.delete()
-    
+        if total_results:
+            btn = [[InlineKeyboardButton('Movies Group 🍿', url=GRP1)]]
+            cap = f"<b>Hey {msg.from_user.mention},\n\nFound {total_results} Results\nSearch:</b> {search.title()}\n\n<i><b>NOTE: </b>To get the movies, please search in the movies group.</i>"
+            result_msg = await msg.reply_text(cap, reply_markup=InlineKeyboardMarkup(btn))
+            await asyncio.sleep(DLT)
+            await result_msg.delete()
+            
     except Exception as e:
-        logger.exception('ERROR: #SUPPORT GROUP FILTER')
+        logger.exception(f'ERROR: SUPPORT GROUP FILTER\n{str(e)}')
+    return
 
 #AUTO FILTER
 async def auto_filter(client, msg):
-
     orgmsg = msg
     ptext = await process_text(msg.text)
-    search_split, search = detail_extraction(ptext,type=True)
+    search_details, search = detail_extraction(ptext, type=True)
+    popularty_search = search_details["title"]
     files = []
 
-    # Invalid message checks
-    if is_invalid_message(msg):
-        return
-    
-    if contains_url(msg.text):
-        await msg.delete()
-        warn_msg = await msg.reply_text("<i>Urls Not Allowed!</i>")
-        await asyncio.sleep(5)
-        await warn_msg.delete()
+    if is_invalid_message(msg) or contains_url(msg.text):
         return
 
-    #  Fetch last search
-    if not search_split['title']:
+    #BASED ON PRIVIOUS SEARCH FILTER ADD ON
+    if not search_details['title'] and not search_details['year']:
         last_search = await db.retrieve_latest_search(msg.from_user.id)
-        if last_search is not None:
-            search = f"{last_search} {search}"
-            search_split, search = detail_extraction(search)
-            files, offset, total_pages = await search_db(search.lower(), offset=0)
-            if not files:
-                cap_search = search.title()
-                await no_resultx(msg, text=f"<i>No Files Found in Database\n<b>For Your Search:</b> {cap_search}</i>")
-                return
-            else:
-                search_split, search = detail_extraction(search)
-                await db.store_search(msg.from_user.id, search)
-        else:
+        if last_search is None:
             await no_resultx(msg, text="<i>Provide a Correct Title❗</i>")
             return
-
-    # DIRECT SERACH
-    if not files:
+        search = f"{last_search} {search}"
+        search_details, search = detail_extraction(search)
+        files, offset, total_pages = await search_db(search.lower(), offset=0)
+        if not files:
+            await no_resultx(msg, text=f"<i>No Files Found in Database\n<b>For Your Search:</b> {search.title()}</i>")
+            return
+        await db.store_search(msg.from_user.id, search)
+        
+    #DIRECT SEARCH 
+    else:
         files, offset, total_pages = await search_db(search.lower(), offset=0)
         if files:
             await db.store_search(msg.from_user.id, search)
-            
-    #LOCAL AUTOCORRECT
-    if not files:
-        as_msg = await msg.reply_text("<b>Optimizing Search ⚡</b>")
-        temp_detail = search_split.copy()
-        temp_detail['title'] = await search_movie_db(temp_detail['title'].lower())
-        if temp_detail['title'] is not None:
-            temp_search = str_to_string(temp_detail)
-            files, offset, total_pages = await search_db(temp_search.lower(), offset=0)
-            if files:
-                await as_msg.delete()
-                search = temp_search
-                await db.store_search(msg.from_user.id, search)
-    
-    #IMDb AUTOCORRECT
-    if not files:
-        imdb_res_list = None
-        try:
-            temp_details = search_split
-            temp_details['title'], imdb_res_list = await imdb_S1(temp_details['title'].lower())
-            if temp_details['title']:
-                temp_details['title'] = await process_text(temp_details['title'])
-                tempsearch = str_to_string(temp_details)
-                files, offset, total_pages = await search_db(tempsearch.lower(), offset=0)
+
+        #LOCAL AUTOCORRECT
+        else:
+            as_msg = await msg.reply_text("<b>Optimizing Search ⚡</b>")
+            temp_detail = search_details.copy()
+            temp_detail['title'] = await search_movie_db(temp_detail['title'].lower())
+            if temp_detail['title'] is not None:
+                temp_search = str_to_string(temp_detail)
+                files, offset, total_pages = await search_db(temp_search.lower(), offset=0)
                 if files:
-                    await as_msg.delete()
-                    search = tempsearch
+                    search = temp_search
                     await db.store_search(msg.from_user.id, search)
-        except Exception:
-            logger.exception('ERROR: #IMDB AUTOCORRECT')
-            pass
-            
-    #IF RESULTS FOUND
+                    await as_msg.delete()
+
+            if not files:
+                imdb_res_list = None
+                try:
+                    search_details['title'], imdb_res_list = await imdb_S1(search_details['title'].lower())
+                    if search_details['title']:
+                        search_details['title'] = await process_text(search_details['title'])
+                        tempsearch = str_to_string(search_details)
+                        files, offset, total_pages = await search_db(tempsearch.lower(), offset=0)
+                        if files:
+                            search = tempsearch
+                            await as_msg.delete()
+                            await db.store_search(msg.from_user.id, search)
+                except Exception as e:
+                    logger.exception(f'ERROR: #IMDB AUTOCORRECT \n{e}')
+                    pass
+
     if files:
-        btn = await result_btn(files, msg.from_user.id,client,search)
+        btn = await result_btn(files, msg.from_user.id, client, search)
         btn = await navigation_buttons(btn, msg, total_pages, offset)
         cap = f"<b>Hey {msg.from_user.mention},\n\nFᴏᴜɴᴅ Rᴇꜱᴜʟᴛꜱ Fᴏʀ Yᴏᴜʀ\nSearch:</b> {search.title()}"
         result_msg = await msg.reply_text(cap, reply_markup=InlineKeyboardMarkup(btn))
-        await popularity_store(client, orgmsg)
-        try:
-            await asyncio.sleep(DLT)
-            await result_msg.delete()
-        except:
-            pass
-        
-    #IMDb RESULTS 
+        await popularity_store(popularty_search)
+
+
     if not files:
-        await asyncio.sleep(0.1)
-        s = await as_msg.edit_text("<b>Sᴇᴀʀᴄʜɪɴɢ Oɴ IMDb..</b>")
+        imdb_msg = await as_msg.edit_text("<b>Searching On IMDb..</b>")
         if not imdb_res_list:
-            await s.delete()
+            await imdb_msg.delete()
             await no_resultx(msg)
             return
-        score_results = find_matching_movies(search_split['title'], imdb_res_list)
+        score_results = find_matching_movies(search_details['title'], imdb_res_list)
         if not score_results:
-            await s.delete()
+            await imdb_msg.delete()
             await no_resultx(msg)
             return
-        await s.delete()
+        await imdb_msg.delete()
         btn = imdb_btn(score_results, msg.from_user.id)
-        cap = f"<b>Hey {msg.from_user.mention},\n\nCʜᴏᴏꜱᴇ Mᴏᴠɪᴇ Tɪᴛʟᴇ!</b>"
-        result_msg = await msg.reply_photo(photo="https://telegra.ph/file/4b873b46bb4861f78ce6d.jpg", caption=cap,
-          
-                                         reply_markup=InlineKeyboardMarkup(btn))
-        try:
-            await asyncio.sleep(DLT)
-            await result_msg.delete()
-        except: pass
+        cap = f"<b>Hey {msg.from_user.mention},\n\nHere Some Related Titles!</b>"
+        result_msg = await msg.reply_photo(photo=IMDB_IMG, caption=cap,
+                                           reply_markup=InlineKeyboardMarkup(btn))
+    try:
+        await asyncio.sleep(DLT)
+        await result_msg.delete()
+    except: pass
 
 #TREANDING MOVIES
-async def popularity_store(client, msg):
+async def popularity_store(query):
     try:
-        cpu_usage = check_cpu_usage()
-        # print(f"current cpu usage: {cpu_usage}%")
-        if cpu_usage >= 50:
-            return
-    except Exception as e:
-        print(f"Error occurred while checking CPU usage: {e}")
-        return
-
-    processed_text = await process_text(msg.text)
-    search_split, _ = detail_extraction(processed_text, type=True)
-
-    try:
-        if await does_movie_exxists(search_split['title'].lower()):
-            movie = f"2,{search_split['title'].lower()},trending,1"
+        # Check if the movie exists in the database
+        if await does_movie_exxists(query.lower()):
+            movie = f"2,{query.lower()},trending,1"
             await store_movies_from_text(movie)
             return
-        
     except Exception as e:
-        print(f"Error occurred while checking movie existence: {e}")
+        print(f"ERROR 1: TRENDING MOVIES\n{e}")
 
     try:
-        imdb_res_up = search_movie(search_split['title'])
+        # Search for the movie on IMDb
+        imdb_res_up = search_movie(query)
         imdb_res = await process_text(imdb_res_up[0]) if imdb_res_up else None
+        
         if not imdb_res:
             return
-        score = fuzz.token_sort_ratio(search_split['title'].lower(), imdb_res.lower())
-        if int(score) >= 95:
+        
+        # Calculate similarity score between query and IMDb result
+        score = fuzz.token_sort_ratio(query.lower(), imdb_res.lower())
+        
+        if score >= 95:
             input_str = f"2,{imdb_res.lower()},trending,1"
             await store_movies_from_text(input_str)
     except Exception as e:
-        print(f"Error occurred during IMDb search or processing: {e}")
+        print(f"ERROR 2: TRENDING MOVIES\n{e}")
         return
-
-
-    score = fuzz.token_sort_ratio(search_split['title'].lower(), imdb_res.lower())
-    # await msg.reply_text(f"{imdb_res} : {search_split['title']}: {score} ")
-    if int(score) >= 95:
-        input_str = f"2,{imdb_res.lower()},trending,1"
-        return await store_movies_from_text(input_str)
-
-#WATCH COMMAND
-async def watch_movies_filter(client, msg,type=False,start_btn=False):
-    btn = watch_btn(msg.from_user.id,start_btn)
-    cap = f"<b>Hᴇʏ {msg.from_user.mention},\n\nCʜᴏᴏsᴇ Pʀᴇғᴇʀʀᴇᴅ Cᴀᴛᴇɢᴏʀʏ : </b>"
-    if type:
-        result_msg = await msg.edit_message_text(text=cap,reply_markup=InlineKeyboardMarkup(btn))
-    else:
-        result_msg = await msg.reply_photo(photo="https://telegra.ph/file/b9ed75fcef91d7edd629b.jpg", caption=cap,
-        
-                                        reply_markup=InlineKeyboardMarkup(btn))
-    await asyncio.sleep(DLT)
-    await result_msg.delete()
 
 #BUTTONS
 async def result_btn(files, user_id, bot, search):
@@ -336,36 +279,6 @@ def imdb_btn(results, user_id):#IMDB result btns
         InlineKeyboardButton(text="Close", callback_data=f"close_data#{user_id}")
     ])
     return keyboard
-
-def watch_btn(userid,start_btn):
-    btn= []
-    if start_btn:
-        btn.insert(0,[
-        InlineKeyboardButton("Aᴅᴜʟᴛ 🔞", callback_data=f"watch_movies#{userid}#18plus"),
-        InlineKeyboardButton("ʙᴀᴄᴋ", callback_data=f"start_home_page")
-    ])
-    else:
-        btn.insert(0,[
-        InlineKeyboardButton("Aᴅᴜʟᴛ 🔞", callback_data=f"watch_movies#{userid}#18plus"),
-        InlineKeyboardButton("Cʟᴏsᴇ ✘", callback_data=f"close_data#{userid}")
-    ])
-    btn2 = [[
-        InlineKeyboardButton("Tʀᴇɴᴅɪɴɢ 🔥", callback_data=f"watch_movies#{userid}#trending"),
-        InlineKeyboardButton("Nᴇᴡ Oᴛᴛ ⚡", callback_data=f"watch_movies#{userid}#ott")
-    ],[
-        InlineKeyboardButton("Iɴᴅɪᴀɴ 🚩", callback_data=f"watch_movies#{userid}#bollywood"),
-        InlineKeyboardButton("Hᴏʟʟʏᴡᴏᴏᴅ 🍿", callback_data=f"watch_movies#{userid}#hollywood")
-    ],[
-        InlineKeyboardButton("Sᴄɪ-Fɪ 👽", callback_data=f"watch_movies#{userid}#scifi"),
-        InlineKeyboardButton("Sᴇʀɪᴇs 🕵️‍♀️", callback_data=f"watch_movies#{userid}#series")
-    ],[
-        InlineKeyboardButton("Hᴏʀʀᴇʀ 💀", callback_data=f"watch_movies#{userid}#horror"),
-        InlineKeyboardButton("Cᴏᴍᴇᴅʏ 😂", callback_data=f"watch_movies#{userid}#comedy")
-    ],[
-        InlineKeyboardButton("Mᴀʀᴠᴇʟ 🦸", callback_data=f"watch_movies#{userid}#marvel"),
-        InlineKeyboardButton("ᴀɴɪᴍᴇ 🦊", callback_data=f"watch_movies#{userid}#anime")
-    ]]
-    return btn2+btn
 
 @Client.on_callback_query(filters.regex(r"^next"))
 async def next_page(bot, query):
@@ -568,6 +481,51 @@ async def filtering_results(bot, query):
             await bot.send_message(chat_id=NO_RES_CNL, text=f"<b>iMDb:</b> <code>{search}</code>")
         return await query.answer(f"ꜱᴏʀʀʏ, ɴᴏ ғɪʟᴇꜱ ғᴏᴜɴᴅ ɪɴ ᴅᴀᴛᴀʙᴀꜱᴇ ғᴏʀ ʏᴏᴜʀ ϙᴜᴇʀʏ 🔍", show_alert=True)
 
+
+
+#WATCH FUNCTANLITY   
+async def watch_movies_filter(client, msg,type=False,start_btn=False):
+    btn = watch_btn(msg.from_user.id,start_btn)
+    cap = f"<b>Hᴇʏ {msg.from_user.mention},\n\nCʜᴏᴏsᴇ Pʀᴇғᴇʀʀᴇᴅ Cᴀᴛᴇɢᴏʀʏ : </b>"
+    if type:
+        result_msg = await msg.edit_message_text(text=cap,reply_markup=InlineKeyboardMarkup(btn))
+    else:
+        result_msg = await msg.reply_photo(photo="https://telegra.ph/file/b9ed75fcef91d7edd629b.jpg", caption=cap,
+        
+                                        reply_markup=InlineKeyboardMarkup(btn))
+    await asyncio.sleep(DLT)
+    await result_msg.delete()    
+
+def watch_btn(userid,start_btn):
+    btn= []
+    if start_btn:
+        btn.insert(0,[
+        InlineKeyboardButton("Aᴅᴜʟᴛ 🔞", callback_data=f"watch_movies#{userid}#18plus"),
+        InlineKeyboardButton("ʙᴀᴄᴋ", callback_data=f"start_home_page")
+    ])
+    else:
+        btn.insert(0,[
+        InlineKeyboardButton("Aᴅᴜʟᴛ 🔞", callback_data=f"watch_movies#{userid}#18plus"),
+        InlineKeyboardButton("Cʟᴏsᴇ ✘", callback_data=f"close_data#{userid}")
+    ])
+    btn2 = [[
+        InlineKeyboardButton("Tʀᴇɴᴅɪɴɢ 🔥", callback_data=f"watch_movies#{userid}#trending"),
+        InlineKeyboardButton("Nᴇᴡ Oᴛᴛ ⚡", callback_data=f"watch_movies#{userid}#ott")
+    ],[
+        InlineKeyboardButton("Iɴᴅɪᴀɴ 🚩", callback_data=f"watch_movies#{userid}#bollywood"),
+        InlineKeyboardButton("Hᴏʟʟʏᴡᴏᴏᴅ 🍿", callback_data=f"watch_movies#{userid}#hollywood")
+    ],[
+        InlineKeyboardButton("Sᴄɪ-Fɪ 👽", callback_data=f"watch_movies#{userid}#scifi"),
+        InlineKeyboardButton("Sᴇʀɪᴇs 🕵️‍♀️", callback_data=f"watch_movies#{userid}#series")
+    ],[
+        InlineKeyboardButton("Hᴏʀʀᴇʀ 💀", callback_data=f"watch_movies#{userid}#horror"),
+        InlineKeyboardButton("Cᴏᴍᴇᴅʏ 😂", callback_data=f"watch_movies#{userid}#comedy")
+    ],[
+        InlineKeyboardButton("Mᴀʀᴠᴇʟ 🦸", callback_data=f"watch_movies#{userid}#marvel"),
+        InlineKeyboardButton("ᴀɴɪᴍᴇ 🦊", callback_data=f"watch_movies#{userid}#anime")
+    ]]
+    return btn2+btn
+
 @Client.on_callback_query(filters.regex(r"^watch_movies"))
 async def watch_movies_lst(bot, query): 
     user_id = query.from_user.id
@@ -678,7 +636,7 @@ async def next_page_watch(bot, query):
     except:
         pass
     return
-    
+
 
 #UTILITY
 async def process_text(text_caption): #text is filter and processed
@@ -691,9 +649,9 @@ async def process_text(text_caption): #text is filter and processed
     text_caption = re.sub(r"[@!$ _\-.+:*#⁓(),/?]", " ", text_caption)
 
     # Replace language abbreviations using a dictionary
-    language_abbreviations = {"session":"season","hin": "hindi", "eng": "english", "tam": "tamil", "tel": "telugu","wanda vision":"wandavision","salar":"salaar","spiderman":"spider man","spiderverse":"spider verse","complete":"combined","12 th":"12th","completed":"combined","all episodes":"combined"}
+    language_abbreviations = {"session":"season","hin": "hindi", "eng": "english", "tam": "tamil", "tel": "telugu","wanda vision":"wandavision","salar":"salaar","spiderman":"spider man","spiderverse":"spider verse","complete":"combined","12 th":"12th","completed":"combined","all episodes":"combined","all episode":"combined"}
     text_caption = re.sub(
-        r"\b(?:session|hin|eng|tam|tel|wanda\s*vision|salar|spiderman|spiderverse|complete|12\s*th|completed|all\s*episodes)\b",
+        r"\b(?:session|hin|eng|tam|tel|wanda\s*vision|salar|spiderman|spiderverse|complete|12\s*th|completed|all\s*episodes|all\s*episode)\b",
         lambda match: language_abbreviations.get(match.group(0), match.group(0)),
         text_caption
     )
@@ -848,39 +806,42 @@ async def imdb_S1(search):
         if not imdb_list:
             return None, None
 
-        imdb_list = [await process_text(str(movie)) for movie in imdb_list]
-        imdb_list = list(set(imdb_list))
+        imdb_list = list(set(await process_movie_titles(imdb_list)))
         match_movie, score = process.extractOne(search.lower(), imdb_list)
-        if int(score) >= 75:
-            return match_movie, imdb_list
-        else:
-            return None, imdb_list
-
-    except Exception as e:
-        return None ,None
+        
+        return (match_movie, imdb_list) if score >= 75 else (None, imdb_list)
     
-def search_movie(query, results=10):
+    except Exception as e:
+        print(f"Error in imdb_S1: {e}")
+        return None, None
+
+async def process_movie_titles(movie_list):
+    return [await process_text(str(movie)) for movie in movie_list]
+
+async def search_movie(query, results=10):
     try:
         query = query.strip().lower()
-        movie_ids = ia.search_movie(query, results)
+        movie_ids = await asyncio.to_thread(ia.search_movie, query, results)
 
-        filtered_results = []
-        for movie in movie_ids:
-            if movie.get('kind') in ['movie', 'tv series', 'anime']:
-                filtered_results.append(movie['title'])
+        filtered_results = [
+            movie['title'] for movie in movie_ids 
+            if movie.get('kind') in ['movie', 'tv series', 'anime']
+        ]
 
         return filtered_results
+    
     except imdb.IMDbDataAccessError as e:
         print("Error accessing IMDb data:", e)
         return None
 
-def find_matching_movies(input_name, movie_list): #gives matching titles from list
+def find_matching_movies(input_name, movie_list):
     try:
         matches = process.extract(input_name, movie_list, scorer=fuzz.ratio, limit=5)
         threshold = 30
         filtered_matches = [name for name, score in matches if score >= threshold]
         return filtered_matches
-    except :
+    except Exception as e:
+        print(f"Error finding matching movies: {e}")
         return []
 
 def clear_filter(search, the_filter): #function clear a type of filter
@@ -917,7 +878,7 @@ def check_cpu_usage():
     return cpu_percent
 
 async def loading_msg(query):
-    await asyncio.sleep(0.2)
+    await asyncio.sleep(0.1)
     await query.edit_message_text(
                 text="▰▱▱"
             )
@@ -947,46 +908,55 @@ async def send_eps_files(user_id, query, client, message):
         if search is None:
             await message.reply_text("<b>No search terms provided</b>")
             return
-        wait_msg = await message.reply_text("<b>Fᴇᴛᴄʜɪɴɢ Fɪʟᴇs..</b>")
-        await asyncio.sleep(2)
-        wait_msg = await wait_msg.edit_text("<b>Uᴘʟᴏᴀᴅɪɴɢ..</b>")
+
+        # Start with a loading message
+        wait_msg = await message.reply_text("<b>Fetching Files...</b>")
+
+        # Simulate fetching files with a loading animation
+        for _ in range(1):
+            await asyncio.sleep(0.5)
+            await wait_msg.edit_text("<b>Fetching Files.</b>")
+            await asyncio.sleep(0.5)
+            await wait_msg.edit_text("<b>Fetching Files..</b>")
+            await asyncio.sleep(0.5)
+            await wait_msg.edit_text("<b>Fetching Files...</b>")
+
+        # Update message to indicate uploading
+        await wait_msg.edit_text("<b>Uploading...</b>")
         await asyncio.sleep(1)
         await wait_msg.delete()
+
         for i in range(1, 26):
+            query_ep = f"{search} e0{i}" if i < 10 else f"{search} e{i}"
 
-            if i < 10:
-                query_ep = f"{search} e0{i}"
-            else:
-                query_ep = f"{search} e{i}"
-
-            suc = await send_filex(query_ep, user_id, client)
-
-            if suc == False :
+            if not await send_filex(query_ep, user_id, client):
                 if i == 1:
-                    await message.reply_text("<b>Nᴏ ғɪʟᴇs Wʜᴇʀᴇ Fᴏᴜɴᴅ</b>")
+                    await message.reply_text("<b>No files found</b>")
                     return
-                else:
-                    break
-        comb = await message.reply_text("<b>Sᴇᴀʀᴄʜɪɴɢ Fᴏʀ Cᴏᴍʙɪɴᴇᴅ Fɪʟᴇ..</b>")
+                break
+
+        comb = await message.reply_text("<b>Searching for Combined File..</b>")
         await asyncio.sleep(2)
+
+        query_comn = f"{search} combined"
         if details['quality']:
-            query_comn = f"{search} combined"
             suc = await send_filex(query_comn, user_id, client)
-            if suc == False:
+            if not suc:
                 details['quality'] = None
                 query_comn = str_to_string(details)
                 suc = await send_filex(query_comn, user_id, client)
         else:
-            query_comn = f"{search} combined"
             suc = await send_filex(query_comn, user_id, client)
-        if suc == False:
-            comb = await comb.edit_text("<b>Fɪʟᴇ Nᴏᴛ Fᴏᴜɴᴅ</b>")
+        if not suc:
+            await comb.edit_text("<b>No Combined File Found.</b>")
+            await asyncio.sleep(1)
         await comb.delete()
-        await asyncio.sleep(2)
-        await comb.reply_text("<i><b>Note:</b> This Feature is in <b>Beta Stage</b>\nYou might receive wrong files</i>")
+        await asyncio.sleep(1)
+        await comb.reply_text("<i><b>Note:</b> This feature is in <b>Beta Stage</b>\nYou might receive wrong files</i>")
+
     except Exception as e:
-        await message.reply_text(f"<i><b>ERROR:</b> {str(e)}</i>")
-    return
+        logging.error(f"Exception in send_eps_files: {e}")
+        await message.reply_text("<b>Error occurred while fetching files. Please try again later.</b>")
 
 async def verify_msg(query, client,file_id):
     pw_msg = await query.message.reply_text("Pʟᴇᴀsᴇ Wᴀɪᴛ..")
@@ -1013,10 +983,12 @@ async def cb_handler(client: Client, query: CallbackQuery):
 
     if query.data.startswith("close_data"): 
         _,userid = query.data.split("#")
-        if int(userid) != int(query.from_user.id):
-            await query.answer("It's Not Your Request", show_alert=True)
-            return
-        await query.message.delete()
+        try:
+            if int(userid) != int(query.from_user.id):
+                await query.answer("It's Not Your Request", show_alert=True)
+                return
+            await query.message.delete()
+        except: pass
         return
 
     if query.data =="back_watch":
