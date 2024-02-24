@@ -13,7 +13,7 @@ from utils import  get_size, is_subscribed, temp, verify_user, check_token, chec
 import re
 from  plugins.pm_Filter import send_eps_files,watch_movies_filter,check_cpu_usage
 import base64
-from database.watch import store_movies_from_text,delete_category,get_all_movies
+
 logger = logging.getLogger(__name__)
 
 BATCH_FILES = {}
@@ -311,7 +311,7 @@ async def verifying_vip(client, message):
 
             s_m = any(admin == int(vipsid) for admin in ADMINS)
 
-            msg = f"<b>{type} Plan Activated!</b>\n\n<b>Name : </b>{username}\n<b>User id :</b> {vipsid}\n<b>Verified For:</b> {timd} Days \n\n<i>for more info use /plan command in bot ☞ @VegaMoviesXbot</i>"
+            msg = f"<b>{type} Plan Activated!</b>\n\n<b>Name : </b>{username}\n<b>User id :</b> {vipsid}\n<b>Verified For:</b> {timd} Days \n\n<i>for more info use /plan command.</i>"
             
             await message.reply(msg)
 
@@ -354,6 +354,8 @@ async def send_msg(bot, message):
 async def verify_settings(client, message):
     global IS_VERIFY
     IS_VERIFY = not IS_VERIFY
+    with open("info.py", "a") as file:
+        file.write(f"\nIS_VERIFY = {IS_VERIFY}\n")
     await message.reply(f"Verification is {'enabled' if IS_VERIFY else 'disabled'}")
    
 @Client.on_message(filters.command('logs') & filters.user(ADMINS))
@@ -419,9 +421,8 @@ async def get_ststs(bot, message):
     free = 536870912 - size
     size = get_size(size)
     free = get_size(free)
-    cpu = check_cpu_usage()
     total_count = await db.get_verify_count()
-    await rju.edit(script.STATUS_TXT.format(cpu,total_count,files, total_users, totl_chats, size, free))
+    await rju.edit(script.STATUS_TXT.format(total_count,files, total_users, totl_chats, size, free))
 
 @Client.on_message(filters.command("kill") & filters.user(ADMINS))
 async def deletemultiplefiles(bot, message):
@@ -465,35 +466,22 @@ async def requests(bot, message):
                       ]]
     await message.reply_text("<b>Yᴏᴜʀ ʀᴇᴏ̨ᴜᴇsᴛ ʜᴀs ʙᴇᴇɴ ᴀᴅᴅᴇᴅ! Pʟᴇᴀsᴇ ᴡᴀɪᴛ ғᴏʀ sᴏᴍᴇ ᴛɪᴍᴇ.</b>", reply_markup=InlineKeyboardMarkup(btn2))
 
-
-#WATCH COMMAHDS   
-@Client.on_message(filters.command('watch'))
-async def watch_cmd(bot, message):
-    await watch_movies_filter(bot, message)
-    return
-
-@Client.on_message(filters.command('store') & filters.user(ADMINS))
-async def store_movie_search(bot, message):
-    input_str = message.text[7:].lower()
-    await store_movies_from_text(input_str)
-
-@Client.on_message(filters.command('del_cat') & filters.user(ADMINS))
-async def deletes_catagory(bot, message):
-    input_str = message.text[9:]
-    deleted = await delete_category(input_str)
-    await message.reply_text(f"Deleted: {deleted}")
-
-@Client.on_message(filters.command('get_all') & filters.user(ADMINS))
-async def cat_get_all(bot, message):
-    input_str = message.text[9:]
-    movies_list = await get_all_movies()
-    await message.reply_text(f"Deleted: {movies_list}")
-
 #VERIFY COUNT
-@Client.on_message(filters.command('mreport') & filters.user(ADMINS))
+@Client.on_message(filters.command('report') & filters.user(ADMINS))
 async def verify_month(bot, message):
-    total_count = await db.get_verify_count()
-    month_data = await db.get_month_verify_count()
+    try:
+        month = int(message.command[1])
+    except: 
+        month = None
+    month_data = await db.get_month_verify_count(month=month)
+
+    if month:
+        months = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"]
+        if month < 1 or month > 12:
+            return await message.reply_text("Invalid Month")
+        month_name = months[month - 1]
+    else:
+        month_name = "Month"
 
     # Calculate total count for the month
     total_count_month = sum(month_data.values())
@@ -501,33 +489,33 @@ async def verify_month(bot, message):
     # Format the month data
     formatted_month_data = "\n".join([f"{date}: {count}" for date, count in month_data.items()])
 
-    response_message = f"<b>Month Report!</b>\n\n<b> Total : </b><code>{total_count_month}<code>\n\n{formatted_month_data}"
+    response_message = f"<b>{month_name} Report!</b>\n\n<b> Total : </b><code>{total_count_month}<code>\n\n{formatted_month_data}"
 
     await message.reply_text(response_message)
 
-# @Client.on_message(filters.command('deleteall') & filters.user(ADMINS))
-# async def delete_all_index(bot, message):
-#     await message.reply_text(
-#         'Tʜɪs ᴡɪʟʟ ᴅᴇʟᴇᴛᴇ ᴀʟʟ ɪɴᴅᴇxᴇᴅ ғɪʟᴇs.\nDᴏ ʏᴏᴜ ᴡᴀɴᴛ ᴛᴏ ᴄᴏɴᴛɪɴᴜᴇ ?',
-#         reply_markup=InlineKeyboardMarkup(
-#             [
-#                 [
-#                     InlineKeyboardButton(
-#                         text="Yᴇs", callback_data="autofilter_delete_all"
-#                     )
-#                 ],
-#                 [
-#                     InlineKeyboardButton(
-#                         text="Cᴀɴᴄᴇʟ", callback_data=f"close_data#{message.from_user.id}"
-#                     )
-#                 ],
-#             ]
-#         ),
-#         quote=True,
-#     )
+@Client.on_message(filters.command('deleteall') & filters.user(ADMINS))
+async def delete_all_index(bot, message):
+    await message.reply_text(
+        'Tʜɪs ᴡɪʟʟ ᴅᴇʟᴇᴛᴇ ᴀʟʟ ɪɴᴅᴇxᴇᴅ ғɪʟᴇs.\nDᴏ ʏᴏᴜ ᴡᴀɴᴛ ᴛᴏ ᴄᴏɴᴛɪɴᴜᴇ ?',
+        reply_markup=InlineKeyboardMarkup(
+            [
+                [
+                    InlineKeyboardButton(
+                        text="Yᴇs", callback_data="autofilter_delete_all"
+                    )
+                ],
+                [
+                    InlineKeyboardButton(
+                        text="Cᴀɴᴄᴇʟ", callback_data=f"close_data#{message.from_user.id}"
+                    )
+                ],
+            ]
+        ),
+        quote=True,
+    )
     
-# @Client.on_callback_query(filters.regex(r'^autofilter_delete_all'))
-# async def delete_all_index_confirm(bot, message):
-#     await Media.collection.drop()
-#     await message.answer("Eᴠᴇʀʏᴛʜɪɴɢ's Gᴏɴᴇ")
-#     await message.message.edit('Sᴜᴄᴄᴇsғᴜʟʟʏ Dᴇʟᴇᴛᴇᴅ Aʟʟ Tʜᴇ Iɴᴅᴇxᴇᴅ Fɪʟᴇs.')    
+@Client.on_callback_query(filters.regex(r'^autofilter_delete_all'))
+async def delete_all_index_confirm(bot, message):
+    await Media.collection.drop()
+    await message.answer("Eᴠᴇʀʏᴛʜɪɴɢ's Gᴏɴᴇ")
+    await message.message.edit('Sᴜᴄᴄᴇsғᴜʟʟʏ Dᴇʟᴇᴛᴇᴅ Aʟʟ Tʜᴇ Iɴᴅᴇxᴇᴅ Fɪʟᴇs.')    

@@ -101,14 +101,8 @@ Cᴏᴍᴍᴀɴᴅs Aɴᴅ Usᴀɢᴇ:
 • /delallg - <code>Tᴏ ᴅᴇʟᴇᴛᴇ ᴀʟʟ Gғɪʟᴛᴇʀs ғʀᴏᴍ ᴛʜᴇ ʙᴏᴛ's ᴅᴀᴛᴀʙᴀsᴇ.</code>
 • /deletefiles - <code>Tᴏ ᴅᴇʟᴇᴛᴇ CᴀᴍRɪᴘ ᴀɴᴅ PʀᴇDVD Fɪʟᴇs ғʀᴏᴍ ᴛʜᴇ ʙᴏᴛ's ᴅᴀᴛᴀʙᴀsᴇ.</code>"""
 
-#     STATUS_TXT = """<b>★ Cᴘᴜ Sᴛᴀᴛɪᴄs : <code>{}</code>%
-# ★ Tᴏᴛᴀʟ Fɪʟᴇs: <code>{}</code>
-# ★ Tᴏᴛᴀʟ Usᴇʀs: <code>{}</code>
-# ★ Tᴏᴛᴀʟ Cʜᴀᴛs: <code>{}</code>
-# ★ Usᴇᴅ Sᴛᴏʀᴀɢᴇ: <code>{}</code>
-# ★ Fʀᴇᴇ Sᴛᴏʀᴀɢᴇ: <code>{}</code>
-# </b>"""
-    STATUS_TXT = """<b>BOT STATUS</b>\n\n| CPU Usage:  {}%\n| Users Verified:  {}\n| Total Files:  {}\n| Total Users:  {}\n| Total Chats:  {}\n| Used Storage:  {}\n| Free Storage:  {}\n"""
+
+    STATUS_TXT = """<b>BOT STATUS</b>\n\n| Users Verified:  {}\n| Total Files:  {}\n| Total Users:  {}\n| Total Chats:  {}\n| Used Storage:  {}\n| Free Storage:  {}\n"""
 
     LOG_TEXT_G = """#NewGroup
 Gʀᴏᴜᴘ = {}(<code>{}</code>)

@@ -17,7 +17,7 @@ def is_enabled(value, default):
 SESSION = environ.get('SESSION', 'MoviesiBotV4') #Bot name
 API_ID = "3704207"
 API_HASH = environ.get("API_HASH", "8d20e46f5413139329f2ec753f7c482a")
-BOT_TOKEN = environ.get("BOT_TOKEN", "6804042543:AAHsAypo4f7s-mN--uWK6o5pxAs-gsKXB68")
+BOT_TOKEN = environ.get("BOT_TOKEN", "6583753281:AAFtg5TYcGEToa99k0hbOYrrkZXJIXWQXHk")
 
 #ADMINS & DB CHANNEL IDS
 ADMINS = [int(admin) if id_pattern.search(admin) else admin for admin in environ.get('ADMINS', '1531899507').split()]
@@ -25,7 +25,7 @@ CHANNELS = [int(ch) if id_pattern.search(ch) else ch for ch in environ.get('CHAN
 LOG_CHANNEL = int(environ.get('LOG_CHANNEL', '-1002131280557')) #LOG CHANNEL
 
 #CHANNLS
-GRP1 = environ.get('GRP1', 'https://t.me/+GHGq0QIwkjUxMGE1') 
+GRP1 = environ.get('GRP1', 'https://t.me/+T7Q3qsiyv9cxOGM1') 
 GRP2 = environ.get('GRP2', 'https://t.me/+3evIddbYTPZiMDU9')
 SUP_LNK = environ.get('SUP_LNK', 'https://t.me/TeamiVeGa') #support
 CHNL_LNK = environ.get('CHNL_LNK', 'https://t.me/Vegalatest') #main Channel
@@ -40,7 +40,7 @@ MOV_REQ = environ.get('MOV_REQ', 'https://t.me/TeamiVeGa') #support
 NO_RES_CNL = int(environ.get('LOG_CHANNEL', '-1002137535594')) #NO RESULT CHANNEL
 
 support_chat_id = environ.get('support_chat_id',"-1002044884739")
-reqst_channel = environ.get('reqst_channel',"-1002019169484")
+reqst_channel = environ.get('reqst_channel',"-1002069948824")
 REQST_CHANNEL = int(reqst_channel) if reqst_channel and id_pattern.search(reqst_channel) else None
 SUPPORT_CHAT_ID = int(support_chat_id) if support_chat_id and id_pattern.search(support_chat_id) else None  
 
@@ -57,7 +57,7 @@ SPELL_IMG = environ.get("SPELL_IMG", "https://telegra.ph/file/5e2d4418525832bc9a
 IMDB_IMG = environ.get("IMDB_IMG", "https://telegra.ph/file/4b873b46bb4861f78ce6d.jpg")
 
 # MongoDB information
-DATABASE_URI = environ.get('DATABASE_URI', "mongodb+srv://shadow:shadow506@cluster0.srfnz9s.mongodb.net/?retryWrites=true&w=majority")
+DATABASE_URI = environ.get('DATABASE_URI', "mongodb+srv://MoviesiBotV6:MoviesiBotV5@cluster0.zs9smub.mongodb.net/?retryWrites=true&w=majority")
 DATABASE_NAME = environ.get('DATABASE_NAME', "Cluster0")
 COLLECTION_NAME = environ.get('COLLECTION_NAME', 'MoviesiBotV4')
 
