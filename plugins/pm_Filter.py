@@ -931,7 +931,7 @@ async def send_eps_files(user_id, query, client, message):
 
             if not await send_filex(query_ep, user_id, client):
                 if i == 1:
-                    await message.reply_text("<b>No files found</b>")
+                    await wait_msg.edit_text("<b>No files found</b>")
                     return
                 break
 
@@ -1063,8 +1063,9 @@ async def cb_handler(client: Client, query: CallbackQuery):
             if IS_VERIFY and not await check_verification(client, query.from_user.id):
                 await verify_msg(query,client,"all_eps")
             else: 
-                search = await db.retrieve_latest_search(int(userid))
-                await send_eps_files(userid,search,client,query)
+                search = await db.retrieve_latest_search(int(query.from_user.id))
+                await send_eps_files(query.from_user.id,search,client,query.message)
+
             return
         
         files_ = await get_file_details(file_id)

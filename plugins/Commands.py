@@ -1,23 +1,23 @@
 import os
-import logging
+import re
+import base64
 import random
-import asyncio
 import psutil
-from datetime import datetime,timedelta
+import logging
+import asyncio
 from Script import script
+from datetime import datetime,timedelta
 from pyrogram import Client, filters, enums
 from pyrogram.errors import ChatAdminRequired
 from pyrogram.types import InlineKeyboardButton, InlineKeyboardMarkup
-from database.ia_filterdb import Media, get_file_details, unpack_new_file_id,send_filex
+
+from database.ia_filterdb import Media, get_file_details, unpack_new_file_id
 from database.users_chats_db import db
-from info import CHANNELS,DLT, ADMINS, GRP2,GRP1,REQST_CHANNEL,AUTH_CHANNEL, LOG_CHANNEL, PICS, CUSTOM_FILE_CAPTION, PROTECT_CONTENT, CHNL_LNK, IS_VERIFY, HOW_TO_VERIFY,SUP_LNK
-from utils import  get_size, is_subscribed, temp, verify_user, check_token, check_verification, get_token,verify_VIP,verify_new
-import re
-from  plugins.pm_Filter import send_eps_files,watch_movies_filter,check_cpu_usage
-import base64
+from info import CHANNELS,DLT, ADMINS,GRP1,REQST_CHANNEL,AUTH_CHANNEL, LOG_CHANNEL, PICS, CUSTOM_FILE_CAPTION, PROTECT_CONTENT, IS_VERIFY, HOW_TO_VERIFY
+from utils import  get_size, is_subscribed, temp, verify_user, check_token, check_verification, get_token,verify_VIP
+from  plugins.pm_Filter import send_eps_files
 
 logger = logging.getLogger(__name__)
-
 BATCH_FILES = {}
 
 @Client.on_message(filters.command("start") & filters.incoming)
@@ -29,6 +29,11 @@ async def start(client, message):
             total=await client.get_chat_members_count(message.chat.id)
             await client.send_message(LOG_CHANNEL, script.LOG_TEXT_G.format(message.chat.title, message.chat.id, total, "Unknown"))       
             await db.add_chat(message.chat.id, message.chat.title)
+        alive = await message.reply_text("⚡")
+        await asyncio.sleep(2)
+        alive = await alive.edit_text("Yep, i'm Alive")
+        await asyncio.sleep(1)
+        await alive.delete()
         return
     
     #NEW USER
@@ -495,32 +500,32 @@ async def verify_month(bot, message):
 
     await message.reply_text(response_message)
 
-@Client.on_message(filters.command('deleteall') & filters.user(ADMINS))
-async def delete_all_index(bot, message):
-    await message.reply_text(
-        'Tʜɪs ᴡɪʟʟ ᴅᴇʟᴇᴛᴇ ᴀʟʟ ɪɴᴅᴇxᴇᴅ ғɪʟᴇs.\nDᴏ ʏᴏᴜ ᴡᴀɴᴛ ᴛᴏ ᴄᴏɴᴛɪɴᴜᴇ ?',
-        reply_markup=InlineKeyboardMarkup(
-            [
-                [
-                    InlineKeyboardButton(
-                        text="Yᴇs", callback_data="autofilter_delete_all"
-                    )
-                ],
-                [
-                    InlineKeyboardButton(
-                        text="Cᴀɴᴄᴇʟ", callback_data=f"close_data#{message.from_user.id}"
-                    )
-                ],
-            ]
-        ),
-        quote=True,
-    )
+# @Client.on_message(filters.command('deleteall') & filters.user(ADMINS))
+# async def delete_all_index(bot, message):
+#     await message.reply_text(
+#         'Tʜɪs ᴡɪʟʟ ᴅᴇʟᴇᴛᴇ ᴀʟʟ ɪɴᴅᴇxᴇᴅ ғɪʟᴇs.\nDᴏ ʏᴏᴜ ᴡᴀɴᴛ ᴛᴏ ᴄᴏɴᴛɪɴᴜᴇ ?',
+#         reply_markup=InlineKeyboardMarkup(
+#             [
+#                 [
+#                     InlineKeyboardButton(
+#                         text="Yᴇs", callback_data="autofilter_delete_all"
+#                     )
+#                 ],
+#                 [
+#                     InlineKeyboardButton(
+#                         text="Cᴀɴᴄᴇʟ", callback_data=f"close_data#{message.from_user.id}"
+#                     )
+#                 ],
+#             ]
+#         ),
+#         quote=True,
+#     )
     
-@Client.on_callback_query(filters.regex(r'^autofilter_delete_all'))
-async def delete_all_index_confirm(bot, message):
-    await Media.collection.drop()
-    await message.answer("Eᴠᴇʀʏᴛʜɪɴɢ's Gᴏɴᴇ")
-    await message.message.edit('Sᴜᴄᴄᴇsғᴜʟʟʏ Dᴇʟᴇᴛᴇᴅ Aʟʟ Tʜᴇ Iɴᴅᴇxᴇᴅ Fɪʟᴇs.')    
+# @Client.on_callback_query(filters.regex(r'^autofilter_delete_all'))
+# async def delete_all_index_confirm(bot, message):
+#     await Media.collection.drop()
+#     await message.answer("Eᴠᴇʀʏᴛʜɪɴɢ's Gᴏɴᴇ")
+#     await message.message.edit('Sᴜᴄᴄᴇsғᴜʟʟʏ Dᴇʟᴇᴛᴇᴅ Aʟʟ Tʜᴇ Iɴᴅᴇxᴇᴅ Fɪʟᴇs.')    
 
 #SYSTEM RESOURCES STATUS
 @Client.on_message(filters.command('rstats') & filters.user(ADMINS))
@@ -532,13 +537,7 @@ async def get_system_info(bot, message):
     disk_usage_percent = disk_usage.percent
     disk_free_gb = round(disk_usage.free / (1024**3), 2)
     uptime = datetime.now() - datetime.fromtimestamp(psutil.boot_time())
-    
-    # Format uptime without milliseconds
     uptime_str = str(timedelta(seconds=uptime.total_seconds()))
     uptime_str = uptime_str.split('.')[0]
-    
-    # Format the message with the obtained statistics
     status_message = script.SYS_STATUS_TXT.format(cpu_percent, ram_percent, disk_usage_percent, disk_free_gb, uptime_str)
-    
-    # Edit the message with the status_message
     await rju.edit(status_message)
