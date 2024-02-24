@@ -104,6 +104,17 @@ Cᴏᴍᴍᴀɴᴅs Aɴᴅ Usᴀɢᴇ:
 
     STATUS_TXT = """<b>BOT STATUS</b>\n\n| Users Verified:  {}\n| Total Files:  {}\n| Total Users:  {}\n| Total Chats:  {}\n| Used Storage:  {}\n| Free Storage:  {}\n"""
 
+    
+    SYS_STATUS_TXT = """
+<b>SYSTEM STATUS</b>
+
+| CPU Usage:  {}%
+| RAM Usage:  {}%
+| Disk Usage:  {}%
+| Disk Free:  {}Gb
+| Uptime:  {}
+"""
+
     LOG_TEXT_G = """#NewGroup
 Gʀᴏᴜᴘ = {}(<code>{}</code>)
 Tᴏᴛᴀʟ Mᴇᴍʙᴇʀs = <code>{}</code>

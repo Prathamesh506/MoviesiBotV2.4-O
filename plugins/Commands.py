@@ -2,6 +2,8 @@ import os
 import logging
 import random
 import asyncio
+import psutil
+from datetime import datetime,timedelta
 from Script import script
 from pyrogram import Client, filters, enums
 from pyrogram.errors import ChatAdminRequired
@@ -413,7 +415,7 @@ async def delete(bot, message):
 
 @Client.on_message(filters.command('stats') & filters.user(ADMINS))
 async def get_ststs(bot, message):
-    rju = await message.reply('Fetching stats..')
+    Stats_msg = await message.reply('Fetching stats..')
     total_users = await db.total_users_count()
     totl_chats = await db.total_chat_count()
     files = await Media.count_documents()
@@ -422,7 +424,7 @@ async def get_ststs(bot, message):
     size = get_size(size)
     free = get_size(free)
     total_count = await db.get_verify_count()
-    await rju.edit(script.STATUS_TXT.format(total_count,files, total_users, totl_chats, size, free))
+    await Stats_msg.edit(script.STATUS_TXT.format(total_count,files, total_users, totl_chats, size, free))
 
 @Client.on_message(filters.command("kill") & filters.user(ADMINS))
 async def deletemultiplefiles(bot, message):
@@ -519,3 +521,24 @@ async def delete_all_index_confirm(bot, message):
     await Media.collection.drop()
     await message.answer("Eᴠᴇʀʏᴛʜɪɴɢ's Gᴏɴᴇ")
     await message.message.edit('Sᴜᴄᴄᴇsғᴜʟʟʏ Dᴇʟᴇᴛᴇᴅ Aʟʟ Tʜᴇ Iɴᴅᴇxᴇᴅ Fɪʟᴇs.')    
+
+#SYSTEM RESOURCES STATUS
+@Client.on_message(filters.command('rstats') & filters.user(ADMINS))
+async def get_system_info(bot, message):
+    rju = await message.reply('Fetching stats..')
+    cpu_percent = psutil.cpu_percent()
+    ram_percent = psutil.virtual_memory().percent
+    disk_usage = psutil.disk_usage('/')
+    disk_usage_percent = disk_usage.percent
+    disk_free_gb = round(disk_usage.free / (1024**3), 2)
+    uptime = datetime.now() - datetime.fromtimestamp(psutil.boot_time())
+    
+    # Format uptime without milliseconds
+    uptime_str = str(timedelta(seconds=uptime.total_seconds()))
+    uptime_str = uptime_str.split('.')[0]
+    
+    # Format the message with the obtained statistics
+    status_message = script.SYS_STATUS_TXT.format(cpu_percent, ram_percent, disk_usage_percent, disk_free_gb, uptime_str)
+    
+    # Edit the message with the status_message
+    await rju.edit(status_message)
