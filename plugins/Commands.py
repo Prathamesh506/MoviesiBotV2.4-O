@@ -13,7 +13,7 @@ from pyrogram.types import InlineKeyboardButton, InlineKeyboardMarkup
 
 from database.ia_filterdb import Media, get_file_details, unpack_new_file_id
 from database.users_chats_db import db
-from info import CHANNELS,DLT, ADMINS,GRP1,REQST_CHANNEL,AUTH_CHANNEL, LOG_CHANNEL, PICS, CUSTOM_FILE_CAPTION, PROTECT_CONTENT, IS_VERIFY, HOW_TO_VERIFY
+from info import CHANNELS,DLT, ADMINS,GRP_LINK,REQST_CHANNEL,AUTH_CHANNEL, LOG_CHANNEL, PICS, CUSTOM_FILE_CAPTION, PROTECT_CONTENT, IS_VERIFY, HOW_TO_VERIFY
 from utils import  get_size, is_subscribed, temp, verify_user, check_token, check_verification, get_token,verify_VIP
 from  plugins.pm_Filter import send_eps_files
 
@@ -30,7 +30,7 @@ async def start(client, message):
             await client.send_message(LOG_CHANNEL, script.LOG_TEXT_G.format(message.chat.title, message.chat.id, total, "Unknown"))       
             await db.add_chat(message.chat.id, message.chat.title)
         alive = await message.reply_text("⚡")
-        await asyncio.sleep(2)
+        await asyncio.sleep(1)
         alive = await alive.edit_text("Yep, i'm Alive")
         await asyncio.sleep(1)
         await alive.delete()
@@ -51,7 +51,7 @@ async def start(client, message):
                     InlineKeyboardButton('⚡ ᴛʀᴇɴᴅɪɴɢ', callback_data="back_watch_start")
             ],[      
                     InlineKeyboardButton('⎚ ᴜᴘᴅᴀᴛᴇs', url="https://t.me/VegaLatest"),
-                    InlineKeyboardButton('♨ ɢʀᴏᴜᴘ', url=GRP1)
+                    InlineKeyboardButton('♨ ɢʀᴏᴜᴘ', url=GRP_LINK)
         ]]
         reply_markup = InlineKeyboardMarkup(buttons)
         await message.reply_photo(
@@ -100,7 +100,7 @@ async def start(client, message):
                     InlineKeyboardButton('⚡ ᴛʀᴇɴᴅɪɴɢ', callback_data="back_watch_start")
             ],[      
                     InlineKeyboardButton('⎚ ᴜᴘᴅᴀᴛᴇs', url="https://t.me/VegaLatest"),
-                    InlineKeyboardButton('♨ ɢʀᴏᴜᴘ', url=GRP1)
+                    InlineKeyboardButton('♨ ɢʀᴏᴜᴘ', url=GRP_LINK)
         ]]
         reply_markup = InlineKeyboardMarkup(buttons)
         await message.reply_photo(
@@ -456,24 +456,27 @@ async def deletemultiplefiles(bot, message):
 
 @Client.on_message((filters.command(["request", "Request"]) | filters.regex("#request") | filters.regex("#Request")))
 async def requests(bot, message):
-    reporter = str(message.from_user.id)
-    mention = message.from_user.mention
-    content = message.text[9:].title()
-    if len(content) < 3: 
-        await message.reply_text("<b>Follow the proper Format</b> \n\nEg: #request Fighter 2024")
+    if REQST_CHANNEL:
+        reporter = str(message.from_user.id)
+        mention = message.from_user.mention
+        content = message.text[9:].title()
+        if len(content) < 3: 
+            await message.reply_text("<b>Follow the proper Format</b> \n\nEg: #request Fighter 2024")
+            return
+        btn = []
+        #development
+        btn.insert(0, [
+                            InlineKeyboardButton('✅',callback_data=f'req_oprt#req_pstd#{reporter}#{content}'),
+                            InlineKeyboardButton("❌", callback_data=f'req_oprt#req_noprt#{reporter}#{content}')
+                        ])
+        rp = await bot.send_message(chat_id=REQST_CHANNEL, text=f"<b>Requested By :</b> {mention} \n\n<b>Request :</b><code> {content}</code>\n\n<i>Your request will be fulfilled shortly.</i>", reply_markup=InlineKeyboardMarkup(btn))
+        btn2 = [[
+                            InlineKeyboardButton('Vɪᴇᴡ Rᴇᴏ̨ᴜᴇsᴛ 📃', url=f"{rp.link}")
+                        ]]
+        await message.reply_text("<b>Yᴏᴜʀ ʀᴇᴏ̨ᴜᴇsᴛ ʜᴀs ʙᴇᴇɴ ᴀᴅᴅᴇᴅ! Pʟᴇᴀsᴇ ᴡᴀɪᴛ ғᴏʀ sᴏᴍᴇ ᴛɪᴍᴇ.</b>", reply_markup=InlineKeyboardMarkup(btn2))
+    else:
         return
-    btn = []
-    #development
-    btn.insert(0, [
-                        InlineKeyboardButton('✅',callback_data=f'req_oprt#req_pstd#{reporter}#{content}'),
-                        InlineKeyboardButton("❌", callback_data=f'req_oprt#req_noprt#{reporter}#{content}')
-                    ])
-    rp = await bot.send_message(chat_id=REQST_CHANNEL, text=f"<b>Requested By :</b> {mention} \n\n<b>Request :</b><code> {content}</code>\n\n<i>Your request will be fulfilled shortly.</i>", reply_markup=InlineKeyboardMarkup(btn))
-    btn2 = [[
-                        InlineKeyboardButton('Vɪᴇᴡ Rᴇᴏ̨ᴜᴇsᴛ 📃', url=f"{rp.link}")
-                      ]]
-    await message.reply_text("<b>Yᴏᴜʀ ʀᴇᴏ̨ᴜᴇsᴛ ʜᴀs ʙᴇᴇɴ ᴀᴅᴅᴇᴅ! Pʟᴇᴀsᴇ ᴡᴀɪᴛ ғᴏʀ sᴏᴍᴇ ᴛɪᴍᴇ.</b>", reply_markup=InlineKeyboardMarkup(btn2))
-
+    
 #VERIFY COUNT
 @Client.on_message(filters.command('report') & filters.user(ADMINS))
 async def verify_month(bot, message):

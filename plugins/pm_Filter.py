@@ -286,14 +286,17 @@ async def next_page(bot, query):
         _, req, offset = query.data.split("_")
         offset = int(offset)
         req = int(req)
+
+        search = await db.retrieve_latest_search(query.from_user.id)
+
+        if req != query.from_user.id:
+            return await query.answer(script.ALRT_TXT.format(query.from_user.first_name), show_alert=True)
+        
     except ValueError:
         logger.exception('ERROR: #NEXT BUTTON')
         return 
 
-    search = await db.retrieve_latest_search(query.from_user.id)
-
-    if req != query.from_user.id:
-        return await query.answer(script.ALRT_TXT.format(query.from_user.first_name), show_alert=True)
+    
 
     try:
         offset = int(offset)
