@@ -7,7 +7,7 @@ from pyrogram import Client, filters
 from pyrogram.types import InlineKeyboardMarkup, InlineKeyboardButton
 
 from info import DLT
-from info import ADMINS
+from info import ADMINS,WATCH_IMG
 from Script import script
 from database.watch import store_movies_from_text,delete_category,get_all_movies,get_watch_movies
 
@@ -43,7 +43,7 @@ async def watch_movies_filter(client, msg,type=False,start_btn=False):
     if type:
         result_msg = await msg.edit_message_text(text=cap,reply_markup=InlineKeyboardMarkup(btn))
     else:
-        result_msg = await msg.reply_photo(photo="https://telegra.ph/file/b9ed75fcef91d7edd629b.jpg", caption=cap,
+        result_msg = await msg.reply_photo(photo=WATCH_IMG, caption=cap,
         
                                         reply_markup=InlineKeyboardMarkup(btn))
     await asyncio.sleep(DLT)

@@ -982,9 +982,9 @@ async def cb_handler(client: Client, query: CallbackQuery):
             InlineKeyboardButton('ᴅᴍᴄᴀ', callback_data="start_dmca"),
             InlineKeyboardButton('ʙᴀᴄᴋ', callback_data="start_home_page")  # Corrected the URL here
         ]]
-        cap = """<B>───[ ᴅᴇᴛᴀɪʟꜱ ]───
+        cap = f"""<B>───[ ᴅᴇᴛᴀɪʟꜱ ]───
 
-‣ ᴍʏ ɴᴀᴍᴇ : [ᴜʟᴛʀᴏɴ 〄](https://t.me/VegaMoviesXBot)
+‣ ᴍʏ ɴᴀᴍᴇ : [{temp.B_NAME}](https://t.me/{temp.U_NAME})
 ‣ ᴅᴇᴠᴇʟᴏᴘᴇʀ : [sʜᴀᴅᴏᴡ](https://t.me/Shadow506)
 ‣ ʟɪʙʀᴀʀʏ : [ᴘʏʀᴏɢʀᴀᴍ](https://docs.pyrogram.org/)
 ‣ ʟᴀɴɢᴜᴀɢᴇ : [ᴘʏᴛʜᴏɴ 3](https://www.python.org/download/releases/3.0/)

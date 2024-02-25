@@ -1,0 +1,28 @@
+[02/25/2024 01:09:09 PM:pyrogram.dispatcher:253:ERROR] Failed to decode "e". The value does not represent an existing local file, HTTP URL, or valid file id.
+Traceback (most recent call last):
+  File "/home/codespace/.local/lib/python3.10/site-packages/pyrogram/utils.py", line 49, in get_input_media_from_file_id
+    decoded = FileId.decode(file_id)
+  File "/home/codespace/.local/lib/python3.10/site-packages/pyrogram/file_id.py", line 201, in decode
+    decoded = rle_decode(b64_decode(file_id))
+  File "/home/codespace/.local/lib/python3.10/site-packages/pyrogram/file_id.py", line 54, in b64_decode
+    return base64.urlsafe_b64decode(s + "=" * (-len(s) % 4))
+  File "/usr/local/python/3.10.13/lib/python3.10/base64.py", line 133, in urlsafe_b64decode
+    return b64decode(s)
+  File "/usr/local/python/3.10.13/lib/python3.10/base64.py", line 87, in b64decode
+    return binascii.a2b_base64(s)
+binascii.Error: Invalid base64-encoded string: number of data characters (1) cannot be 1 more than a multiple of 4
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/home/codespace/.local/lib/python3.10/site-packages/pyrogram/dispatcher.py", line 240, in handler_worker
+    await handler.callback(self.client, *args)
+  File "/workspaces/MoviesiBotV1.9/plugins/NewG&U.py", line 37, in save_group
+    user_wc = await message.reply_photo(
+  File "/home/codespace/.local/lib/python3.10/site-packages/pyrogram/types/messages_and_media/message.py", line 2000, in reply_photo
+    return await self._client.send_photo(
+  File "/home/codespace/.local/lib/python3.10/site-packages/pyrogram/methods/messages/send_photo.py", line 166, in send_photo
+    media = utils.get_input_media_from_file_id(photo, FileType.PHOTO, ttl_seconds=ttl_seconds)
+  File "/home/codespace/.local/lib/python3.10/site-packages/pyrogram/utils.py", line 51, in get_input_media_from_file_id
+    raise ValueError(
+ValueError: Failed to decode "e". The value does not represent an existing local file, HTTP URL, or valid file id.

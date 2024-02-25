@@ -16,12 +16,10 @@ class Database:
         self.user_data_col = self.db.user_data 
         try:
             self.search_col.drop_index("timestamp_1")
-            print("Dropped index 'timestamp_1' successfully.")
         except pymongo.errors.OperationFailure as e:
-            print(f"Error dropping index 'timestamp_1': {e}")
+            print(f"Error dropping index 'timestamp_1'")
         try:
             self.search_col.create_index("timestamp", expireAfterSeconds=6000)
-            print("Created index 'timestamp' successfully.")
         except pymongo.errors.OperationFailure as e:
             print(f"Error creating index 'timestamp': {e}")
 

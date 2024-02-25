@@ -34,6 +34,7 @@ OWNER_USERNAME ="Shadow506"
 #--------------------- DATABSES & CHANNLS ----------------------
 
 GRP_LINK = environ.get('GRP1', 'https://t.me/+T7Q3qsiyv9cxOGM1') 
+SUP_LINK = environ.get('SUP_LINK', 'https://t.me/TeamiVega') 
 UPDATES =environ.get('UPDATES', 'CineArcade') 
 
 auth_channel = "-1002086574998"
@@ -54,7 +55,8 @@ DELETE_CHANNELS = [int(ch) if id_pattern.search(ch) else ch for ch in environ.ge
 #START BTN PICS
 PICS = (environ.get('PICS', 'https://telegra.ph/file/96aa21c66eec5a24b9644.jpg https://telegra.ph/file/84bd10861f905d72adcaf.jpg https://telegra.ph/file/d315eaa802cdb2f790a5a.jpg https://telegra.ph/file/a25ea7f7a746ac1c544e3.jpg https://telegra.ph/file/40d555da9059bb1b0fcd7.jpg https://telegra.ph/file/2efd3b607301d692a634b.jpg https://telegra.ph/file/6e66b7dd8b9b30ace0f93.jpg https://telegra.ph/file/a320d989754c8dea12b02.png')).split()
 IMDB_IMG = environ.get("IMDB_IMG", "https://telegra.ph/file/4b873b46bb4861f78ce6d.jpg")
-WATCH_IMG = environ.get("WATCH_IMG", "https://telegra.ph/file/4b873b46bb4861f78ce6d.jpg")
+WATCH_IMG = environ.get("WATCH_IMG", "https://telegra.ph/file/b9ed75fcef91d7edd629b.jpg")
+WELCOME_PICS = environ.get("WELCOME_PICS", "https://telegra.ph/file/4b873b46bb4861f78ce6d.jpg")
 
 #-------------------------- DATABASE MONGODB -------------------------
 
