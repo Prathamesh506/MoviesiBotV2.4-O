@@ -17,7 +17,7 @@ def is_enabled(value, default):
 SESSION = environ.get('SESSION', 'MoviesiBotV4')
 API_ID = "3704207"
 API_HASH = environ.get("API_HASH", "8d20e46f5413139329f2ec753f7c482a")
-BOT_TOKEN = environ.get("BOT_TOKEN", "6583753281:AAFtg5TYcGEToa99k0hbOYrrkZXJIXWQXHk")
+BOT_TOKEN = environ.get("BOT_TOKEN", "6804042543:AAHsAypo4f7s-mN--uWK6o5pxAs-gsKXB68")
 
 
 #------------------- ADMINS & AUTH_USERS -------------------------------
@@ -41,10 +41,10 @@ auth_channel = "-1002086574998"
 LOG_CHANNEL = int(environ.get('LOG_CHANNEL', '-1002131280557'))
 NO_RES_CNL = int(environ.get('NO_RES_CNL', '-1002137535594')) 
 support_chat_id = environ.get('support_chat_id',"-1002044884739")
-reqst_channel = environ.get('reqst_channel',"-1002069948824")
+reqst_channel = environ.get('reqst_channel',"-1002019169484")
 
 #DATABASE CHANNELS
-CHANNELS = [int(ch) if id_pattern.search(ch) else ch for ch in environ.get('CHANNELS', '-1001997311406 -1001908988097 -1001977939308 -1002052107035 -1002031777198 -1002120266966').split()]
+CHANNELS = [int(ch) if id_pattern.search(ch) else ch for ch in environ.get('CHANNELS', '-1001997311406 -1001908988097 -1001977939308 -1002052107035 -1002031777198 -1002120266966 -1001638006524').split()]
 
 #MULTI FILE AUTO DELETE
 DELETE_CHANNELS = [int(ch) if id_pattern.search(ch) else ch for ch in environ.get('CHANNELS', '-1001997311406 -1001908988097 -1001977939308 -1002052107035 -1002031777198 -1002120266966').split()] 
@@ -60,7 +60,7 @@ WELCOME_PICS = environ.get("WELCOME_PICS", "https://telegra.ph/file/4b873b46bb48
 
 #-------------------------- DATABASE MONGODB -------------------------
 
-DATABASE_URI = environ.get('DATABASE_URI', "mongodb+srv://MoviesiBotV6:MoviesiBotV5@cluster0.zs9smub.mongodb.net/?retryWrites=true&w=majority")
+DATABASE_URI = environ.get('DATABASE_URI', "mongodb+srv://shadow:shadow506@cluster0.srfnz9s.mongodb.net/?retryWrites=true&w=majority")
 DATABASE_NAME = environ.get('DATABASE_NAME', "Cluster0")
 COLLECTION_NAME = environ.get('COLLECTION_NAME', 'MoviesiBotV4')
 
