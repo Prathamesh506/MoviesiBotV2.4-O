@@ -8,9 +8,10 @@ from pymongo.errors import DuplicateKeyError
 from umongo import Instance, Document, fields
 from motor.motor_asyncio import AsyncIOMotorClient
 from marshmallow.exceptions import ValidationError
-from info import DATABASE_URI, DATABASE_NAME, COLLECTION_NAME
+from info import DATABASE_URI, DATABASE_NAME, COLLECTION_NAME,PROTECT_CONTENT,CUSTOM_FILE_CAPTION
 import regex 
 from datetime import datetime
+from utils import get_size
 
 import asyncio
 logger = logging.getLogger(__name__)
@@ -294,11 +295,23 @@ async def send_filex(query_ep,user_id,client):
             media_instance = await Media.find_one(doc["_id"])
             result = media_instance
             break  # Break out of the loop after the first iteration
+        title = result.file_name
+        size=get_size(result.file_size)
+        f_caption=result.caption
+        if CUSTOM_FILE_CAPTION:
+            try:
+                f_caption=CUSTOM_FILE_CAPTION.format(file_name= '' if title is None else title, file_size='' if size is None else size, file_caption='' if f_caption is None else f_caption)
+            except Exception as e:
+                logger.exception(e)
+                f_caption=f_caption
+        if f_caption is None:
+            f_caption = f"{result.file_name}"
+
         await client.send_cached_media(
         chat_id=user_id,
         file_id=result.file_id,
-        caption=f"<i><b>{result.caption} ~ VegaMoviesX\n\nJOIN 💎 : @CiNEARCADE</i></b>",
-        protect_content= False
+        caption=f_caption,
+        protect_content=True if PROTECT_CONTENT else False,
     )
         return True
     except: 

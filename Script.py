@@ -178,10 +178,8 @@ Nᴀᴍᴇ - {}"""
 𝗡𝗮𝗺𝗲 <b>: {}</b>
 𝗠𝗲𝘀𝘀𝗮𝗴𝗲 <b>: {}</b>"""
 
-    CAPTION = """
-<b><i><b><a href="t.me/VegaMoviesX">{file_name}</a>\n\nJOIN 💎 : @CINEARCADE\n\nTEAM 💠 : @VEGAMOVIESX</i></b>"""
 
-    CAPTION2 = """<i><b>{file_caption} ~ VegaMoviesX\n\nJOIN 💎 : @CiNEARCADE</i></b>"""
+    CAPTION = """<i><b>{file_caption} ~ VegaMoviesX\n\nJOIN 💎 : @CiNEARCADE</i></b>"""
 
     IMDB_TEMPLATE_TXT = """<b>
 <i>{title} ( {year} )

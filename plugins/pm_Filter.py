@@ -21,7 +21,7 @@ from fuzzywuzzy import fuzz, process
 from Script import script
 from plugins.iwatch import watch_movies_filter
 from utils import get_size, is_subscribed, temp, check_verification, get_token
-from info import ADMINS, AUTH_CHANNEL, NO_RES_CNL,GRP1,SUPPORT_CHAT_ID,DOWNLOAD_TIPS, CUSTOM_FILE_CAPTION, IS_VERIFY, HOW_TO_VERIFY, DLT,IMDB_IMG
+from info import ADMINS, AUTH_CHANNEL, NO_RES_CNL,GRP_LINK,SUPPORT_CHAT_ID,DOWNLOAD_TIPS, CUSTOM_FILE_CAPTION, IS_VERIFY, HOW_TO_VERIFY, DLT,IMDB_IMG,PROTECT_CONTENT
 from database.users_chats_db import db
 from database.watch import store_movies_from_text,does_movie_exxists,search_movie_db,get_watch_movies
 from database.ia_filterdb import Media, get_file_details,search_db,total_results_count,send_filex
@@ -55,7 +55,7 @@ async def support_grp_filter(msg):
         total_results = await total_results_count(search)
         
         if total_results:
-            btn = [[InlineKeyboardButton('Movies Group 🍿', url=GRP1)]]
+            btn = [[InlineKeyboardButton('Movies Group 🍿', url=GRP_LINK)]]
             cap = f"<b>Hey {msg.from_user.mention},\n\nFound {total_results} Results\nSearch:</b> {search.title()}\n\n<i><b>NOTE: </b>To get the movies, please search in the movies group.</i>"
             result_msg = await msg.reply_text(cap, reply_markup=InlineKeyboardMarkup(btn))
             await asyncio.sleep(DLT)
@@ -482,7 +482,7 @@ async def filtering_results(bot, query):
     else:
         if len(data_parts) == 4:
             await bot.send_message(chat_id=NO_RES_CNL, text=f"<b>iMDb:</b> <code>{search}</code>")
-        return await query.answer(f"ꜱᴏʀʀʏ, ɴᴏ ғɪʟᴇꜱ ғᴏᴜɴᴅ ɪɴ ᴅᴀᴛᴀʙᴀꜱᴇ ғᴏʀ ʏᴏᴜʀ ϙᴜᴇʀʏ 🔍", show_alert=True)
+        return await query.answer(f"No Files Found In database For Your Query. 🔍", show_alert=True)
 
 
 #UTILITY
@@ -937,7 +937,7 @@ async def cb_handler(client: Client, query: CallbackQuery):
             chat_id=query.from_user.id,
             file_id=file_id,
             caption=f_caption,
-            protect_content=False
+            protect_content=True if PROTECT_CONTENT else False,
         )
 
     elif query.data.startswith("killfilesdq"):
@@ -1007,7 +1007,7 @@ async def cb_handler(client: Client, query: CallbackQuery):
                     InlineKeyboardButton('⚡ ᴛʀᴇɴᴅɪɴɢ', callback_data="back_watch_start")
             ],[      
                     InlineKeyboardButton('⎚ ᴜᴘᴅᴀᴛᴇs', url="https://t.me/VegaLatest"),
-                    InlineKeyboardButton('♨ ɢʀᴏᴜᴘ', url=GRP1)
+                    InlineKeyboardButton('♨ ɢʀᴏᴜᴘ', url=GRP_LINK)
         ]]
         await query.edit_message_text(
                     text=script.START_TXT.format(query.from_user.mention, temp.B_NAME),

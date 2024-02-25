@@ -1,23 +1,21 @@
-import logging
-from pyrogram.errors import InputUserDeactivated, UserNotParticipant, FloodWait, UserIsBlocked, PeerIdInvalid, ChatAdminRequired
-from info import AUTH_CHANNEL, LONG_IMDB_DESCRIPTION, MAX_LIST_ELM, SHORTLINK_URL, SHORTLINK_API, LOG_CHANNEL, SUP_LNK, CHNL_LNK, CUSTOM_FILE_CAPTION, IS_VERIFY, VERIFY2_URL, VERIFY2_API, PROTECT_CONTENT, HOW_TO_VERIFY
-from imdb import Cinemagoer 
-import asyncio
-from pyrogram.types import Message, InlineKeyboardButton, InlineKeyboardMarkup
-from pyrogram import enums
-from typing import Union
-from Script import script
-import pytz
-import random 
 import re
 import os
-from datetime import datetime, timedelta, date, time
+import pytz
+import random 
 import string
-from typing import List
-from database.users_chats_db import db
-from bs4 import BeautifulSoup
-import requests
 import aiohttp
+import asyncio
+import logging
+from typing import List
+from typing import Union
+from pyrogram import enums
+from pyrogram.types import Message, InlineKeyboardButton
+from pyrogram.errors import InputUserDeactivated, UserNotParticipant, FloodWait, UserIsBlocked, PeerIdInvalid
+
+from Script import script
+from database.users_chats_db import db
+from datetime import datetime, timedelta, date, time
+from info import AUTH_CHANNEL, MAX_LIST_ELM, SHORTLINK_URL, SHORTLINK_API, LOG_CHANNEL,SHORTLINK_URL_BKUP,SHORTLINK_URL_BKUP
 
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.INFO)
@@ -26,7 +24,6 @@ BTN_URL_REGEX = re.compile(
     r"(\[([^\[]+?)\]\((buttonurl|buttonalert):(?:/{0,2})(.+?)(:same)?\))"
 )
 
-imdb = Cinemagoer()
 TOKENS = {}
 VERIFIED = {}
 BANNED = {}
@@ -181,7 +178,6 @@ def last_online(from_user):
         time += from_user.last_online_date.strftime("%a, %d %b %Y, %H:%M:%S")
     return time
 
-
 def split_quotes(text: str) -> List:
     if not any(text.startswith(char) for char in START_CHAR):
         return text.split(None, 1)
@@ -202,62 +198,6 @@ def split_quotes(text: str) -> List:
     if not key:
         key = text[0] + text[0]
     return list(filter(None, [key, rest]))
-
-def gfilterparser(text, keyword):
-    if "buttonalert" in text:
-        text = (text.replace("\n", "\\n").replace("\t", "\\t"))
-    buttons = []
-    note_data = ""
-    prev = 0
-    i = 0
-    alerts = []
-    for match in BTN_URL_REGEX.finditer(text):
-        # Check if btnurl is escaped
-        n_escapes = 0
-        to_check = match.start(1) - 1
-        while to_check > 0 and text[to_check] == "\\":
-            n_escapes += 1
-            to_check -= 1
-
-        # if even, not escaped -> create button
-        if n_escapes % 2 == 0:
-            note_data += text[prev:match.start(1)]
-            prev = match.end(1)
-            if match.group(3) == "buttonalert":
-                # create a thruple with button label, url, and newline status
-                if bool(match.group(5)) and buttons:
-                    buttons[-1].append(InlineKeyboardButton(
-                        text=match.group(2),
-                        callback_data=f"gfilteralert:{i}:{keyword}"
-                    ))
-                else:
-                    buttons.append([InlineKeyboardButton(
-                        text=match.group(2),
-                        callback_data=f"gfilteralert:{i}:{keyword}"
-                    )])
-                i += 1
-                alerts.append(match.group(4))
-            elif bool(match.group(5)) and buttons:
-                buttons[-1].append(InlineKeyboardButton(
-                    text=match.group(2),
-                    url=match.group(4).replace(" ", "")
-                ))
-            else:
-                buttons.append([InlineKeyboardButton(
-                    text=match.group(2),
-                    url=match.group(4).replace(" ", "")
-                )])
-
-        else:
-            note_data += text[prev:to_check]
-            prev = match.start(1) - 1
-    else:
-        note_data += text[prev:]
-
-    try:
-        return note_data, buttons, alerts
-    except:
-        return note_data, buttons, None
 
 def parser(text, keyword):
     if "buttonalert" in text:
@@ -393,12 +333,10 @@ async def get_shortlink(chat_id, link):
                 return f'https://{URL}/api?api={API}&link={link}'
 
 async def get_verify_shorted_link(num, link):
-    if int(num) == 1:
-        API = SHORTLINK_API
-        URL = SHORTLINK_URL
-    else:
-        API = VERIFY2_API
-        URL = VERIFY2_URL
+
+    API = SHORTLINK_API
+    URL = SHORTLINK_URL
+
     https = link.split(":")[0]
     if "http" == https:
         https = "https"
@@ -447,12 +385,11 @@ async def get_verify_shorted_link(num, link):
                 return f'https://{URL}/api?api={API}&url={link}'
             else:
                 # return f'https://{URL}/api?api={API}&link={link}'
-                return await get_verify_shortened_link_tn(link) #new
+                return await get_verify_shortened_link_2(link) #new
 
-
-async def get_verify_shortened_link_tn(link):
-    API = "5b8c9497bbeabea5a30c16062eeba6b3fe6bbd13"
-    URL = "tnshort.net" 
+async def get_verify_shortened_link_2(link):
+    API = SHORTLINK_URL_BKUP
+    URL = SHORTLINK_URL_BKUP
 
     https = link.split(":")[0]
     if "http" == https:
@@ -518,7 +455,6 @@ async def get_token(bot, userid, link, fileid):
         vr_num = 1
     shortened_verify_url = await get_verify_shorted_link(vr_num, url)
     return str(shortened_verify_url)
-
 
 async def get_verify_status(userid):
     status = temp.VERIFY.get(userid)
