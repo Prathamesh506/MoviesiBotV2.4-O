@@ -19,6 +19,7 @@ from pyrogram.errors import UserIsBlocked, MessageNotModified, PeerIdInvalid
 from fuzzywuzzy import fuzz, process
 
 from Script import script
+from plugins.iwatch import watch_movies_filter
 from utils import get_size, is_subscribed, temp, check_verification, get_token
 from info import ADMINS, AUTH_CHANNEL, NO_RES_CNL,GRP1,SUPPORT_CHAT_ID,DOWNLOAD_TIPS, CUSTOM_FILE_CAPTION, IS_VERIFY, HOW_TO_VERIFY, DLT,IMDB_IMG
 from database.users_chats_db import db
