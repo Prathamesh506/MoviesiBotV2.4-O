@@ -3,11 +3,14 @@ from pyrogram import Client
 from utils import get_verify_status
 import datetime
 import pytz  
+from info import UPI_ID,OWNER_USERNAME
 
-prestats = """<b>User id: </b><code>{}</code>
+prestats = """<b>PLAN DETAILS !
+
+User id: </b><code>{}</code>
 <b>Name: </b>{}
 
-<b>Plan: {}</b>
+<b>Plan:</b> {}
 
 <b>Verification Ends In:</b>
 <code>{}</code>
@@ -15,7 +18,7 @@ prestats = """<b>User id: </b><code>{}</code>
 <i></i>
 
 """
-pay_msg = """<b>› PREMIUM PLANS !</b>
+pay_msg = f"""<b>› PREMIUM PLANS !</b>
 
 <i>₹15 - Get Verified for <b>Week</b>
 ₹29 - Get Verified for <b>Month</b>
@@ -24,11 +27,11 @@ pay_msg = """<b>› PREMIUM PLANS !</b>
 ₹299 - Get Verified for <b>Year</b>
 ₹499 - Get Verified for <b>Life Time</b></i>
 
-<b>UPI ID:</b><code>mrnova@hdfcbank</code><i>
+<b>UPI ID: </b><code>{UPI_ID}</code><i>
 
 You can make payments using either the <b>UPI ID </b>or by scanning the <b>QR code</b>.
 
-<b>Note: </b>Don't forget to send payment screenshot to <a href="http://t.me/shadow506">Admins</a> for plan activation. ☞ @Shadow506</i>"""
+<b>Note: </b>Don't forget to send payment screenshot to <a href="http://t.me/{OWNER_USERNAME}">Admins</a> for plan activation. ☞ @{OWNER_USERNAME}</i>"""
 
 @Client.on_message(pyrogram.filters.private & pyrogram.filters.command(["premium"]))
 def premium_Plans(bot, update):
@@ -38,11 +41,7 @@ def premium_Plans(bot, update):
 @Client.on_callback_query(pyrogram.filters.regex("buy_prm"))
 def strat_callback(bot, update):
   update.message.edit(pay_msg.format(), reply_markup=pay_btn(bot, update.message), parse_mode=pyrogram.enums.ParseMode.HTML, disable_web_page_preview=True)
- 
- 
-# @Client.on_callback_query(pyrogram.filters.regex("close"))
-# async def close_dkjsh(bot, update):
-#   await update.message.delete()
+
 
 @Client.on_callback_query(pyrogram.filters.regex("bckpre"))
 async def back_org(bot, update):
@@ -115,10 +114,12 @@ async def started_command(bot, update):
 
 async def user_stas(bot, update):
   bot = await bot.get_me()
+  userid= update.from_user.id
   buttons = [[
-   pyrogram.types.InlineKeyboardButton("Refresh 💫", callback_data="bckpre"),
-   pyrogram.types.InlineKeyboardButton("Buy Premium", callback_data="buy_prm"),
-   ]]
+    pyrogram.types.InlineKeyboardButton("Refresh Data 💫", callback_data="bckpre")
+   ],[
+   pyrogram.types.InlineKeyboardButton("Premium", callback_data="buy_prm"),
+   pyrogram.types.InlineKeyboardButton("Close", callback_data=f"close_data#{userid}")]]
   return pyrogram.types.InlineKeyboardMarkup(buttons)
 
 def pay_btn(bot, update):
@@ -134,6 +135,6 @@ def pay_btn2(bot, update):
   userid= update.from_user.id
   buttons = [[
    pyrogram.types.InlineKeyboardButton("ᴏʀ ᴄᴏᴅᴇ ▣", url=f"https://telegra.ph/file/a2d3a48d65c5bb675e8c1.jpg"),
-   pyrogram.types.InlineKeyboardButton("Close ",callback_data="close_data#{userid}" ),
+   pyrogram.types.InlineKeyboardButton("Close ",callback_data=f"close_data#{userid}" ),
    ]]
   return pyrogram.types.InlineKeyboardMarkup(buttons)

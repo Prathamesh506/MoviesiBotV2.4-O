@@ -24,6 +24,10 @@ ADMINS = [int(admin) if id_pattern.search(admin) else admin for admin in environ
 CHANNELS = [int(ch) if id_pattern.search(ch) else ch for ch in environ.get('CHANNELS', '-1001997311406 -1001908988097 -1001977939308 -1002052107035 -1002031777198 -1002120266966').split()] #DATABASE
 LOG_CHANNEL = int(environ.get('LOG_CHANNEL', '-1002131280557')) #LOG CHANNEL
 
+# OWNER INFO
+UPI_ID = "mrnova@hdfcbank"
+OWNER_USERNAME ="Shadow506"
+
 #CHANNLS
 GRP1 = environ.get('GRP1', 'https://t.me/+T7Q3qsiyv9cxOGM1') 
 GRP2 = environ.get('GRP2', 'https://t.me/+3evIddbYTPZiMDU9')
