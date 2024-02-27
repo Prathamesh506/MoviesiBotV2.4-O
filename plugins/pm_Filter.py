@@ -253,7 +253,7 @@ async def navigation_buttons(btn,message, total_pages, offset,Text_mode=False):#
     offsetpageno = int(math.ceil(int(offset)/10))
     if total_pages == 1 :
         btn.append([
-            InlineKeyboardButton(text=f"⚙️ {mode}",callback_data=f"text_mode_{req}#{offset}#{Text_mode}"),
+            InlineKeyboardButton(text=f"⚙️ {mode}",callback_data=f"text_mode#{req}#{offset}#{Text_mode}"),
             InlineKeyboardButton(text=f" 1 / {total_pages}",callback_data="callback_none")]
         )
     elif offsetpageno == total_pages :
@@ -1047,7 +1047,7 @@ async def cb_handler(client: Client, query: CallbackQuery):
 ‣ ʟᴀɴɢᴜᴀɢᴇ : [ᴘʏᴛʜᴏɴ 3](https://www.python.org/download/releases/3.0/)
 ‣ ᴅᴀᴛᴀ ʙᴀsᴇ : [ᴍᴏɴɢᴏ ᴅʙ](https://www.mongodb.com/)
 ‣ ʙᴏᴛ sᴇʀᴠᴇʀ : [ᴀᴡs](https://aws.amazon.com/)
-‣ ʙᴜɪʟᴅ sᴛᴀᴛᴜs : v1.9 [ sᴛᴀʙʟᴇ ]</B>
+‣ ʙᴜɪʟᴅ sᴛᴀᴛᴜs : v2.1 [ sᴛᴀʙʟᴇ ]</B>
         """
 
         await query.edit_message_text(
