@@ -184,7 +184,7 @@ async def popularity_store(query):
         return
 
 #BUTTONS
-async def result_btn(files, user_id, bot, search):
+async def result_btn(files, user_id, bot, search,text_mode=False):
     # Extract season
     season = extract_season(search) or "01"
     
@@ -195,16 +195,17 @@ async def result_btn(files, user_id, bot, search):
     batch_btn = any(re.search(r'\bs\d+', html.unescape(file.caption), re.IGNORECASE) for file in files)
     
     # Construct basic button structure
-    btn = [
-        [
-            InlineKeyboardButton(
-                text=f"[{get_size(file.file_size)}] {html.unescape(file.caption[:45].strip())}",
-                url=f"https://telegram.dog/{temp.U_NAME}?start=BotFusion_{file.file_id}"
-            ),
-        ]        
-        for file in files
-    ]
-    
+    if not text_mode:
+        btn = [
+            [
+                InlineKeyboardButton(
+                    text=f"[{get_size(file.file_size)}] {html.unescape(file.caption[:45].strip())}",
+                    url=f"https://telegram.dog/{temp.U_NAME}?start=CodeiBots_{file.file_id}"
+                ),
+            ]        
+            for file in files
+        ]
+    else: btn = []
     # Construct URL for batch files
     link = f"https://telegram.me/{temp.U_NAME}?start="
     batch_url = f"{link}all_eps_files-{user_id}"
@@ -229,40 +230,48 @@ async def result_btn(files, user_id, bot, search):
     # Insert common buttons at the beginning
     common_btns = [
         [
-            InlineKeyboardButton("Lᴀɴɢᴜᴀɢᴇ", callback_data=f"select_language#{user_id}"),
-            InlineKeyboardButton("Qᴜᴀʟɪᴛʏ", callback_data=f"select_quality#{user_id}"),
-            InlineKeyboardButton("Sᴇᴀꜱᴏɴ", callback_data=f"select_season#{user_id}")
+            InlineKeyboardButton("Lᴀɴɢᴜᴀɢᴇ", callback_data=f"select_language#{user_id}#{text_mode}"),
+            InlineKeyboardButton("Qᴜᴀʟɪᴛʏ", callback_data=f"select_quality#{user_id}#{text_mode}"),
+            InlineKeyboardButton("Sᴇᴀꜱᴏɴ", callback_data=f"select_season#{user_id}#{text_mode}")
         ]
     ]
     btn = common_btns + btn
     
     return btn
 
-async def navigation_buttons(btn,message, total_pages, offset):#navigation btns
+async def result_text(files, cap):
+    for file in files:
+        text = f"[{get_size(file.file_size)}] {html.unescape(file.caption)}"
+        url = f"https://telegram.dog/{temp.U_NAME}?start=CodeiBots_{file.file_id}"
+        cap += f"<b>\n\n📂 <a href={url}>{text}</a></b>"
+    return cap
+
+async def navigation_buttons(btn,message, total_pages, offset,Text_mode=False):#navigation btns
     req = message.from_user.id if message.from_user else 0
     offset = int(offset)
+    mode = "ʙᴛɴ" if Text_mode else "ᴛᴇxᴛ"
     offsetpageno = int(math.ceil(int(offset)/10))
     if total_pages == 1 :
         btn.append([
-            InlineKeyboardButton(text=f"📚 ᴘᴀɢᴇ",callback_data="callback_none"),
+            InlineKeyboardButton(text=f"⚙️ {mode}",callback_data=f"text_mode_{req}#{offset}#{Text_mode}"),
             InlineKeyboardButton(text=f" 1 / {total_pages}",callback_data="callback_none")]
         )
     elif offsetpageno == total_pages :
         btn.append([
-            InlineKeyboardButton(text="⌫ ʙᴀᴄᴋ",callback_data=f"next_{req}_{offset-20}"),
+            InlineKeyboardButton(text="⌫ ʙᴀᴄᴋ",callback_data=f"next_{req}_{offset-20}_{Text_mode}"),
             InlineKeyboardButton(text=f" {offsetpageno} / {total_pages}",callback_data="callback_none")]
         )
     elif offset == 10 :
         btn.append([
-            InlineKeyboardButton(text=f"📚 ᴘᴀɢᴇ",callback_data="callback_none"),
+            InlineKeyboardButton(text=f"⚙️ {mode}",callback_data=f"text_mode#{req}#{offset}#{Text_mode}"),
             InlineKeyboardButton(text=f" 1 / {total_pages}",callback_data="callback_none"),
-            InlineKeyboardButton(text="ɴᴇxᴛ ⌦ ",callback_data=f"next_{req}_{offset}")]
+            InlineKeyboardButton(text="ɴᴇxᴛ ⌦ ",callback_data=f"next_{req}_{offset}_{Text_mode}")]
         )
     else:
         btn.append([
-            InlineKeyboardButton(text="⌫ ʙᴀᴄᴋ",callback_data=f"next_{req}_{offset-20}"),
+            InlineKeyboardButton(text="⌫ ʙᴀᴄᴋ",callback_data=f"next_{req}_{offset-20}_{Text_mode}"),
             InlineKeyboardButton(text=f"{offsetpageno} / {total_pages}",callback_data="callback_none"),
-            InlineKeyboardButton(text="ɴᴇxᴛ ⌦",callback_data=f"next_{req}_{offset}") ]
+            InlineKeyboardButton(text="ɴᴇxᴛ ⌦",callback_data=f"next_{req}_{offset}_{Text_mode}") ]
         )  
     
     return btn
@@ -283,7 +292,8 @@ def imdb_btn(results, user_id):#IMDB result btns
 @Client.on_callback_query(filters.regex(r"^next"))
 async def next_page(bot, query):
     try:
-        _, req, offset = query.data.split("_")
+        _, req, offset,tm = query.data.split("_")
+        text_mode = True if tm == "True" else False
         offset = int(offset)
         req = int(req)
 
@@ -295,9 +305,7 @@ async def next_page(bot, query):
     except ValueError:
         logger.exception('ERROR: #NEXT BUTTON')
         return 
-
     
-
     try:
         offset = int(offset)
     except ValueError:
@@ -312,11 +320,16 @@ async def next_page(bot, query):
     if not files:
         return
 
-    btn = await result_btn(files, req, bot, search)
+    btn = await result_btn(files, req, bot, search,text_mode)
     query.text = search
-    btn = await navigation_buttons(btn, query, total_pages, n_offset)
+    btn = await navigation_buttons(btn, query, total_pages, n_offset,text_mode)
     try:
-        await query.edit_message_reply_markup(reply_markup=InlineKeyboardMarkup(btn))
+        if not text_mode:
+            await query.edit_message_reply_markup(reply_markup=InlineKeyboardMarkup(btn))
+        else:
+            cap = f"<b>Hey {query.from_user.mention},\n\nFᴏᴜɴᴅ Rᴇꜱᴜʟᴛꜱ Fᴏʀ Yᴏᴜʀ\nSearch: </b>{search.title()}"
+            cap = await result_text(files,cap)
+            result_msg = await query.message.edit_text(cap, reply_markup=InlineKeyboardMarkup(btn))
     except pyrogram.errors.exceptions.flood_420.FloodWait as e:
         await query.answer("Flood Wait 15s ⌛")
     except pyrogram.errors.exceptions.bad_request_400.QueryIdInvalid as e:
@@ -328,32 +341,34 @@ async def next_page(bot, query):
 
 @Client.on_callback_query(filters.regex(r"^select_lang"))
 async def select_language(bot, query):
-    _, userid= query.data.split("#")
+    _, userid,tm= query.data.split("#")
+    text_mode = True if tm == "True" else False
     if int(userid) not in [query.from_user.id, 0]:
         return await query.answer(script.ALRT_TXT.format(query.from_user.first_name), show_alert=True)
     btn = [[
         InlineKeyboardButton("⇃  ᴄʜᴏᴏsᴇ ʟᴀɴɢᴜᴀɢᴇ  ⇂", callback_data=f"callback_none")
     ],[
-        InlineKeyboardButton("Eɴɢʟɪꜱʜ", callback_data=f"add_filter#{userid}#english"),
-        InlineKeyboardButton("Hɪɴᴅɪ", callback_data=f"add_filter#{userid}#hindi")
+        InlineKeyboardButton("Eɴɢʟɪꜱʜ", callback_data=f"add_filter#{userid}#english#{text_mode}"),
+        InlineKeyboardButton("Hɪɴᴅɪ", callback_data=f"add_filter#{userid}#hindi#{text_mode}")
     ],[
-        InlineKeyboardButton("Tᴀᴍɪʟ", callback_data=f"add_filter#{userid}#tamil"),
-        InlineKeyboardButton("Tᴇʟᴜɢᴜ", callback_data=f"add_filter#{userid}#telugu")
+        InlineKeyboardButton("Tᴀᴍɪʟ", callback_data=f"add_filter#{userid}#tamil#{text_mode}"),
+        InlineKeyboardButton("Tᴇʟᴜɢᴜ", callback_data=f"add_filter#{userid}#telugu#{text_mode}")
     ],[
-        InlineKeyboardButton("Mᴀʀᴀᴛʜɪ", callback_data=f"add_filter#{userid}#mar"),
-        InlineKeyboardButton("Mᴀʟᴀʏᴀʟᴀᴍ", callback_data=f"add_filter#{userid}#mal")
+        InlineKeyboardButton("Mᴀʀᴀᴛʜɪ", callback_data=f"add_filter#{userid}#mar#{text_mode}"),
+        InlineKeyboardButton("Mᴀʟᴀʏᴀʟᴀᴍ", callback_data=f"add_filter#{userid}#mal#{text_mode}")
     ],[
-        InlineKeyboardButton("Kᴀɴɴᴀᴅᴀ", callback_data=f"add_filter#{userid}#kan"),
-        InlineKeyboardButton("Dᴜᴀʟ Aᴜᴅɪᴏ", callback_data=f"add_filter#{userid}#dual")
+        InlineKeyboardButton("Kᴀɴɴᴀᴅᴀ", callback_data=f"add_filter#{userid}#kan#{text_mode}"),
+        InlineKeyboardButton("Dᴜᴀʟ Aᴜᴅɪᴏ", callback_data=f"add_filter#{userid}#dual#{text_mode}")
     ],[
-        InlineKeyboardButton("Mᴜʟᴛɪ Aᴜᴅɪᴏ", callback_data=f"add_filter#{userid}#multi"),
-        InlineKeyboardButton("ꜱᴜʙᴛɪᴛʟᴇꜱ", callback_data=f"add_filter#{userid}#sub")
+        InlineKeyboardButton("Mᴜʟᴛɪ Aᴜᴅɪᴏ", callback_data=f"add_filter#{userid}#multi#{text_mode}"),
+        InlineKeyboardButton("ꜱᴜʙᴛɪᴛʟᴇꜱ", callback_data=f"add_filter#{userid}#sub#{text_mode}")
     ],[
-        InlineKeyboardButton("Cʟᴇᴀʀ", callback_data=f"add_filter#{userid}#clearlanguage"),
-        InlineKeyboardButton("Bᴀᴄᴋ", callback_data=f"add_filter#{userid}#mainpage")
+        InlineKeyboardButton("Cʟᴇᴀʀ", callback_data=f"add_filter#{userid}#clearlanguage#{text_mode}"),
+        InlineKeyboardButton("Bᴀᴄᴋ", callback_data=f"add_filter#{userid}#mainpage#{text_mode}")
     ]]
     try:
-        await query.edit_message_reply_markup(
+        cap = f"<b>Hey {query.from_user.mention},\n\nSᴇʟᴇᴄᴛ Aɴ Lᴀɴɢᴜᴀɢᴇ:</b>"
+        await query.message.edit_text(text = cap,
             reply_markup=InlineKeyboardMarkup(btn)
         )
     except MessageNotModified:
@@ -362,26 +377,28 @@ async def select_language(bot, query):
     
 @Client.on_callback_query(filters.regex(r"^select_quality"))
 async def select_quality(bot, query):
-    _, userid= query.data.split("#")
+    _, userid,tm= query.data.split("#")
+    text_mode = True if tm == "True" else False
     if int(userid) not in [query.from_user.id, 0]:
         return await query.answer(script.ALRT_TXT.format(query.from_user.first_name), show_alert=True)
+    cap = f"<b>Hey {query.from_user.mention},\n\nSᴇʟᴇᴄᴛ Aɴ Qᴜᴀʟɪᴛʏ:</b>"
     btn = [[
         InlineKeyboardButton("⇃  ᴄʜᴏᴏsᴇ ϙᴜᴀʟɪᴛʏ  ⇂", callback_data=f"callback_none")
     ],[
-        InlineKeyboardButton("HD/Rips", callback_data=f"add_filter#{userid}#rip"),
-        InlineKeyboardButton("360P", callback_data=f"add_filter#{userid}#360p")
+        InlineKeyboardButton("HD/Rips", callback_data=f"add_filter#{userid}#rip#{text_mode}"),
+        InlineKeyboardButton("360P", callback_data=f"add_filter#{userid}#360p#{text_mode}")
     ],[
-        InlineKeyboardButton("480P", callback_data=f"add_filter#{userid}#480p"),
-        InlineKeyboardButton("720P", callback_data=f"add_filter#{userid}#720p")
+        InlineKeyboardButton("480P", callback_data=f"add_filter#{userid}#480p#{text_mode}"),
+        InlineKeyboardButton("720P", callback_data=f"add_filter#{userid}#720p#{text_mode}")
     ],[
-        InlineKeyboardButton("1080P", callback_data=f"add_filter#{userid}#1080p"),
-        InlineKeyboardButton("4K", callback_data=f"add_filter#{userid}#4k")
+        InlineKeyboardButton("1080P", callback_data=f"add_filter#{userid}#1080p#{text_mode}"),
+        InlineKeyboardButton("4K", callback_data=f"add_filter#{userid}#4k#{text_mode}")
     ],[
-        InlineKeyboardButton("Clear", callback_data=f"add_filter#{userid}#clearquality"),
-        InlineKeyboardButton("Back", callback_data=f"add_filter#{userid}#mainpage")
+        InlineKeyboardButton("Clear", callback_data=f"add_filter#{userid}#clearquality#{text_mode}"),
+        InlineKeyboardButton("Back", callback_data=f"add_filter#{userid}#mainpage#{text_mode}")
     ]]
     try:
-        await query.edit_message_reply_markup(
+        await query.message.edit_text(text = cap,
             reply_markup=InlineKeyboardMarkup(btn)
         )
     except MessageNotModified:
@@ -390,35 +407,37 @@ async def select_quality(bot, query):
 
 @Client.on_callback_query(filters.regex(r"^select_season"))
 async def select_season(bot, query):
-    _, userid= query.data.split("#")
+    _, userid,tm= query.data.split("#")
+    text_mode = True if tm == "True" else False
     if int(userid) not in [query.from_user.id, 0]:
         return await query.answer(script.ALRT_TXT.format(query.from_user.first_name), show_alert=True)
     btn = [[
         InlineKeyboardButton("⇃  ᴄʜᴏᴏsᴇ ꜱᴇᴀꜱᴏɴ  ⇂", callback_data=f"callback_none")
     ],[
-        InlineKeyboardButton("Season 01", callback_data=f"add_filter#{userid}#s01"),
-        InlineKeyboardButton("Season 02", callback_data=f"add_filter#{userid}#s02")
+        InlineKeyboardButton("Season 01", callback_data=f"add_filter#{userid}#s01#{text_mode}"),
+        InlineKeyboardButton("Season 02", callback_data=f"add_filter#{userid}#s02#{text_mode}")
     ],[
-        InlineKeyboardButton("Season 03", callback_data=f"add_filter#{userid}#s03"), 
-        InlineKeyboardButton("Season 04", callback_data=f"add_filter#{userid}#s04")
+        InlineKeyboardButton("Season 03", callback_data=f"add_filter#{userid}#s03#{text_mode}"), 
+        InlineKeyboardButton("Season 04", callback_data=f"add_filter#{userid}#s04#{text_mode}")
     ],[
-        InlineKeyboardButton("Season 05", callback_data=f"add_filter#{userid}#s05"),
-        InlineKeyboardButton("Season 06", callback_data=f"add_filter#{userid}#s06")
+        InlineKeyboardButton("Season 05", callback_data=f"add_filter#{userid}#s05#{text_mode}"),
+        InlineKeyboardButton("Season 06", callback_data=f"add_filter#{userid}#s06#{text_mode}")
     ],[
-        InlineKeyboardButton("Season 07", callback_data=f"add_filter#{userid}#s07"), 
-        InlineKeyboardButton("Season 08", callback_data=f"add_filter#{userid}#s08")
+        InlineKeyboardButton("Season 07", callback_data=f"add_filter#{userid}#s07#{text_mode}"), 
+        InlineKeyboardButton("Season 08", callback_data=f"add_filter#{userid}#s08#{text_mode}")
     ],[
-        InlineKeyboardButton("Season 09", callback_data=f"add_filter#{userid}#s09"),
-        InlineKeyboardButton("Season 10", callback_data=f"add_filter#{userid}#s10")
+        InlineKeyboardButton("Season 09", callback_data=f"add_filter#{userid}#s09#{text_mode}"),
+        InlineKeyboardButton("Season 10", callback_data=f"add_filter#{userid}#s10#{text_mode}")
     ],[
-        InlineKeyboardButton("Season 11", callback_data=f"add_filter#{userid}#s11"), 
-        InlineKeyboardButton("Season 12", callback_data=f"add_filter#{userid}#s12")
+        InlineKeyboardButton("Season 11", callback_data=f"add_filter#{userid}#s11#{text_mode}"), 
+        InlineKeyboardButton("Season 12", callback_data=f"add_filter#{userid}#s12#{text_mode}")
     ],[
-        InlineKeyboardButton("Clear", callback_data=f"add_filter#{userid}#clearseason"),
-        InlineKeyboardButton("Back", callback_data=f"add_filter#{userid}#mainpage")
+        InlineKeyboardButton("Clear", callback_data=f"add_filter#{userid}#clearseason#{text_mode}"),
+        InlineKeyboardButton("Back", callback_data=f"add_filter#{userid}#mainpage#{text_mode}")
     ]]
     try:
-        await query.edit_message_reply_markup(
+        cap = f"<b>Hey {query.from_user.mention},\n\nSᴇʟᴇᴄᴛ Aɴ Sᴇᴀꜱᴏɴ:</b>"
+        await query.message.edit_text(text = cap,
             reply_markup=InlineKeyboardMarkup(btn)
         )
     except MessageNotModified:
@@ -429,12 +448,13 @@ async def select_season(bot, query):
 async def filtering_results(bot, query): 
     user_id = query.from_user.id
     data_parts = query.data.split("#")
-
-    if len(data_parts) == 4: #IMDB RESULT
+    text_mode = False
+    if len(data_parts) == 4 and data_parts[3] not in ["True","False"]: #IMDB RESULT
         _, userid, the_filter, search = data_parts
         search = await process_text(search)
     else:
-        _, userid, the_filter = data_parts
+        _, userid, the_filter,tm = data_parts
+        text_mode = True if tm == "True" else False
         if the_filter == "imdbclse":
             await query.answer(f"🤖 Closing IMDb Results")
             await query.message.delete()
@@ -458,11 +478,13 @@ async def filtering_results(bot, query):
     query.text = search
     if files:
         await db.store_search(user_id, search)
-        btn = await result_btn(files, user_id,bot,search)
-        btn = await navigation_buttons(btn, query, total_pages, offset)
+        btn = await result_btn(files, user_id,bot,search,text_mode)
+        btn = await navigation_buttons(btn, query, total_pages, offset,text_mode)
         try:
             cap = f"<b>Hey {query.from_user.mention},\n\nFᴏᴜɴᴅ Rᴇꜱᴜʟᴛꜱ Fᴏʀ Yᴏᴜʀ\nSearch: </b>{search.title()}"
-            if len(data_parts) == 4:
+            if text_mode:
+                cap = await result_text(files,cap)
+            if len(data_parts) and data_parts[3] not in ["True","False"] == 4:
                 await query.answer(f"🤖 Fetching Results")
                 await query.message.delete()
                 result_msg = await query.message.reply_text(cap, reply_markup=InlineKeyboardMarkup(btn))
@@ -484,6 +506,40 @@ async def filtering_results(bot, query):
             await bot.send_message(chat_id=NO_RES_CNL, text=f"<b>iMDb:</b> <code>{search}</code>")
         return await query.answer(f"No Files Found In database For Your Query. 🔍", show_alert=True)
 
+@Client.on_callback_query(filters.regex(r"^text_mode"))
+async def add_Text_mode(bot, query): 
+    user_id = query.from_user.id
+    data_parts = query.data.split("#")
+    _, userid, offset ,tm= data_parts
+    text_mode = not (True if tm == "True" else False)
+    search = await db.retrieve_latest_search(user_id)
+
+    if int(userid) != user_id:
+        return await query.answer(script.ALRT_TXT.format(query.from_user.first_name), show_alert=True)
+
+    if not search:
+        return await query.answer(script.OLD_ALRT_TXT.format(query.from_user.first_name), show_alert=True)
+    
+
+    files, offset, total_pages = await search_db(search, offset=int(offset)-10)
+
+    query.text = search
+
+    if files:
+        await db.store_search(user_id, search)
+        btn = await result_btn(files, user_id,bot,search,text_mode=text_mode)
+        btn = await navigation_buttons(btn, query, total_pages, offset,text_mode)
+        try:
+            cap = f"<b>Hey {query.from_user.mention},\n\nFᴏᴜɴᴅ Rᴇꜱᴜʟᴛꜱ Fᴏʀ Yᴏᴜʀ\nSearch: </b>{search.title()}"
+            if text_mode:
+                cap = await result_text(files,cap)
+            result_msg = await query.message.edit_text(cap, reply_markup=InlineKeyboardMarkup(btn))
+            await asyncio.sleep(DLT)
+            await result_msg.delete()
+        except MessageNotModified:
+            pass
+    else:
+        return await query.answer(f"No Files Found In database For Your Query. 🔍", show_alert=True)
 
 #UTILITY
 async def process_text(text_caption): #text is filter and processed
