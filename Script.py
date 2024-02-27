@@ -56,7 +56,7 @@ Nᴀᴍᴇ - {}"""
 
 <b>| Time : </b>{}
 <b>| Date : </b>{}
-<b>| Version : </b> V1.9 [ Stable ]
+<b>| Version : </b> V2.1 [ Stable ]
 | #BotRebooted"""
 
     LOGO = """
