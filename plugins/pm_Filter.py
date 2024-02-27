@@ -452,7 +452,6 @@ async def filtering_results(bot, query):
     user_id = query.from_user.id
     data_parts = query.data.split("#")
     text_mode = False
-    print(f"{data_parts[3]}")
     if len(data_parts) == 4 and data_parts[3] not in ["True","False"]: #IMDB RESULT
         _, userid, the_filter, search = data_parts
         search = await process_text(search)
