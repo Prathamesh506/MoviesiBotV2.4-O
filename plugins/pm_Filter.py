@@ -241,7 +241,7 @@ async def result_btn(files, user_id, bot, search,text_mode=False):
 
 async def result_text(files, cap):
     for file in files:
-        text = f"[{get_size(file.file_size)}] {html.unescape(file.caption[:55].strip())}"
+        text = f"[{get_size(file.file_size)}] {html.unescape(file.caption[:70].strip())}"
         url = f"https://telegram.dog/{temp.U_NAME}?start=CodeiBots_{file.file_id}"
         cap += f"<b>\n\n📂 <a href={url}>{text}</a></b>"
     return cap
