@@ -241,7 +241,7 @@ async def result_btn(files, user_id, bot, search,text_mode=False):
 
 async def result_text(files, cap):
     for file in files:
-        text = f"[{get_size(file.file_size)}] {html.unescape(file.caption[:70].strip())}"
+        text = f"[{get_size(file.file_size)}] {html.unescape(file.caption[:55].strip())}"
         url = f"https://telegram.dog/{temp.U_NAME}?start=CodeiBots_{file.file_id}"
         cap += f"<b>\n\n📂 <a href={url}>{text}</a></b>"
     return cap
@@ -1047,7 +1047,7 @@ async def cb_handler(client: Client, query: CallbackQuery):
 ‣ ʟᴀɴɢᴜᴀɢᴇ : [ᴘʏᴛʜᴏɴ 3](https://www.python.org/download/releases/3.0/)
 ‣ ᴅᴀᴛᴀ ʙᴀsᴇ : [ᴍᴏɴɢᴏ ᴅʙ](https://www.mongodb.com/)
 ‣ ʙᴏᴛ sᴇʀᴠᴇʀ : [ᴀᴡs](https://aws.amazon.com/)
-‣ ʙᴜɪʟᴅ sᴛᴀᴛᴜs : v2.1 [ sᴛᴀʙʟᴇ ]</B>
+‣ ʙᴜɪʟᴅ sᴛᴀᴛᴜs : v1.9 [ sᴛᴀʙʟᴇ ]</B>
         """
 
         await query.edit_message_text(
