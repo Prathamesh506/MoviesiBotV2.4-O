@@ -101,7 +101,7 @@ async def auto_filter(client, msg):
 
         #LOCAL AUTOCORRECT
         else:
-            as_msg = await msg.edit_text("<b>Optimizing Search ⚡</b>")
+            as_msg = await result_msg.edit_text("<b>Optimizing Search ⚡</b>")
             temp_detail = search_details.copy()
             temp_detail['title'] = await search_movie_db(temp_detail['title'].lower())
             if temp_detail['title'] is not None:
