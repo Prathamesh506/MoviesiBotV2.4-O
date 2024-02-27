@@ -76,6 +76,7 @@ async def auto_filter(client, msg):
     if is_invalid_message(msg) or contains_url(msg.text):
         return
 
+    as_msg = await msg.reply_text("<b>Searching..</b>")
     #BASED ON PRIVIOUS SEARCH FILTER ADD ON
     if not search_details['title'] and not search_details['year']:
         last_search = await db.retrieve_latest_search(msg.from_user.id)
@@ -85,6 +86,7 @@ async def auto_filter(client, msg):
         search = f"{last_search} {search}"
         search_details, search = detail_extraction(search)
         files, offset, total_pages = await search_db(search.lower(), offset=0)
+        await as_msg.delete()
         if not files:
             await no_resultx(msg, text=f"<i>No Files Found in Database\n<b>For Your Search:</b> {search.title()}</i>")
             return
@@ -95,10 +97,11 @@ async def auto_filter(client, msg):
         files, offset, total_pages = await search_db(search.lower(), offset=0)
         if files:
             await db.store_search(msg.from_user.id, search)
+            await as_msg.delete()
 
         #LOCAL AUTOCORRECT
         else:
-            as_msg = await msg.reply_text("<b>Optimizing Search ⚡</b>")
+            as_msg = await msg.edit_text("<b>Optimizing Search ⚡</b>")
             temp_detail = search_details.copy()
             temp_detail['title'] = await search_movie_db(temp_detail['title'].lower())
             if temp_detail['title'] is not None:
