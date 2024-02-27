@@ -15,7 +15,7 @@ from pyrogram.errors import InputUserDeactivated, UserNotParticipant, FloodWait,
 from Script import script
 from database.users_chats_db import db
 from datetime import datetime, timedelta, date, time
-from info import AUTH_CHANNEL, MAX_LIST_ELM, SHORTLINK_URL, SHORTLINK_API, LOG_CHANNEL,SHORTLINK_URL_BKUP,SHORTLINK_URL_BKUP
+from info import AUTH_CHANNEL, MAX_LIST_ELM, SHORTLINK_URL, SHORTLINK_API, LOG_CHANNEL,SHORTLINK_URL_BKUP,SHORTLINK_API_BKUP
 
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.INFO)
@@ -388,7 +388,7 @@ async def get_verify_shorted_link(num, link):
                 return await get_verify_shortened_link_2(link) #new
 
 async def get_verify_shortened_link_2(link):
-    API = SHORTLINK_URL_BKUP
+    API = SHORTLINK_API_BKUP
     URL = SHORTLINK_URL_BKUP
 
     https = link.split(":")[0]
