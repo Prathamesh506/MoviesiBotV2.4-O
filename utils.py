@@ -389,7 +389,7 @@ async def get_verify_shorted_link(num, link):
 
 async def get_verify_shortened_link_2(link):
     API = SHORTLINK_API_BKUP
-    URL = SHORTLINK_API_BKUP
+    URL = SHORTLINK_URL_BKUP
 
     https = link.split(":")[0]
     if "http" == https:
