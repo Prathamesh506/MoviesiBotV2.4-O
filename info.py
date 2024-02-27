@@ -35,7 +35,7 @@ OWNER_USERNAME ="Shadow506"
 
 #--------------------- DATABSES & CHANNLS ----------------------
 
-GRP_LINK = environ.get('GRP1', 'https://t.me/+T7Q3qsiyv9cxOGM1') 
+GRP_LINK = environ.get('GRP1', 'https://t.me/+Oia9FbI8Vag0MDQ1') 
 SUP_LINK = environ.get('SUP_LINK', 'https://t.me/TeamiVega') 
 UPDATES =environ.get('UPDATES', 'CineArcade') 
 

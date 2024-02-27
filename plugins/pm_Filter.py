@@ -241,7 +241,7 @@ async def result_btn(files, user_id, bot, search,text_mode=False):
 
 async def result_text(files, cap):
     for file in files:
-        text = f"[{get_size(file.file_size)}] {html.unescape(file.caption)}"
+        text = f"[{get_size(file.file_size)}] {html.unescape(file.caption[:55].strip())}"
         url = f"https://telegram.dog/{temp.U_NAME}?start=CodeiBots_{file.file_id}"
         cap += f"<b>\n\n📂 <a href={url}>{text}</a></b>"
     return cap
@@ -449,6 +449,7 @@ async def filtering_results(bot, query):
     user_id = query.from_user.id
     data_parts = query.data.split("#")
     text_mode = False
+    print(f"{data_parts[3]}")
     if len(data_parts) == 4 and data_parts[3] not in ["True","False"]: #IMDB RESULT
         _, userid, the_filter, search = data_parts
         search = await process_text(search)
@@ -484,7 +485,7 @@ async def filtering_results(bot, query):
             cap = f"<b>Hey {query.from_user.mention},\n\nFᴏᴜɴᴅ Rᴇꜱᴜʟᴛꜱ Fᴏʀ Yᴏᴜʀ\nSearch: </b>{search.title()}"
             if text_mode:
                 cap = await result_text(files,cap)
-            if len(data_parts) and data_parts[3] not in ["True","False"] == 4:
+            if len(data_parts) == 4 and data_parts[3] not in ["True","False"]:
                 await query.answer(f"🤖 Fetching Results")
                 await query.message.delete()
                 result_msg = await query.message.reply_text(cap, reply_markup=InlineKeyboardMarkup(btn))
