@@ -17,8 +17,8 @@ def is_enabled(value, default):
 SESSION = environ.get('SESSION', 'MoviesiBotV4')
 API_ID = "3704207"
 API_HASH = environ.get("API_HASH", "8d20e46f5413139329f2ec753f7c482a")
-BOT_TOKEN = environ.get("BOT_TOKEN", "6804042543:AAHsAypo4f7s-mN--uWK6o5pxAs-gsKXB68")#u
-# BOT_TOKEN = environ.get("BOT_TOKEN", "7189786967:AAEEAAkdroqKWYiiRZnGWDL-sPtZdUPFAW8")#s
+# BOT_TOKEN = environ.get("BOT_TOKEN", "6804042543:AAHsAypo4f7s-mN--uWK6o5pxAs-gsKXB68")#u
+BOT_TOKEN = environ.get("BOT_TOKEN", "7189786967:AAEEAAkdroqKWYiiRZnGWDL-sPtZdUPFAW8")#s
 # BOT_TOKEN = environ.get("BOT_TOKEN", "6583753281:AAFtg5TYcGEToa99k0hbOYrrkZXJIXWQXHk")#t
 
 
@@ -56,9 +56,9 @@ DELETE_CHANNELS = [int(ch) if id_pattern.search(ch) else ch for ch in environ.ge
 #-------------------------- IMAGES -------------------------------
 
 #START BTN PICS
-PICS = (environ.get('PICS', 'https://telegra.ph/file/96aa21c66eec5a24b9644.jpg https://telegra.ph/file/84bd10861f905d72adcaf.jpg https://telegra.ph/file/d315eaa802cdb2f790a5a.jpg https://telegra.ph/file/a25ea7f7a746ac1c544e3.jpg https://telegra.ph/file/40d555da9059bb1b0fcd7.jpg https://telegra.ph/file/2efd3b607301d692a634b.jpg https://telegra.ph/file/6e66b7dd8b9b30ace0f93.jpg https://telegra.ph/file/a320d989754c8dea12b02.png')).split()#u
+# PICS = (environ.get('PICS', 'https://telegra.ph/file/96aa21c66eec5a24b9644.jpg https://telegra.ph/file/84bd10861f905d72adcaf.jpg https://telegra.ph/file/d315eaa802cdb2f790a5a.jpg https://telegra.ph/file/a25ea7f7a746ac1c544e3.jpg https://telegra.ph/file/40d555da9059bb1b0fcd7.jpg https://telegra.ph/file/2efd3b607301d692a634b.jpg https://telegra.ph/file/6e66b7dd8b9b30ace0f93.jpg https://telegra.ph/file/a320d989754c8dea12b02.png')).split()#u
 
-# PICS = (environ.get('PICS', 'https://telegra.ph/file/9203de86a8e55d14fa304.jpg https://telegra.ph/file/b9ed75fcef91d7edd629b.jpg https://telegra.ph/file/931798c653da0fa85b182.jpg https://telegra.ph/file/45162159d9b57fe6b270c.jpg ')).split()
+PICS = (environ.get('PICS', 'https://telegra.ph/file/9203de86a8e55d14fa304.jpg https://telegra.ph/file/b9ed75fcef91d7edd629b.jpg https://telegra.ph/file/931798c653da0fa85b182.jpg https://telegra.ph/file/45162159d9b57fe6b270c.jpg ')).split()
 
 IMDB_IMG = environ.get("IMDB_IMG", "https://telegra.ph/file/4b873b46bb4861f78ce6d.jpg")
 WATCH_IMG = environ.get("WATCH_IMG", "https://telegra.ph/file/b9ed75fcef91d7edd629b.jpg")
@@ -66,15 +66,15 @@ WELCOME_PICS = environ.get("WELCOME_PICS", "https://telegra.ph/file/4b873b46bb48
 
 #-------------------------- DATABASE MONGODB -------------------------
 
-DATABASE_URI = environ.get('DATABASE_URI', "mongodb+srv://shadow:shadow506@cluster0.srfnz9s.mongodb.net/?retryWrites=true&w=majority")#u
-DATABASE_NAME = environ.get('DATABASE_NAME', "Cluster0")
-COLLECTION_NAME = environ.get('COLLECTION_NAME', 'MoviesiBotV4')
-
-# DATABASE_URI = environ.get('DATABASE_URI', "mongodb+srv://VegaMoviesiBot:VegaMoviesiBot@cluster0.mcdc3bh.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0")#s
+# DATABASE_URI = environ.get('DATABASE_URI', "mongodb+srv://shadow:shadow506@cluster0.srfnz9s.mongodb.net/?retryWrites=true&w=majority")#u
 # DATABASE_NAME = environ.get('DATABASE_NAME', "Cluster0")
-# COLLECTION_NAME = environ.get('COLLECTION_NAME', 'iArchive')
+# COLLECTION_NAME = environ.get('COLLECTION_NAME', 'MoviesiBotV4')
 
-# DATABASE_URI = environ.get('DATABASE_URI', "mongodb+srv://MoviesiBotV6:MoviesiBotV5@cluster0.zs9smub.mongodb.net/?retryWrites=true&w=majority")#u
+DATABASE_URI = environ.get('DATABASE_URI', "mongodb+srv://VegaMoviesiBot:VegaMoviesiBot@cluster0.mcdc3bh.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0")#s
+DATABASE_NAME = environ.get('DATABASE_NAME', "Cluster0")
+COLLECTION_NAME = environ.get('COLLECTION_NAME', 'iArchive')
+
+# DATABASE_URI = environ.get('DATABASE_URI', "mongodb+srv://MoviesiBotV6:MoviesiBotV5@cluster0.zs9smub.mongodb.net/?retryWrites=true&w=majority")#t
 # DATABASE_NAME = environ.get('DATABASE_NAME', "Cluster0")
 # COLLECTION_NAME = environ.get('COLLECTION_NAME', 'MoviesiBotV4')
 
