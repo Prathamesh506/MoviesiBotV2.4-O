@@ -21,9 +21,9 @@ from fuzzywuzzy import fuzz, process
 from Script import script
 from plugins.iwatch import watch_movies_filter
 from utils import get_size, is_subscribed, temp, check_verification, get_token
-from info import ADMINS, AUTH_CHANNEL, NO_RES_CNL,GRP_LINK,SUPPORT_CHAT_ID,DOWNLOAD_TIPS, CUSTOM_FILE_CAPTION, IS_VERIFY, HOW_TO_VERIFY, DLT,IMDB_IMG,PROTECT_CONTENT
+from info import ADMINS, AUTH_CHANNEL, NO_RES_CNL,GRP_LINK,SUPPORT_CHAT_ID,DOWNLOAD_TIPS, CUSTOM_FILE_CAPTION, IS_VERIFY, HOW_TO_VERIFY, DLT,IMDB_IMG,PROTECT_CONTENT,UPIQRPIC
 from database.users_chats_db import db
-from database.watch import store_movies_from_text,does_movie_exxists,search_movie_db,get_watch_movies
+from database.watch import store_movies_from_text,does_movie_exxists,search_movie_db
 from database.ia_filterdb import Media, get_file_details,search_db,total_results_count,send_filex
 
 lock = asyncio.Lock()
@@ -67,16 +67,15 @@ async def support_grp_filter(msg):
 
 #AUTO FILTER
 async def auto_filter(client, msg):
-    orgmsg = msg
     ptext = await process_text(msg.text)
     search_details, search = detail_extraction(ptext, type=True)
-    popularty_search = search_details["title"]
     files = []
 
     if is_invalid_message(msg) or contains_url(msg.text):
         return
 
     as_msg = await msg.reply_text("<b>Searching..</b>")
+
     #BASED ON PRIVIOUS SEARCH FILTER ADD ON
     if not search_details['title'] and not search_details['year']:
         last_search = await db.retrieve_latest_search(msg.from_user.id)
@@ -133,7 +132,7 @@ async def auto_filter(client, msg):
         btn = await navigation_buttons(btn, msg, total_pages, offset)
         cap = f"<b>Hey {msg.from_user.mention},\n\nFᴏᴜɴᴅ Rᴇꜱᴜʟᴛꜱ Fᴏʀ Yᴏᴜʀ\nSearch:</b> {search.title()}"
         result_msg = await msg.reply_text(cap, reply_markup=InlineKeyboardMarkup(btn))
-        await popularity_store(popularty_search)
+        await popularity_store(search)
 
 
     if not files:
@@ -170,17 +169,17 @@ async def popularity_store(query):
 
     try:
         # Search for the movie on IMDb
-        imdb_res_up = search_movie(query)
-        imdb_res = await process_text(imdb_res_up[0]) if imdb_res_up else None
+        imdb_result,_ = await imdb_S1(query.lower())
         
-        if not imdb_res:
-            return
+        if imdb_result:
+            imdb_result = await process_text(imdb_result)
+
         
         # Calculate similarity score between query and IMDb result
-        score = fuzz.token_sort_ratio(query.lower(), imdb_res.lower())
+        score = fuzz.token_sort_ratio(query.lower(), imdb_result.lower())
         
         if score >= 95:
-            input_str = f"2,{imdb_res.lower()},trending,1"
+            input_str = f"2,{imdb_result.lower()},trending,1"
             await store_movies_from_text(input_str)
     except Exception as e:
         print(f"ERROR 2: TRENDING MOVIES\n{e}")
@@ -295,7 +294,7 @@ def imdb_btn(results, user_id):#IMDB result btns
 @Client.on_callback_query(filters.regex(r"^next"))
 async def next_page(bot, query):
     try:
-        _, req, offset,tm = query.data.split("_")
+        _,req, offset,tm = query.data.split("_")
         text_mode = True if tm == "True" else False
         offset = int(offset)
         req = int(req)
@@ -449,19 +448,17 @@ async def select_season(bot, query):
 
 @Client.on_callback_query(filters.regex(r"^add_filter"))
 async def filtering_results(bot, query): 
+
+    text_mode = False
     user_id = query.from_user.id
     data_parts = query.data.split("#")
-    text_mode = False
-    if len(data_parts) == 4 and data_parts[3] not in ["True","False"]: #IMDB RESULT
+    
+    if data_parts[3] not in ["True","False"]:
         _, userid, the_filter, search = data_parts
         search = await process_text(search)
     else:
         _, userid, the_filter,tm = data_parts
         text_mode = True if tm == "True" else False
-        if the_filter == "imdbclse":
-            await query.answer(f"🤖 Closing IMDb Results")
-            await query.message.delete()
-            
         search = await db.retrieve_latest_search(user_id)
 
     if int(userid) != user_id:
@@ -472,15 +469,18 @@ async def filtering_results(bot, query):
     
     if the_filter in ["clearlanguage", "clearquality", "clearseason"]:
         search = clear_filter(search, the_filter)
+
     elif the_filter != "mainpage":
         search = f"{search} {the_filter}"
-        details, search = detail_extraction(search)
+        _, search = detail_extraction(search)
 
     files, offset, total_pages = await search_db(search, offset=0)
 
     query.text = search
+    
     if files:
         await db.store_search(user_id, search)
+        
         btn = await result_btn(files, user_id,bot,search,text_mode)
         btn = await navigation_buttons(btn, query, total_pages, offset,text_mode)
         try:
@@ -774,15 +774,15 @@ def extract_season(text):
         return None
 
 async def loading_msg(query):
-    await asyncio.sleep(0.1)
+    await asyncio.sleep(0.05)
     await query.edit_message_text(
                 text="▰▱▱"
             )
-    await asyncio.sleep(0.1)
+    await asyncio.sleep(0.05)
     await query.edit_message_text(
                 text="▰▰▱"
             )
-    await asyncio.sleep(0.08)
+    await asyncio.sleep(0.05)
     await query.edit_message_text(
                 text="▰▰▰"
             )
@@ -1039,7 +1039,7 @@ async def cb_handler(client: Client, query: CallbackQuery):
             InlineKeyboardButton('sᴏᴜʀᴄᴇ ᴄᴏᴅᴇ',callback_data="private_source" )
         ], [
             InlineKeyboardButton('ᴅᴍᴄᴀ', callback_data="start_dmca"),
-            InlineKeyboardButton('ʙᴀᴄᴋ', callback_data="start_home_page")  # Corrected the URL here
+            InlineKeyboardButton('ʙᴀᴄᴋ', callback_data="start_home_page")  
         ]]
         cap = f"""<B>───[ ᴅᴇᴛᴀɪʟꜱ ]───
 
@@ -1072,5 +1072,13 @@ async def cb_handler(client: Client, query: CallbackQuery):
                     text=script.START_TXT.format(query.from_user.mention, temp.B_NAME),
                     reply_markup=InlineKeyboardMarkup(buttons)
                 )
-        
+    
+    elif query.data == "sendqrcode":
+        qr = await query.message.reply_photo(
+            photo=UPIQRPIC,
+            parse_mode=enums.ParseMode.HTML
+        )
+        await query.answer() 
+        await asyncio.sleep(60)
+        await qr.delete()
     else: return
