@@ -330,4 +330,3 @@ async def send_filex(query_ep,user_id,client):
         return True
     except: 
         return False
-
