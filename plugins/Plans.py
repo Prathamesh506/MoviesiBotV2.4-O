@@ -42,7 +42,6 @@ def premium_Plans(bot, update):
 def strat_callback(bot, update):
   update.message.edit(pay_msg.format(), reply_markup=pay_btn(bot, update.message), parse_mode=pyrogram.enums.ParseMode.HTML, disable_web_page_preview=True)
 
-
 @Client.on_callback_query(pyrogram.filters.regex("bckpre"))
 async def back_org(bot, update):
     status = await get_verify_status(update.from_user.id)
@@ -75,7 +74,7 @@ async def back_org(bot, update):
         else:
             as_msg = await update.reply_text("Date or time not found in status.")
     except:
-        pass
+        await update.answer() 
 
 @Client.on_message(pyrogram.filters.private & pyrogram.filters.command(["plan"]))
 async def started_command(bot, update):
@@ -125,7 +124,7 @@ async def user_stas(bot, update):
 def pay_btn(bot, update):
   bot = bot.get_me()
   buttons = [[
-   pyrogram.types.InlineKeyboardButton("ᴏʀ ᴄᴏᴅᴇ ▣", url=f"https://telegra.ph/file/a2d3a48d65c5bb675e8c1.jpg"),
+   pyrogram.types.InlineKeyboardButton("ᴏʀ ᴄᴏᴅᴇ ▣", callback_data="sendqrcode"),
    pyrogram.types.InlineKeyboardButton("Back ",callback_data="bckpre" ),
    ]]
   return pyrogram.types.InlineKeyboardMarkup(buttons)
@@ -134,7 +133,7 @@ def pay_btn2(bot, update):
   bot = bot.get_me()
   userid= update.from_user.id
   buttons = [[
-   pyrogram.types.InlineKeyboardButton("ᴏʀ ᴄᴏᴅᴇ ▣", url=f"https://telegra.ph/file/a2d3a48d65c5bb675e8c1.jpg"),
+   pyrogram.types.InlineKeyboardButton("ᴏʀ ᴄᴏᴅᴇ ▣", callback_data="sendqrcode"),
    pyrogram.types.InlineKeyboardButton("Close ",callback_data=f"close_data#{userid}" ),
    ]]
   return pyrogram.types.InlineKeyboardMarkup(buttons)
