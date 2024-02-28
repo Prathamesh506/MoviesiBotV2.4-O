@@ -1,10 +1,10 @@
 class script(object):
+
     START_TXT = """𝚑𝚎𝚢👋, <b>{}
 
 {}, ɪs ᴀᴛ ʏᴏᴜʀ sᴇʀᴠɪᴄᴇ!
 
 ғᴇᴇʟ ғʀᴇᴇ ᴛᴏ ʀᴇϙᴜᴇsᴛ ᴀɴʏ ᴍᴏᴠɪᴇs, ɪ'ʟʟ ᴘʀᴏᴠɪᴅᴇ ᴛʜᴇᴍ. ʏᴏᴜ ᴄᴀɴ ᴀᴅᴅ ᴍᴇ ᴛᴏ ʏᴏᴜʀ ɢʀᴏᴜᴘ ᴏʀ ᴊᴏɪɴ ᴏᴜʀs.‌</b>"""
-
 
     COMD_TXT = """ʜᴇʟᴘ: Aᴅᴍɪɴ Mᴏᴅs
 <b>ɴᴏᴛᴇ:</b>
@@ -20,18 +20,25 @@ Cᴏᴍᴍᴀɴᴅs Aɴᴅ Usᴀɢᴇ:
 • /request - <code>Tᴏ sᴇɴᴅ ᴀ Mᴏᴠɪᴇ/Sᴇʀɪᴇs ʀᴇᴏ̨ᴜᴇsᴛ ᴛᴏ ʙᴏᴛ ᴀᴅᴍɪɴs. Oɴʟʏ ᴡᴏʀᴋs ᴏɴ sᴜᴘᴘᴏʀᴛ ɢʀᴏᴜᴘ.</code>
 • /kill - <code>Tᴏ ᴅᴇʟᴇᴛᴇ CᴀᴍRɪᴘ ᴀɴᴅ PʀᴇDVD Fɪʟᴇs ғʀᴏᴍ ᴛʜᴇ ʙᴏᴛ's ᴅᴀᴛᴀʙᴀsᴇ.</code>"""
 
+    STATUS_TXT = """
+<b>BOT STATUS</b>
 
-    STATUS_TXT = """<b>BOT STATUS</b>\n\n| Users Verified:  {}\n| Total Files:  {}\n| Total Users:  {}\n| Total Chats:  {}\n| Used Storage:  {}\n| Free Storage:  {}\n"""
+| Users Verified: {}
+| Total Files: {}
+| Total Users: {}
+| Total Chats: {}
+| Used Storage: {}
+| Free Storage: {}
+"""
 
-    
     SYS_STATUS_TXT = """
 <b>SYSTEM STATUS</b>
 
-| CPU Usage:  {}%
-| RAM Usage:  {}%
-| Disk Usage:  {}%
-| Disk Free:  {}Gb
-| Uptime:  {}
+| CPU Usage: {}%
+| RAM Usage: {}%
+| Disk Usage: {}%
+| Disk Free: {}Gb
+| Uptime: {}
 """
 
     LOG_TEXT_G = """#NewGroup
@@ -43,14 +50,13 @@ Aᴅᴅᴇᴅ Bʏ - {}"""
 ID - <code>{}</code>
 Nᴀᴍᴇ - {}"""
 
-    ALRT_TXT = """This Isn't Your Request"""
+    ALRT_TXT = """⚠️ Tʜɪs Is Nᴏᴛ Yᴏᴜʀ Rᴇϙᴜᴇsᴛ."""
 
-    OLD_ALRT_TXT = """You Are Using One Of My Old Messages, Please Make A New Request"""
+    OLD_ALRT_TXT = """⚠️ Rᴇϙᴜᴇsᴛ Expired! Rᴇϙᴜᴇsᴛ Aɢᴀɪɴ."""
 
     MELCOW_ENG = """<b>Hᴇʟʟᴏ {} 😍, Aɴᴅ Wᴇʟᴄᴏᴍᴇ Tᴏ {} Gʀᴏᴜᴘ ❤️</b>"""
 
     CAPTION = """<i><b>{file_caption} ~ VegaMoviesX\n\nJOIN 💎 : @CiNEARCADE</i></b>"""
-
 
     RESTART_TXT = """<b>{} Is Now Online!</b>
 
