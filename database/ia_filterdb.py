@@ -211,9 +211,19 @@ async def search_db(query, offset,max =False):
     else:
         max_results=10
     try:
+        details,_ = detail_extraction(query)
+
+        language_abbreviations = {"dual":"hindi english","multi":"hindi english tamil telugu"}
+        query = re.sub(
+        r"\b(?:dual|multi)\b",
+        lambda match: language_abbreviations.get(match.group(0), match.group(0)),
+        query)
+
         words = query.strip().split()
-        replacement_dict = {'dual': 'hindi english', 'multi': 'hindi english tamil telugu',"hd":"rip"}
-        words = [replacement_dict.get(word, word) for word in words]
+        if details['title']:
+           words.append(f"{details['title']}")
+           print(words)
+        
         regex_patterns = [fr"{re.escape(word)}" if word in ["sub", "rip"] else fr"\b{re.escape(word)}" for word in words]
 
         match_filters = [
@@ -249,9 +259,14 @@ async def search_db(query, offset,max =False):
 
 async def total_results_count(query):
     try:
+        language_abbreviations = {"dual":"hindi english","multi":"hindi english tamil telugu"}
+        query = re.sub(
+        r"\b(?:dual|multi)\b",
+        lambda match: language_abbreviations.get(match.group(0), match.group(0)),
+        query)
+
         words = query.strip().split()
-        replacement_dict = {'dual': 'hindi english', 'multi': 'hindi english tamil telugu',"hd":"rip"}
-        words = [replacement_dict.get(word, word) for word in words]
+        
         regex_patterns = [fr"{re.escape(word)}" if word in ["sub", "rip"] else fr"\b{re.escape(word)}" for word in words]
 
         match_filters = [
@@ -271,10 +286,14 @@ async def total_results_count(query):
 
 async def send_filex(query_ep,user_id,client):
     max_results = 1
-    words = query_ep.strip().split()
-    replacement_dict = {'dual': 'hindi english', 'multi': 'hindi english tamil telugu'}
 
-    words = [replacement_dict.get(word, word) for word in words]
+    language_abbreviations = {"dual":"hindi english","multi":"hindi english tamil telugu"}
+    query_ep = re.sub(
+    r"\b(?:dual|multi)\b",
+    lambda match: language_abbreviations.get(match.group(0), match.group(0)),
+    query_ep)
+    
+    words = query_ep.strip().split()
     regex_patterns = [re.compile(fr"\b{re.escape(word)}", re.IGNORECASE) for word in words]
 
     match_filters = [
@@ -317,3 +336,90 @@ async def send_filex(query_ep,user_id,client):
     except: 
         return False
 
+
+#utility
+def detail_extraction(text,type=False): #extractes details title ans all
+
+    languages = ["english", "hindi", "tamil", "telugu", "kannada", "malayalam", "marathi", "multi", "dual","kan","mal","mar"]
+    qualities = ["720p", "1080p", "480p", "4k", "360p","rip","hd"]
+    subs = ["sub", "esub", "msub", "esubs", "msubs"]
+    extra_words = ["combined"]
+
+    # Define patterns for 's01', 'e01', 'part 1', and a four-digit number (year)
+    season_pattern = re.compile(r'\bs\d+', re.IGNORECASE)
+    episode_pattern = re.compile(r'\be\d+', re.IGNORECASE)
+    # part_pattern = re.compile(r'part\s*(\d+)', re.IGNORECASE)
+    year_pattern = re.compile(r'\b\d{4}\b')
+
+    details = {
+        'title': text,
+        'year': None,
+        'season': None,
+        'episode': None,
+        'language': None,
+        'quality': None,
+        'sub': None,
+        'comb':None
+    }
+
+    # Extract patterns for language
+    if type:
+        found_languages = []
+        for word in text.split():
+            if word in languages:
+                found_languages.append(word)
+
+        if found_languages:
+            details['language'] = ' '.join(found_languages)
+        else:
+            details['language'] = None
+            
+    else: #only one lang
+        for word in text.split():
+            for lang in languages:
+                if lang == word:
+                    details['language'] = lang
+
+    # Extract patterns for quality
+    for word in text.split():
+        for quality in qualities:
+            if quality == word:
+                details['quality'] = quality
+
+    # Extract patterns for subtitles
+    for word in text.split():
+        for sub in subs:
+            if sub == word:
+                details['sub'] = sub
+
+    # Extract pattern for year
+    match_year = year_pattern.search(text)
+    if match_year:
+        details['year'] = match_year.group()
+        details['title'] = re.sub(year_pattern, '', details['title']).strip()
+
+    # Extract patterns for season
+    match_season = season_pattern.findall(text)
+    if match_season:
+        details['season'] = match_season[-1]
+        details['title'] = re.sub(season_pattern, '', details['title']).strip()
+
+    # Extract patterns for episode
+    match_episode = episode_pattern.findall(text)
+    if match_episode:
+        details['episode'] = match_episode[-1]
+        details['title'] = re.sub(episode_pattern, '', details['title']).strip()
+
+     # Extract 'combined'
+    details['comb'] = "combined" if "combined" in text.lower() else None
+
+    # Remove all qualities, subtitles, year, and other languages from the title
+    for term in qualities + subs + languages + extra_words:
+        matches = re.findall(r'\b(?:{})\b'.format(term), details['title'])
+        if matches:
+            details['title'] = re.sub(r'\b(?:{})\b'.format(term), '', details['title']).strip()
+    formatted_info = ' '.join(str(value) for value in details.values() if value is not None)
+    formatted_info = formatted_info.replace("'", '').replace('{', '').replace('}', '')
+    # Remove extra spaces between words
+    formatted_info = re.sub(r'\s+', ' ', formatted_info)
+    return details , formatted_info
