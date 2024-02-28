@@ -134,7 +134,6 @@ async def auto_filter(client, msg):
         result_msg = await msg.reply_text(cap, reply_markup=InlineKeyboardMarkup(btn))
         await popularity_store(search)
 
-
     if not files:
         imdb_msg = await as_msg.edit_text("<b>Searching On IMDb..</b>")
         if not imdb_res_list:
@@ -293,6 +292,9 @@ def imdb_btn(results, user_id):#IMDB result btns
 
 @Client.on_callback_query(filters.regex(r"^next"))
 async def next_page(bot, query):
+    if (total_splits := len(query.data.split("_"))) == 3:
+        await query.answer(script.OLD_ALRT_TXT.format(query.from_user.first_name), show_alert=True)
+        return
     try:
         _,req, offset,tm = query.data.split("_")
         text_mode = True if tm == "True" else False
@@ -305,7 +307,7 @@ async def next_page(bot, query):
             return await query.answer(script.ALRT_TXT.format(query.from_user.first_name), show_alert=True)
         
     except ValueError:
-        logger.exception('ERROR: #NEXT BUTTON')
+        logger.error("ERROR 1 ! NEXT_PAGE")
         return 
     
     try:
@@ -323,7 +325,9 @@ async def next_page(bot, query):
         return
 
     btn = await result_btn(files, req, bot, search,text_mode)
+
     query.text = search
+
     btn = await navigation_buttons(btn, query, total_pages, n_offset,text_mode)
     try:
         if not text_mode:
@@ -331,14 +335,11 @@ async def next_page(bot, query):
         else:
             cap = f"<b>Hey {query.from_user.mention},\n\nFᴏᴜɴᴅ Rᴇꜱᴜʟᴛꜱ Fᴏʀ Yᴏᴜʀ\nSearch: </b>{search.title()}"
             cap = await result_text(files,cap)
-            result_msg = await query.message.edit_text(cap, reply_markup=InlineKeyboardMarkup(btn))
-    except pyrogram.errors.exceptions.flood_420.FloodWait as e:
-        await query.answer("Flood Wait 15s ⌛")
-    except pyrogram.errors.exceptions.bad_request_400.QueryIdInvalid as e:
-        logger.error("Query ID is invalid or expired.")
-        return  # Don't proceed further if the query ID is invalid
+            await query.message.edit_text(cap, reply_markup=InlineKeyboardMarkup(btn))
     except MessageNotModified:
-        pass
+            await query.answer() 
+    except Exception as e:
+        logger.error("ERROR 2 ! NEXT_PAGE: %s", e)
     await query.answer()
 
 @Client.on_callback_query(filters.regex(r"^select_lang"))
@@ -483,14 +484,19 @@ async def filtering_results(bot, query):
         
         btn = await result_btn(files, user_id,bot,search,text_mode)
         btn = await navigation_buttons(btn, query, total_pages, offset,text_mode)
+
         try:
             cap = f"<b>Hey {query.from_user.mention},\n\nFᴏᴜɴᴅ Rᴇꜱᴜʟᴛꜱ Fᴏʀ Yᴏᴜʀ\nSearch: </b>{search.title()}"
             if text_mode:
                 cap = await result_text(files,cap)
-            if len(data_parts) == 4 and data_parts[3] not in ["True","False"]:
+
+            if data_parts[3] not in ["True","False"]:
+
                 await query.answer(f"🤖 Fetching Results")
                 await query.message.delete()
+
                 result_msg = await query.message.reply_text(cap, reply_markup=InlineKeyboardMarkup(btn))
+
                 await asyncio.sleep(DLT)
                 await result_msg.delete()
             else:
@@ -498,35 +504,43 @@ async def filtering_results(bot, query):
                     text=cap,
                     reply_markup=InlineKeyboardMarkup(btn)
                 )
+
                 if the_filter in ["clearlanguage", "clearquality", "clearseason"]:
                     await query.answer(f"🤖 Removed {the_filter[5:].title()} Filter")
+
                 elif the_filter != "mainpage":
                     await query.answer(f"🤖 Results For : {the_filter.title()}")
+                    
         except MessageNotModified:
-            pass
+            await query.answer() 
+        except Exception as e:
+            logger.error("ERROR 1 ! THE_FILTER: %s", e)
     else:
         if len(data_parts) == 4:
             await bot.send_message(chat_id=NO_RES_CNL, text=f"<b>iMDb:</b> <code>{search}</code>")
-        return await query.answer(f"No Files Found In database For Your Query. 🔍", show_alert=True)
+        try: 
+            return await query.answer(f"⚠️ Nᴏ Fɪʟᴇs Fᴏᴜɴᴅ Iɴ Dᴀᴛᴀʙᴀsᴇ.", show_alert=True)
+        except:
+            await query.answer() 
 
 @Client.on_callback_query(filters.regex(r"^text_mode"))
-async def add_Text_mode(bot, query): 
+async def add_Text_mode(bot, query):
+
     user_id = query.from_user.id
     data_parts = query.data.split("#")
+
     _, userid, offset ,tm= data_parts
     text_mode = not (True if tm == "True" else False)
-    search = await db.retrieve_latest_search(user_id)
 
     if int(userid) != user_id:
         return await query.answer(script.ALRT_TXT.format(query.from_user.first_name), show_alert=True)
+    
+    search = await db.retrieve_latest_search(user_id)
 
     if not search:
         return await query.answer(script.OLD_ALRT_TXT.format(query.from_user.first_name), show_alert=True)
     
-
     files, offset, total_pages = await search_db(search, offset=int(offset)-10)
-
-    query.text = search
 
     if files:
         await db.store_search(user_id, search)
@@ -540,9 +554,14 @@ async def add_Text_mode(bot, query):
             await asyncio.sleep(DLT)
             await result_msg.delete()
         except MessageNotModified:
-            pass
+            await query.answer() 
+        except Exception as e:
+            logger.error("ERROR 1 ! TEXT_MODE : %s", e)
     else:
-        return await query.answer(f"No Files Found In database For Your Query. 🔍", show_alert=True)
+        try: 
+            return await query.answer(f"⚠️ Nᴏ Fɪʟᴇs Fᴏᴜɴᴅ Iɴ Dᴀᴛᴀʙᴀsᴇ.", show_alert=True)
+        except:
+            await query.answer() 
 
 #UTILITY
 async def process_text(text_caption): #text is filter and processed
