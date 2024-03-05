@@ -83,8 +83,12 @@ COLLECTION_NAME = environ.get('COLLECTION_NAME', 'MoviesiBotV4')
 IS_VERIFY = is_enabled((environ.get('IS_VERIFY', 'True')), True) 
 SHORTLINKS = is_enabled((environ.get('SHORTLINKS', 'False')), False)
 
-SHORTLINK_URL = environ.get('SHORTLINK_URL', 'easysky.in')
-SHORTLINK_API = environ.get('SHORTLINK_API', 'a1a45bfd3be9e758537846a3617b24c5d8be7d34')
+SHORTLINK_URL = environ.get('SHORTLINK_URL', 'afly.in')
+SHORTLINK_API = environ.get('SHORTLINK_API', '77e4228021224fb293f6be6afc41d10c01087800')
+
+
+# SHORTLINK_URL = environ.get('SHORTLINK_URL', 'easysky.in')
+# SHORTLINK_API = environ.get('SHORTLINK_API', 'a1a45bfd3be9e758537846a3617b24c5d8be7d34')
 
 #SECOUNDY BACKUP SHORTNER IN CASE OF PRIMARY WEB FAILUAR
 SHORTLINK_URL_BKUP = environ.get('SHORTLINK_URL_BKUP', 'tnshort.net')
