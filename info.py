@@ -17,6 +17,7 @@ def is_enabled(value, default):
 SESSION = environ.get('SESSION', 'MoviesiBotV4')
 API_ID = "3704207"
 API_HASH = environ.get("API_HASH", "8d20e46f5413139329f2ec753f7c482a")
+
 # BOT_TOKEN = environ.get("BOT_TOKEN", "6804042543:AAHsAypo4f7s-mN--uWK6o5pxAs-gsKXB68")#u
 BOT_TOKEN = environ.get("BOT_TOKEN", "7189786967:AAEEAAkdroqKWYiiRZnGWDL-sPtZdUPFAW8")#s
 # BOT_TOKEN = environ.get("BOT_TOKEN", "6583753281:AAFtg5TYcGEToa99k0hbOYrrkZXJIXWQXHk")#t
@@ -83,12 +84,12 @@ COLLECTION_NAME = environ.get('COLLECTION_NAME', 'iArchive')
 IS_VERIFY = is_enabled((environ.get('IS_VERIFY', 'True')), True) 
 SHORTLINKS = is_enabled((environ.get('SHORTLINKS', 'False')), False)
 
-SHORTLINK_URL = environ.get('SHORTLINK_URL', 'afly.in')
-SHORTLINK_API = environ.get('SHORTLINK_API', '77e4228021224fb293f6be6afc41d10c01087800')
+# SHORTLINK_URL = environ.get('SHORTLINK_URL', 'afly.in')
+# SHORTLINK_API = environ.get('SHORTLINK_API', '77e4228021224fb293f6be6afc41d10c01087800')
 
 
-# SHORTLINK_URL = environ.get('SHORTLINK_URL', 'easysky.in')
-# SHORTLINK_API = environ.get('SHORTLINK_API', 'a1a45bfd3be9e758537846a3617b24c5d8be7d34')
+SHORTLINK_URL = environ.get('SHORTLINK_URL', 'easysky.in')
+SHORTLINK_API = environ.get('SHORTLINK_API', 'a1a45bfd3be9e758537846a3617b24c5d8be7d34')
 
 #SECOUNDY BACKUP SHORTNER IN CASE OF PRIMARY WEB FAILUAR
 SHORTLINK_URL_BKUP = environ.get('SHORTLINK_URL_BKUP', 'tnshort.net')
