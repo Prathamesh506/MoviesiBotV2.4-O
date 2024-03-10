@@ -38,7 +38,7 @@ async def start(client, message):
     
     #NEW USER
     if not await db.is_user_exist(message.from_user.id):
-        # await verify_new(client,message.from_user.id)
+        await verify_new(client,message.from_user.id)
         await db.add_user(message.from_user.id, message.from_user.first_name)
         await client.send_message(LOG_CHANNEL, script.LOG_TEXT_P.format(message.from_user.id, message.from_user.mention))
     
