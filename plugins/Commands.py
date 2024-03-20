@@ -14,7 +14,7 @@ from pyrogram.types import InlineKeyboardButton, InlineKeyboardMarkup
 from database.ia_filterdb import Media, get_file_details, unpack_new_file_id
 from database.users_chats_db import db
 from info import CHANNELS,DLT, ADMINS,GRP_LINK,REQST_CHANNEL,AUTH_CHANNEL, LOG_CHANNEL, PICS, CUSTOM_FILE_CAPTION, PROTECT_CONTENT, IS_VERIFY, HOW_TO_VERIFY
-from utils import  get_size, is_subscribed, temp, verify_user, check_token, check_verification, get_token,verify_VIP
+from utils import  get_size, is_subscribed, temp, verify_user, check_token, check_verification, get_token,verify_VIP,verify_new
 from  plugins.pm_Filter import send_eps_files
 
 logger = logging.getLogger(__name__)
