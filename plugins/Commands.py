@@ -481,9 +481,9 @@ async def requests(bot, message):
 #RESTART 
 @Client.on_message(filters.command("restart") & filters.user(ADMINS))
 async def stop_button(bot, message):
-    msg = await bot.send_message(text="**🔄 Bot is Restarting ...**", chat_id=message.chat.id)       
+    msg = await bot.send_message(text="**Rebooting**", chat_id=message.chat.id)       
     await asyncio.sleep(3)
-    await msg.edit("**✅ 𝙱ot Restarted Succesfully**")
+    await msg.edit("**𝙱ot Restarted ✅ **")
     os.execl(sys.executable, sys.executable, *sys.argv)
 
 #VERIFY COUNT
