@@ -5,6 +5,7 @@ import random
 import psutil
 import logging
 import asyncio
+import time, sys
 from Script import script
 from datetime import datetime,timedelta
 from pyrogram import Client, filters, enums
@@ -476,7 +477,15 @@ async def requests(bot, message):
         await message.reply_text("<b>Yᴏᴜʀ ʀᴇᴏ̨ᴜᴇsᴛ ʜᴀs ʙᴇᴇɴ ᴀᴅᴅᴇᴅ! Pʟᴇᴀsᴇ ᴡᴀɪᴛ ғᴏʀ sᴏᴍᴇ ᴛɪᴍᴇ.</b>", reply_markup=InlineKeyboardMarkup(btn2))
     else:
         return
-    
+
+#RESTART 
+@Client.on_message(filters.command("restart") & filters.user(ADMINS))
+async def stop_button(bot, message):
+    msg = await bot.send_message(text="**🔄 Bot is Restarting ...**", chat_id=message.chat.id)       
+    await asyncio.sleep(3)
+    await msg.edit("**✅ 𝙱ot Restarted Succesfully**")
+    os.execl(sys.executable, sys.executable, *sys.argv)
+
 #VERIFY COUNT
 @Client.on_message(filters.command('report') & filters.user(ADMINS))
 async def verify_month(bot, message):
