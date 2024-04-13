@@ -71,17 +71,17 @@ WELCOME_PICS = environ.get("WELCOME_PICS", "https://telegra.ph/file/4b873b46bb48
 # DATABASE_NAME = environ.get('DATABASE_NAME', "Cluster0")
 # COLLECTION_NAME = environ.get('COLLECTION_NAME', 'MoviesiBotV4')
 
-# DATABASE_URI = environ.get('DATABASE_URI', "mongodb+srv://VegaMoviesibot:VegaMoviesibot@cluster0.kzx22pz.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0")#u
-# DATABASE_NAME = environ.get('DATABASE_NAME', "Cluster0")
-# COLLECTION_NAME = environ.get('COLLECTION_NAME', 'MoviesiBotV4')
+DATABASE_URI = environ.get('DATABASE_URI', "mongodb+srv://VegaMoviesibot:VegaMoviesibot@cluster0.kzx22pz.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0")#u
+DATABASE_NAME = environ.get('DATABASE_NAME', "Cluster0")
+COLLECTION_NAME = environ.get('COLLECTION_NAME', 'MoviesiBotV4')
 
 # DATABASE_URI = environ.get('DATABASE_URI', "mongodb+srv://VegaMoviesiBot:VegaMoviesiBot@cluster0.mcdc3bh.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0")#s
 # DATABASE_NAME = environ.get('DATABASE_NAME', "Cluster0")
 # COLLECTION_NAME = environ.get('COLLECTION_NAME', 'iArchive')
 
-DATABASE_URI = environ.get('DATABASE_URI', "mongodb+srv://MoviesiBotV6:MoviesiBotV5@cluster0.zs9smub.mongodb.net/?retryWrites=true&w=majority")#t
-DATABASE_NAME = environ.get('DATABASE_NAME', "Cluster0")
-COLLECTION_NAME = environ.get('COLLECTION_NAME', 'MoviesiBotV4')
+# DATABASE_URI = environ.get('DATABASE_URI', "mongodb+srv://MoviesiBotV6:MoviesiBotV5@cluster0.zs9smub.mongodb.net/?retryWrites=true&w=majority")#t
+# DATABASE_NAME = environ.get('DATABASE_NAME', "Cluster0")
+# COLLECTION_NAME = environ.get('COLLECTION_NAME', 'MoviesiBotV4')
 
 #-------------------------VERIFY AND SHORTNER--------------------------
 
