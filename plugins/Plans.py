@@ -10,7 +10,7 @@ prestats = """<b>PLAN DETAILS !
 User id: </b><code>{}</code>
 <b>Name: </b>{}
 
-<b>Plan:</b> {}
+<b>Plan: {}</b>
 
 <b>Verification Ends In:</b>
 <code>{}</code>
@@ -22,9 +22,9 @@ pay_msg = f"""<b>› PREMIUM PLANS !</b>
 
 ₹19 - Get Verified for <b>Week</b>
 ₹29 - Get Verified for <b>Month</b>
-₹89 - Get Verified for <b>3 Months</b>
-₹159 - Get Verified for <b>6 months</b>
-₹299 - Get Verified for <b>Year</b></i>
+₹79 - Get Verified for <b>3 Months</b>
+₹139 - Get Verified for <b>6 months</b>
+₹269 - Get Verified for <b>Year</b></i>
 
 <b>UPI ID: </b><code>{UPI_ID}</code><i>
 
