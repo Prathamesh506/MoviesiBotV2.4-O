@@ -75,7 +75,7 @@ async def auto_filter(client, msg):
     if is_invalid_message(msg) or contains_url(msg.text):
         return
     if SRC_MSG:
-        as_msg = await msg.reply_text("<b>Searching..</b>")
+        as_msg = await msg.reply_text("<code>Searching 🔎</code>")
 
     #BASED ON PRIVIOUS SEARCH FILTER ADD ON
     if not search_details['title'] and not search_details['year']:
@@ -157,6 +157,8 @@ async def auto_filter(client, msg):
         cap = f"<b>Hey {msg.from_user.mention},\n\nHere Some Related Titles!</b>"
         result_msg = await msg.reply_photo(photo=IMDB_IMG, caption=cap,
                                            reply_markup=InlineKeyboardMarkup(btn))
+        await asyncio.sleep(20)
+        await result_msg.delete()
     try:
         await asyncio.sleep(DLT)
         await result_msg.delete()
