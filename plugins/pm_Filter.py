@@ -12,7 +12,8 @@ import random
 import asyncio
 import logging
 import pyrogram
-
+from datetime import datetime,timedelta
+from info import OWNER_USERNAME
 from pyrogram.types import InlineKeyboardMarkup, InlineKeyboardButton, CallbackQuery
 from pyrogram import Client, filters, enums
 from pyrogram.errors import UserIsBlocked, MessageNotModified, PeerIdInvalid
@@ -250,7 +251,7 @@ async def result_text(files, cap):
     for file in files:
         text = f"[{get_size(file.file_size)}] {html.unescape(file.caption[:65].strip())}"
         url = f"https://telegram.dog/{temp.U_NAME}?start=CodeiBots_{file.file_id}"
-        cap += f"<b>\n\n📂 <a href={url}>{text}</a></b>"
+        cap += f"<b>\n\n📙 ➔ <a href={url}>{text}</a></b>"
     return cap
 
 async def navigation_buttons(btn,message, total_pages, offset,Text_mode=False):#navigation btns
@@ -260,7 +261,7 @@ async def navigation_buttons(btn,message, total_pages, offset,Text_mode=False):#
     offsetpageno = int(math.ceil(int(offset)/10))
     if total_pages == 1 :
         btn.append([
-            InlineKeyboardButton(text=f"⚙️ {mode}",callback_data=f"text_mode#{req}#{offset}#{Text_mode}"),
+            InlineKeyboardButton(text=f"📙 {mode}",callback_data=f"text_mode#{req}#{offset}#{Text_mode}"),
             InlineKeyboardButton(text=f" 1 / {total_pages}",callback_data="callback_none")]
         )
     elif offsetpageno == total_pages :
@@ -270,7 +271,7 @@ async def navigation_buttons(btn,message, total_pages, offset,Text_mode=False):#
         )
     elif offset == 10 :
         btn.append([
-            InlineKeyboardButton(text=f"⚙️ {mode}",callback_data=f"text_mode#{req}#{offset}#{Text_mode}"),
+            InlineKeyboardButton(text=f"📙 {mode}",callback_data=f"text_mode#{req}#{offset}#{Text_mode}"),
             InlineKeyboardButton(text=f" 1 / {total_pages}",callback_data="callback_none"),
             InlineKeyboardButton(text="ɴᴇxᴛ ⌦ ",callback_data=f"next_{req}_{offset}_{Text_mode}")]
         )
@@ -799,17 +800,17 @@ def extract_season(text):
         return None
 
 async def loading_msg(query):
-    await asyncio.sleep(0.05)
+    # await asyncio.sleep(0.05)
     await query.edit_message_text(
-                text="▰▱▱"
+                text="● ○ ○"
             )
-    await asyncio.sleep(0.05)
+    # await asyncio.sleep(0.05)
     await query.edit_message_text(
-                text="▰▰▱"
+                text="● ● ○"
             )
-    await asyncio.sleep(0.05)
+    # await asyncio.sleep(0.05)
     await query.edit_message_text(
-                text="▰▰▰"
+                text="● ● ●"
             )
 
 def contains_url(message):
@@ -880,7 +881,7 @@ async def send_eps_files(user_id, query, client, message):
         await message.reply_text("<b>Error occurred while fetching files. Please try again later.</b>")
 
 async def verify_msg(query, client,file_id):
-    pw_msg = await query.message.reply_text("Pʟᴇᴀsᴇ Wᴀɪᴛ..")
+    pw_msg = await query.message.reply_text("Please Wait..")
     btn = [[
         InlineKeyboardButton("Vᴇʀɪғʏ", url=await get_token(client, query.from_user.id, f"https://telegram.me/{temp.U_NAME}?start=", file_id)),
         InlineKeyboardButton("Hᴏᴡ Tᴏ Vᴇʀɪғʏ", url=HOW_TO_VERIFY)
@@ -1050,20 +1051,95 @@ async def cb_handler(client: Client, query: CallbackQuery):
             else:
                 await query.message.edit_text(f"<b>Pʀᴏᴄᴇss Cᴏᴍᴘʟᴇᴛᴇᴅ ғᴏʀ ғɪʟᴇ ᴅᴇʟᴇᴛɪᴏɴ !\n\nSᴜᴄᴄᴇssғᴜʟʟʏ ᴅᴇʟᴇᴛᴇᴅ {str(deleted)} ғɪʟᴇs ғʀᴏᴍ DB ғᴏʀ ʏᴏᴜʀ ᴏ̨ᴜᴇʀʏ {keyword}.</b>")
 
+#-------------------------------------------- START COMMANDS ---------------------------------------------------------------
+
+
     elif query.data == "private_source":
-        await query.answer(f"Project isn't Open Source!", show_alert=True)
-    
+        await loading_msg(query)
+        await asyncio.sleep(0.3)
+        cap = f"""<B>───[ sᴏᴜʀᴄᴇ ᴄᴏᴅᴇ ]───</b>
+        
+<i>Project isn't Open Source. If you need help or have questions, please feel free to message us directly. [ @{OWNER_USERNAME} ]
+
+<b>Based On:</b> https://github.com/Joelkb/DQ-the-file-donor </i>"""
+        btns = [[
+            InlineKeyboardButton('ᴅᴇᴛᴀɪʟꜱ',  callback_data="about_bot"),
+            InlineKeyboardButton('sʏsᴛᴇᴍ',  callback_data="sys_stats"),
+            InlineKeyboardButton('ᴅᴍᴄᴀ', callback_data="start_dmca")
+        ], [
+            InlineKeyboardButton('sᴏᴜʀᴄᴇ ᴄᴏᴅᴇ',callback_data="private_source" ),
+            InlineKeyboardButton('ʙᴀᴄᴋ', callback_data="start_home_page")  
+        ]]
+        try: 
+            await query.edit_message_text(
+                        text=cap,
+                        reply_markup=InlineKeyboardMarkup(btns)
+                    )
+        except:
+            pass
     elif query.data == "start_dmca":
-        await query.answer(f"Bot Disclaimer: Files here are freely available or posted by others online. Original creators, if you want your files removed, contact us.", show_alert=True)
+
+        await loading_msg(query)
+        await asyncio.sleep(0.3)
+        cap = f"""<B>───[ ʙᴏᴛ ᴅɪsᴄʟᴀɪᴍᴇʀ ]───</b>
+        
+<i>Files here are freely available or posted by others online. Original creators, if you want your files removed, contact us.</i>"""
+        btns = [[
+            InlineKeyboardButton('ᴅᴇᴛᴀɪʟꜱ',  callback_data="about_bot"),
+            InlineKeyboardButton('sʏsᴛᴇᴍ',  callback_data="sys_stats"),
+            InlineKeyboardButton('ᴅᴍᴄᴀ', callback_data="start_dmca")
+        ], [
+            InlineKeyboardButton('sᴏᴜʀᴄᴇ ᴄᴏᴅᴇ',callback_data="private_source" ),
+            InlineKeyboardButton('ʙᴀᴄᴋ', callback_data="start_home_page")  
+        ]]
+        try: 
+            await query.edit_message_text(
+                        text=cap,
+                        reply_markup=InlineKeyboardMarkup(btns)
+                    )
+        except:
+            pass
+        
+
+
+    elif query.data == "sys_stats":
+        cpu_percent = psutil.cpu_percent()
+        ram_percent = psutil.virtual_memory().percent
+        disk_usage = psutil.disk_usage('/')
+        disk_usage_percent = disk_usage.percent
+        disk_free_gb = round(disk_usage.free / (1024**3), 2)
+        uptime = datetime.now() - datetime.fromtimestamp(psutil.boot_time())
+        uptime_str = str(timedelta(seconds=uptime.total_seconds()))
+        uptime_str = uptime_str.split('.')[0]
+        status_message = script.SYS_STATUS_TXT2.format(cpu_percent, ram_percent, disk_usage_percent, disk_free_gb, uptime_str)
+
+        await loading_msg(query)
+        await asyncio.sleep(0.3)
+        btns = [[
+            InlineKeyboardButton('ᴅᴇᴛᴀɪʟꜱ',  callback_data="about_bot"),
+            InlineKeyboardButton('sʏsᴛᴇᴍ',  callback_data="sys_stats"),
+            InlineKeyboardButton('ᴅᴍᴄᴀ', callback_data="start_dmca")
+        ], [
+            InlineKeyboardButton('sᴏᴜʀᴄᴇ ᴄᴏᴅᴇ',callback_data="private_source" ),
+            InlineKeyboardButton('ʙᴀᴄᴋ', callback_data="start_home_page")  
+        ]]
+        try: 
+            await query.edit_message_text(
+                        text=status_message,
+                        reply_markup=InlineKeyboardMarkup(btns)
+                    )
+        except:
+            pass
 
     elif query.data == "about_bot":
         await loading_msg(query)
         await asyncio.sleep(0.3)
         btns = [[
-            InlineKeyboardButton('ᴄʀᴇᴀᴛᴏʀ', url="https://t.me/Shadow506"),
-            InlineKeyboardButton('sᴏᴜʀᴄᴇ ᴄᴏᴅᴇ',callback_data="private_source" )
+            InlineKeyboardButton('ᴅᴇᴛᴀɪʟꜱ',  callback_data="about_bot"),
+            InlineKeyboardButton('sʏsᴛᴇᴍ',  callback_data="sys_stats"),
+            InlineKeyboardButton('ᴅᴍᴄᴀ', callback_data="start_dmca")
         ], [
-            InlineKeyboardButton('ᴅᴍᴄᴀ', callback_data="start_dmca"),
+            InlineKeyboardButton('sᴏᴜʀᴄᴇ ᴄᴏᴅᴇ',callback_data="private_source" ),
             InlineKeyboardButton('ʙᴀᴄᴋ', callback_data="start_home_page")  
         ]]
         cap = f"""<B>───[ ᴅᴇᴛᴀɪʟꜱ ]───
@@ -1076,11 +1152,13 @@ async def cb_handler(client: Client, query: CallbackQuery):
 ‣ ʙᴏᴛ sᴇʀᴠᴇʀ : [ᴀᴡs](https://aws.amazon.com/)
 ‣ ʙᴜɪʟᴅ sᴛᴀᴛᴜs : v1.2 [ sᴛᴀʙʟᴇ ]</B>
         """
-
-        await query.edit_message_text(
-                    text=cap,
-                    reply_markup=InlineKeyboardMarkup(btns)
-                )
+        try: 
+            await query.edit_message_text(
+                        text=cap,
+                        reply_markup=InlineKeyboardMarkup(btns)
+                    )
+        except:
+            pass
 
     elif query.data == "start_home_page":
         await loading_msg(query)
@@ -1088,7 +1166,7 @@ async def cb_handler(client: Client, query: CallbackQuery):
             InlineKeyboardButton('〆   ᴀᴅᴅ ᴍᴇ ᴛᴏ ʏᴏᴜʀ ɢʀᴏᴜᴘ   〆', url=f"http://t.me/{temp.U_NAME}?startgroup=true")
             ],[
                     InlineKeyboardButton('⍟ ᴀʙᴏᴜᴛ', callback_data="about_bot"),
-                    InlineKeyboardButton('⚡ ᴛʀᴇɴᴅɪɴɢ', callback_data="back_watch_start")
+                    InlineKeyboardButton('⚡ ᴡᴀᴛᴄʜ', callback_data="back_watch_start")
             ],[      
                     InlineKeyboardButton('⎚ ᴜᴘᴅᴀᴛᴇs', url="https://t.me/VegaLatest"),
                     InlineKeyboardButton('♨ ɢʀᴏᴜᴘ', url=GRP_LINK)
