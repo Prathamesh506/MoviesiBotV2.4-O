@@ -98,7 +98,7 @@ async def start(client, message):
             InlineKeyboardButton('〆   ᴀᴅᴅ ᴍᴇ ᴛᴏ ʏᴏᴜʀ ɢʀᴏᴜᴘ   〆', url=f"http://t.me/{temp.U_NAME}?startgroup=true")
             ],[
                     InlineKeyboardButton('⍟ ᴀʙᴏᴜᴛ', callback_data="about_bot"),
-                    InlineKeyboardButton('⚡ ᴛʀᴇɴᴅɪɴɢ', callback_data="back_watch_start")
+                    InlineKeyboardButton('⚡ ᴡᴀᴛᴄʜ', callback_data="back_watch_start")
             ],[      
                     InlineKeyboardButton('⎚ ᴜᴘᴅᴀᴛᴇs', url="https://t.me/VegaLatest"),
                     InlineKeyboardButton('♨ ɢʀᴏᴜᴘ', url=GRP_LINK)
