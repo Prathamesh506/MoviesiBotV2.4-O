@@ -21,7 +21,7 @@ from fuzzywuzzy import fuzz, process
 from Script import script
 from plugins.iwatch import watch_movies_filter
 from utils import get_size, is_subscribed, temp, check_verification, get_token
-from info import ADMINS, AUTH_CHANNEL, NO_RES_CNL,GRP_LINK,SUPPORT_CHAT_ID,DOWNLOAD_TIPS, CUSTOM_FILE_CAPTION, IS_VERIFY, HOW_TO_VERIFY, DLT,IMDB_IMG,PROTECT_CONTENT,UPIQRPIC
+from info import ADMINS, AUTH_CHANNEL, NO_RES_CNL,GRP_LINK,SUPPORT_CHAT_ID,DOWNLOAD_TIPS, CUSTOM_FILE_CAPTION, IS_VERIFY, HOW_TO_VERIFY, DLT,IMDB_IMG,PROTECT_CONTENT,UPIQRPIC,SRC_MSG
 from database.users_chats_db import db
 from database.watch import store_movies_from_text,does_movie_exxists,search_movie_db
 from database.ia_filterdb import Media, get_file_details,search_db,total_results_count,send_filex
@@ -73,8 +73,8 @@ async def auto_filter(client, msg):
 
     if is_invalid_message(msg) or contains_url(msg.text):
         return
-
-    as_msg = await msg.reply_text("<b>Searching..</b>")
+    if SRC_MSG:
+        as_msg = await msg.reply_text("<b>Searching..</b>")
 
     #BASED ON PRIVIOUS SEARCH FILTER ADD ON
     if not search_details['title'] and not search_details['year']:
@@ -85,7 +85,8 @@ async def auto_filter(client, msg):
         search = f"{last_search} {search}"
         search_details, search = detail_extraction(search)
         files, offset, total_pages = await search_db(search.lower(), offset=0)
-        await as_msg.delete()
+        if SRC_MSG:
+            await as_msg.delete()
         if not files:
             await no_resultx(msg, text=f"<i>No Files Found in Database\n<b>For Your Search:</b> {search.title()}</i>")
             return
@@ -96,12 +97,16 @@ async def auto_filter(client, msg):
         files, offset, total_pages = await search_db(search.lower(), offset=0)
         if files:
             await db.store_search(msg.from_user.id, search)
-            await as_msg.delete()
+            if SRC_MSG:
+                await as_msg.delete()
 
         #LOCAL AUTOCORRECT
         else:
-            # as_msg = await msg.reply_text("<b>Auto Correcting ⚡</b>")
-            as_msg = await as_msg.edit_text("<b>Auto Correcting ⚡</b>")
+            if SRC_MSG:
+                as_msg = await as_msg.edit_text("<b>Auto Correcting ⚡</b>")
+            else:       
+                as_msg = await msg.reply_text("<b>Auto Correcting ⚡</b>")
+                
             temp_detail = search_details.copy()
             temp_detail['title'] = await search_movie_db(temp_detail['title'].lower())
             if temp_detail['title'] is not None:
