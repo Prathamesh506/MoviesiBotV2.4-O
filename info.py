@@ -71,13 +71,9 @@ WELCOME_PICS = environ.get("WELCOME_PICS", "https://telegra.ph/file/4b873b46bb48
 # DATABASE_NAME = environ.get('DATABASE_NAME', "Cluster0")
 # COLLECTION_NAME = environ.get('COLLECTION_NAME', 'MoviesiBotV4')
 
-DATABASE_URI = environ.get('DATABASE_URI', "mongodb+srv://VegaMoviesibot:VegaMoviesibot@cluster0.kzx22pz.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0")#sv2
+DATABASE_URI = environ.get('DATABASE_URI', "mongodb+srv://VegaMoviesibot:VegaMoviesibot@cluster0.kzx22pz.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0")#s
 DATABASE_NAME = environ.get('DATABASE_NAME', "Cluster0")
 COLLECTION_NAME = environ.get('COLLECTION_NAME', 'MoviesiBotV4')
-
-# DATABASE_URI = environ.get('DATABASE_URI', "mongodb+srv://VegaMoviesiBot:VegaMoviesiBot@cluster0.mcdc3bh.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0")#sv1
-# DATABASE_NAME = environ.get('DATABASE_NAME', "Cluster0")
-# COLLECTION_NAME = environ.get('COLLECTION_NAME', 'iArchive')
 
 # DATABASE_URI = environ.get('DATABASE_URI', "mongodb+srv://MoviesiBotV6:MoviesiBotV5@cluster0.zs9smub.mongodb.net/?retryWrites=true&w=majority")#t
 # DATABASE_NAME = environ.get('DATABASE_NAME', "Cluster0")
@@ -110,6 +106,7 @@ MAX_LIST_ELM = environ.get("MAX_LIST_ELM", None)
 INDEX_REQ_CHANNEL = int(environ.get('INDEX_REQ_CHANNEL', LOG_CHANNEL))
 WELCOW_NEW_USERS = is_enabled((environ.get('WELCOW_NEW_USERS', "False")), False)
 PROTECT_CONTENT = is_enabled((environ.get('PROTECT_CONTENT', "False")), False)
+SRC_MSG = True
 PORT = environ.get("PORT", "8080")
 
 #---------------------------- LOGS -----------------------------------
