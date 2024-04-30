@@ -41,6 +41,16 @@ Cᴏᴍᴍᴀɴᴅs Aɴᴅ Usᴀɢᴇ:
 | Uptime: {}
 """
 
+    SYS_STATUS_TXT2 = """
+<b>───[ sʏsᴛᴇᴍ sᴛᴀᴛs ]───</b>
+
+<B>| CPU Usage:</b> {}%
+<b>| RAM Usage:</b> {}%
+<b>| Disk Usage:</b> {}%
+<b>| Disk Free:</b> {}Gb
+<b>| Uptime:</b> {}
+"""
+
     LOG_TEXT_G = """#NewGroup
 Gʀᴏᴜᴘ = {}(<code>{}</code>)
 Tᴏᴛᴀʟ Mᴇᴍʙᴇʀs = <code>{}</code>
