@@ -1074,7 +1074,7 @@ async def cb_handler(client: Client, query: CallbackQuery):
 ‣ ʟᴀɴɢᴜᴀɢᴇ : [ᴘʏᴛʜᴏɴ 3](https://www.python.org/download/releases/3.0/)
 ‣ ᴅᴀᴛᴀ ʙᴀsᴇ : [ᴍᴏɴɢᴏ ᴅʙ](https://www.mongodb.com/)
 ‣ ʙᴏᴛ sᴇʀᴠᴇʀ : [ᴀᴡs](https://aws.amazon.com/)
-‣ ʙᴜɪʟᴅ sᴛᴀᴛᴜs : v1.9 [ sᴛᴀʙʟᴇ ]</B>
+‣ ʙᴜɪʟᴅ sᴛᴀᴛᴜs : v1.2 [ sᴛᴀʙʟᴇ ]</B>
         """
 
         await query.edit_message_text(
