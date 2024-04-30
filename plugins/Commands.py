@@ -306,10 +306,10 @@ async def verifying_vip(client, message):
         vipsid = message.command[1]
         timd = message.command[2]
         
-        if timd not in ('1', '7', '30', '90', '180', '365', '1000'):
+        if timd not in ('0','1', '7', '30', '90', '180', '365', '1000'):
             raise ValueError("Invalid Plan!")
 
-        type_map = {'1': "Free", '7': "Basics", '30': "Standard", '90': "Elite", '180': "Premium", '365': "Premium", '1000': "Ultimate"}
+        type_map = {'1': "Free", '7': "Basics", '30': "Standard", '90': "Elite", '180': "Premium", '365': "Premium", '1000': "Ultimate",'0':"Zero"}
         type = type_map[timd]
 
         plan = int(timd)
