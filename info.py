@@ -31,9 +31,9 @@ auth_users = [int(user) if id_pattern.search(user) else user for user in environ
 
 #-------------------PAYMENTS AND VERIFICATION INFO----------------
 
-UPI_ID = "mrnova@hdfcbank"
+UPI_ID = "atvixt-2@oksbi"
 OWNER_USERNAME ="Shadow506"
-UPIQRPIC = "https://telegra.ph/file/8aa126c269f1be662048c.jpg"
+UPIQRPIC = "https://telegra.ph/file/6eaf67a6b34db55957412.jpg"
 
 #--------------------- DATABSES & CHANNLS ----------------------
 
