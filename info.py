@@ -89,12 +89,12 @@ SHORTLINKS = is_enabled((environ.get('SHORTLINKS', 'False')), False)
 
 
 SHORTLINK_URL = environ.get('SHORTLINK_URL', 'easysky.in')
-SHORTLINK_API = environ.get('SHORTLINK_API', 'a1a45bfd3be9e758537846a3617b24c5d8be7d34')
+# SHORTLINK_API = environ.get('SHORTLINK_API', 'a1a45bfd3be9e758537846a3617b24c5d8be7d34')#ultraplix
+SHORTLINK_API = environ.get('SHORTLINK_API', 'ea057eadea4247ce9fe883a4056ab6086a212f16')#cinearcade
 
 #SECOUNDY BACKUP SHORTNER IN CASE OF PRIMARY WEB FAILUAR
 SHORTLINK_URL_BKUP = environ.get('SHORTLINK_URL_BKUP', 'tnshort.net')
-# SHORTLINK_API_BKUP = environ.get('SHORTLINK_API_BKUP',"5b8c9497bbeabea5a30c16062eeba6b3fe6bbd13")#ultraplix
-SHORTLINK_API_BKUP = environ.get('SHORTLINK_API_BKUP',"ea057eadea4247ce9fe883a4056ab6086a212f16")#cinearcade
+SHORTLINK_API_BKUP = environ.get('SHORTLINK_API_BKUP',"5b8c9497bbeabea5a30c16062eeba6b3fe6bbd13")
 
 DOWNLOAD_TIPS = environ.get('HOW_TO_VERIFY', "https://t.me/Vegalatest/15")
 HOW_TO_VERIFY = environ.get('HOW_TO_VERIFY', "https://t.me/Vegalatest/12")
