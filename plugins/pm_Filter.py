@@ -75,7 +75,7 @@ async def auto_filter(client, msg):
     if is_invalid_message(msg) or contains_url(msg.text):
         return
     if SRC_MSG:
-        as_msg = await msg.reply_text("<code>Searching 🔎</code>")
+        as_msg = await msg.reply_text("<b>Searching 🔎</b>")
 
     #BASED ON PRIVIOUS SEARCH FILTER ADD ON
     if not search_details['title'] and not search_details['year']:
@@ -924,26 +924,26 @@ async def cb_handler(client: Client, query: CallbackQuery):
         await watch_movies_filter(client,query,True,True)
         return
     
-    if query.data.startswith("req_oprt"):
-        _, type_op, requester_id, req_cont = query.data.split("#")
-        if type_op == "req_pstd" and query.from_user.id in ADMINS:
-            cap = f"<i>Your requested movie, {req_cont} is now available in Bot</i>"
-            await client.send_message(chat_id=int(requester_id), text=cap)
-            btn = []
-            btn.insert(0, [
-                InlineKeyboardButton('Uploded ✅', callback_data='callback_none'),
-            ])
-            await query.message.edit_reply_markup(reply_markup=InlineKeyboardMarkup(btn))
-        elif query.from_user.id in ADMINS:
-            cap = f"<i>hey, Your Request for {req_cont} is Declined, requested movie isn't available or the requested formate is incorrect</i>"
-            try:
-                await client.send_message(chat_id=int(requester_id), text=cap)
-            except Exception as e:
-                await query.message(f"error: {e}")
-            await query.message.delete() 
-        else:
-            await query.answer()    
-        return
+    # if query.data.startswith("req_oprt"):
+    #     _, type_op, requester_id, req_cont = query.data.split("#")
+    #     if type_op == "req_pstd" and query.from_user.id in ADMINS:
+    #         cap = f"<i>Your requested movie, {req_cont} is now available in Bot</i>"
+    #         await client.send_message(chat_id=int(requester_id), text=cap)
+    #         btn = []
+    #         btn.insert(0, [
+    #             InlineKeyboardButton('Uploded ✅', callback_data='callback_none'),
+    #         ])
+    #         await query.message.edit_reply_markup(reply_markup=InlineKeyboardMarkup(btn))
+    #     elif query.from_user.id in ADMINS:
+    #         cap = f"<i>hey, Your Request for {req_cont} is Declined, requested movie isn't available or the requested formate is incorrect</i>"
+    #         try:
+    #             await client.send_message(chat_id=int(requester_id), text=cap)
+    #         except Exception as e:
+    #             await query.message(f"error: {e}")
+    #         await query.message.delete() 
+    #     else:
+    #         await query.answer()    
+    #     return
 
     elif query.data == "delallcancel":
         userid = query.from_user.id
