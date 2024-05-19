@@ -18,9 +18,9 @@ SESSION = environ.get('SESSION', 'MoviesiBotV4')
 API_ID = "3704207"
 API_HASH = environ.get("API_HASH", "8d20e46f5413139329f2ec753f7c482a")
 
-BOT_TOKEN = environ.get("BOT_TOKEN", "6804042543:AAHsAypo4f7s-mN--uWK6o5pxAs-gsKXB68")#u
+# BOT_TOKEN = environ.get("BOT_TOKEN", "6804042543:AAHsAypo4f7s-mN--uWK6o5pxAs-gsKXB68")#u
 # BOT_TOKEN = environ.get("BOT_TOKEN", "7189786967:AAEEAAkdroqKWYiiRZnGWDL-sPtZdUPFAW8")#s
-# BOT_TOKEN = environ.get("BOT_TOKEN", "7195878471:AAGjpjZCZgvsMrIViQB3cxrUv8A7_fX8870")#m
+BOT_TOKEN = environ.get("BOT_TOKEN", "7195878471:AAGjpjZCZgvsMrIViQB3cxrUv8A7_fX8870")#m
 # BOT_TOKEN = environ.get("BOT_TOKEN", "6583753281:AAFtg5TYcGEToa99k0hbOYrrkZXJIXWQXHk")#t
 
 
@@ -71,9 +71,9 @@ WELCOME_PICS = environ.get("WELCOME_PICS", "https://telegra.ph/file/4b873b46bb48
 #-------------------------- DATABASE MONGODB -------------------------
 
 
-DATABASE_URI = environ.get('DATABASE_URI', "mongodb+srv://shadow:shadow506@cluster0.srfnz9s.mongodb.net/?retryWrites=true&w=majority")#u
+# DATABASE_URI = environ.get('DATABASE_URI', "mongodb+srv://shadow:shadow506@cluster0.srfnz9s.mongodb.net/?retryWrites=true&w=majority")#u
 # DATABASE_URI = environ.get('DATABASE_URI', "mongodb+srv://VegaMoviesibot:VegaMoviesibot@cluster0.kzx22pz.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0")#s
-# DATABASE_URI = environ.get('DATABASE_URI', "mongodb+srv://Makima:Makima@cluster0.d4ucrlw.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0")#m
+DATABASE_URI = environ.get('DATABASE_URI', "mongodb+srv://Makima:Makima@cluster0.d4ucrlw.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0")#m
 # DATABASE_URI = environ.get('DATABASE_URI', "mongodb+srv://MoviesiBotV6:MoviesiBotV5@cluster0.zs9smub.mongodb.net/?retryWrites=true&w=majority")#t
 
 DATABASE_NAME = environ.get('DATABASE_NAME', "Cluster0")
