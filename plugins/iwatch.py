@@ -63,7 +63,7 @@ def watch_btn(userid,start_btn):
     ])
     btn2 = [[
         InlineKeyboardButton("Tʀᴇɴᴅɪɴɢ 🔥", callback_data=f"watch_movies#{userid}#trending"),
-        InlineKeyboardButton("Nᴇᴡ Oᴛᴛ ⚡", callback_data=f"watch_movies#{userid}#mustwatch")
+        InlineKeyboardButton("Mᴜsᴛ Wᴀᴛᴄʜ ⚡", callback_data=f"watch_movies#{userid}#mustwatch")
     ],[
         InlineKeyboardButton("Iɴᴅɪᴀɴ 🚩", callback_data=f"watch_movies#{userid}#bollywood"),
         InlineKeyboardButton("Hᴏʟʟʏᴡᴏᴏᴅ 🍿", callback_data=f"watch_movies#{userid}#hollywood")
