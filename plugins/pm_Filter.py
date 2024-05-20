@@ -3,12 +3,9 @@ import ast
 import math
 import imdb
 import html
-import copy 
-import time
 import imdb
 import regex
 import psutil
-import random
 import asyncio
 import logging
 import pyrogram
@@ -16,16 +13,15 @@ from datetime import datetime,timedelta
 from info import OWNER_USERNAME
 from pyrogram.types import InlineKeyboardMarkup, InlineKeyboardButton, CallbackQuery
 from pyrogram import Client, filters, enums
-from pyrogram.errors import UserIsBlocked, MessageNotModified, PeerIdInvalid
+from pyrogram.errors import MessageNotModified
 from fuzzywuzzy import fuzz, process
-
 from Script import script
 from plugins.iwatch import watch_movies_filter
 from utils import get_size, is_subscribed, temp, check_verification, get_token
-from info import ADMINS, AUTH_CHANNEL, NO_RES_CNL,GRP_LINK,SUPPORT_CHAT_ID,DOWNLOAD_TIPS, CUSTOM_FILE_CAPTION, IS_VERIFY, HOW_TO_VERIFY, DLT,IMDB_IMG,PROTECT_CONTENT,UPIQRPIC,SRC_MSG
+from info import ADMINS, AUTH_CHANNEL, NO_RES_CNL,GRP_LINK, CUSTOM_FILE_CAPTION, IS_VERIFY, HOW_TO_VERIFY, DLT,PROTECT_CONTENT,UPIQRPIC
 from database.users_chats_db import db
-from database.watch import store_movies_from_text,does_movie_exxists,search_movie_db
-from database.ia_filterdb import Media, get_file_details,search_db,total_results_count,send_filex
+from database.watch import search_movie_db
+from database.ia_filterdb import Media, get_file_details,search_db,send_filex
 
 lock = asyncio.Lock()
 ia = imdb.IMDb()
@@ -35,80 +31,32 @@ logger.setLevel(logging.ERROR)
 
 BUTTONS = {}
 SPELL_CHECK = {}
-CATCH_TIME = DLT
+
 
 @Client.on_message((filters.group | filters.private) & filters.text & filters.incoming)
-async def message_filter(client, message):
-
-    if message.text is None or message.text.startswith(("/", "#")):
-        return
-    
-    if message.chat.id == SUPPORT_CHAT_ID:
-        await support_grp_filter(message)
-        return
-    
-    await auto_filter(client, message)
-
-#SUPPORT FILTER
-async def support_grp_filter(msg):
-    try:
-        search = await process_text(msg.text)
-        total_results = await total_results_count(search)
-        
-        if total_results:
-            btn = [[InlineKeyboardButton('Movies Group 🍿', url=GRP_LINK)]]
-            cap = f"<b>Hey {msg.from_user.mention},\n\nFound {total_results} Results\nSearch:</b> {search.title()}\n\n<i><b>NOTE: </b>To get the movies, please search in the movies group.</i>"
-            result_msg = await msg.reply_text(cap, reply_markup=InlineKeyboardMarkup(btn))
-            await asyncio.sleep(DLT)
-            await result_msg.delete()
-            
-    except Exception as e:
-        logger.exception(f'ERROR: SUPPORT GROUP FILTER\n{str(e)}')
-    return
-
-#AUTO FILTER
 async def auto_filter(client, msg):
+
+    if msg.text is None or msg.text.startswith(("/", "#")):
+        return
+
     ptext = await process_text(msg.text)
+
     search_details, search = detail_extraction(ptext, type=True)
     files = []
 
     if is_invalid_message(msg) or contains_url(msg.text):
         return
-    if SRC_MSG:
-        as_msg = await msg.reply_text("<b>Searching 🔎</b>")
 
-    #BASED ON PRIVIOUS SEARCH FILTER ADD ON
-    if not search_details['title'] and not search_details['year']:
-        last_search = await db.retrieve_latest_search(msg.from_user.id)
-        if last_search is None:
-            await no_resultx(msg, text="<i>Provide a Correct Title❗</i>")
-            return
-        search = f"{last_search} {search}"
-        search_details, search = detail_extraction(search)
-        files, offset, total_pages = await search_db(search.lower(), offset=0)
-        if SRC_MSG:
-            await as_msg.delete()
-        if not files:
-            await no_resultx(msg, text=f"<i>No Files Found in Database\n<b>For Your Search:</b> {search.title()}</i>")
-            return
-        await db.store_search(msg.from_user.id, search)
-        
-    #DIRECT SEARCH 
     else:
         files, offset, total_pages = await search_db(search.lower(), offset=0)
         if files:
             await db.store_search(msg.from_user.id, search)
-            if SRC_MSG:
-                await as_msg.delete()
 
-        #LOCAL AUTOCORRECT
-        else:
-            if SRC_MSG:
-                as_msg = await as_msg.edit_text("<b>Auto Correcting ⚡</b>")
-            else:       
-                as_msg = await msg.reply_text("<b>Auto Correcting ⚡</b>")
-                
+        else:     
+            as_msg = await msg.reply_text("<b>Auto Correcting ⚡</b>")
+
             temp_detail = search_details.copy()
+
             temp_detail['title'] = await search_movie_db(temp_detail['title'].lower())
             if temp_detail['title'] is not None:
                 temp_search = str_to_string(temp_detail)
@@ -119,8 +67,8 @@ async def auto_filter(client, msg):
                     await as_msg.delete()
 
             if not files:
-                imdb_res_list = None
                 try:
+                    await as_msg.delete()
                     search_details['title'], imdb_res_list = await imdb_S1(search_details['title'].lower())
                     if search_details['title']:
                         search_details['title'] = await process_text(search_details['title'])
@@ -135,190 +83,104 @@ async def auto_filter(client, msg):
                     pass
 
     if files:
-        btn = await result_btn(files, msg.from_user.id, client, search)
+        btn = await result_btn(files, msg.from_user.id, search)
         btn = await navigation_buttons(btn, msg, total_pages, offset)
         cap = f"<b>Hey {msg.from_user.mention},\n\nFᴏᴜɴᴅ Rᴇꜱᴜʟᴛꜱ Fᴏʀ Yᴏᴜʀ\nSearch:</b> {search.title()}"
         result_msg = await msg.reply_text(cap, reply_markup=InlineKeyboardMarkup(btn))
-        await popularity_store(search)
 
     if not files:
-        imdb_msg = await as_msg.edit_text("<b>Searching On IMDb..</b>")
-        if not imdb_res_list:
-            await imdb_msg.delete()
-            await no_resultx(msg)
-            return
-        score_results = find_matching_movies(search_details['title'], imdb_res_list)
-        if not score_results:
-            await imdb_msg.delete()
-            await no_resultx(msg)
-            return
-        await imdb_msg.delete()
-        btn = imdb_btn(score_results, msg.from_user.id)
-        cap = f"<b>Hey {msg.from_user.mention},\n\nHere Some Related Titles!</b>"
-        result_msg = await msg.reply_photo(photo=IMDB_IMG, caption=cap,
-                                           reply_markup=InlineKeyboardMarkup(btn))
-        await asyncio.sleep(20)
+   
+        cap = """<b>This Movie Not Found in Database\n\nPlease Check Your Spelling On Google & Try Again ✅</b>"""
+        
+        btn = [
+        [
+            InlineKeyboardButton("Request The Movie 📬", url = "https://t.me/TeamiVeGa"),
+        ]]
+        result_msg = await msg.reply_text(cap, reply_markup=InlineKeyboardMarkup(btn))
+        await asyncio.sleep(10)
         await result_msg.delete()
     try:
         await asyncio.sleep(DLT)
         await result_msg.delete()
     except: pass
 
-#TREANDING MOVIES
-async def popularity_store(query):
-    try:
-        # Check if the movie exists in the database
-        if await does_movie_exxists(query.lower()):
-            movie = f"2,{query.lower()},trending,1"
-            await store_movies_from_text(movie)
-            return
-    except Exception as e:
-        print(f"ERROR 1: TRENDING MOVIES\n{e}")
-
-    try:
-        # Search for the movie on IMDb
-        imdb_result,_ = await imdb_S1(query.lower())
-        
-        if imdb_result:
-            imdb_result = await process_text(imdb_result)
-
-        
-        # Calculate similarity score between query and IMDb result
-        score = fuzz.token_sort_ratio(query.lower(), imdb_result.lower())
-        
-        if score >= 95:
-            input_str = f"2,{imdb_result.lower()},trending,1"
-            await store_movies_from_text(input_str)
-    except Exception as e:
-        print(f"ERROR 2: TRENDING MOVIES\n{e}")
-        return
-
 #BUTTONS
-async def result_btn(files, user_id, bot, search,text_mode=False):
-    # Extract season
+async def result_btn(files, user_id, search):
     season = extract_season(search) or "01"
-    
-    # Check verification asynchronously
-    is_verified = await check_verification(bot, user_id)
-    
-    # Determine if batch button should be shown
     batch_btn = any(re.search(r'\bs\d+', html.unescape(file.caption), re.IGNORECASE) for file in files)
-    
-    # Construct basic button structure
-    if not text_mode:
-        btn = [
-            [
-                InlineKeyboardButton(
-                    text=f"[{get_size(file.file_size)}] {html.unescape(file.caption[:45].strip())}",
-                    url=f"https://telegram.dog/{temp.U_NAME}?start=CodeiBots_{file.file_id}"
-                ),
-            ]        
-            for file in files
-        ]
-    else: btn = []
-    # Construct URL for batch files
+    btn = [
+        [
+            InlineKeyboardButton(
+                text=f"[{get_size(file.file_size)}] {html.unescape(file.caption[:45].strip())}",
+                url=f"https://telegram.dog/{temp.U_NAME}?start=CodeiBots_{file.file_id}"
+            ),
+        ]        
+        for file in files
+    ]
     link = f"https://telegram.me/{temp.U_NAME}?start="
     batch_url = f"{link}all_eps_files-{user_id}"
     
-    # Add appropriate buttons based on conditions
-    additional_btns = []
-    if not is_verified and not batch_btn:
-        additional_btns.append([
-            InlineKeyboardButton('Hᴏᴡ Tᴏ Vᴇʀɪғʏ & Dᴏᴡɴʟᴏᴀᴅ ? 🤔', url=HOW_TO_VERIFY)
-        ])
-    
     if batch_btn:
-        additional_btns.append([
-            InlineKeyboardButton(f'📂 S{season} Bᴀᴛᴄʜ', url=batch_url),
-            InlineKeyboardButton("Hᴏᴡ Tᴏ Dᴏᴡɴʟᴏᴀᴅ ?", url=HOW_TO_VERIFY) if not is_verified else
-            InlineKeyboardButton("Sᴇᴀʀᴄʜ Tɪᴘs", url=DOWNLOAD_TIPS)
-        ])
+        additional_btns = [
+            [InlineKeyboardButton(f'S{season} All Episodes & Combined File ✅', url=batch_url)]
+        ]
+
+    else:
+        additional_btns = []
     
-    # Insert additional buttons at the beginning of btn list
     btn = additional_btns + btn
-    
-    # Insert common buttons at the beginning
+
     common_btns = [
         [
-            InlineKeyboardButton("Lᴀɴɢᴜᴀɢᴇ", callback_data=f"select_language#{user_id}#{text_mode}"),
-            InlineKeyboardButton("Qᴜᴀʟɪᴛʏ", callback_data=f"select_quality#{user_id}#{text_mode}"),
-            InlineKeyboardButton("Sᴇᴀꜱᴏɴ", callback_data=f"select_season#{user_id}#{text_mode}")
+            InlineKeyboardButton("Language", callback_data=f"select_language#{user_id}"),
+            InlineKeyboardButton("Quality", callback_data=f"select_quality#{user_id}"),
+            InlineKeyboardButton("Season", callback_data=f"select_season#{user_id}")
         ]
     ]
-    btn = common_btns + btn
-    
+    btn = common_btns + btn    
     return btn
 
-async def result_text(files, cap):
-    for file in files:
-        text = f"[{get_size(file.file_size)}] {html.unescape(file.caption[:65].strip())}"
-        url = f"https://telegram.dog/{temp.U_NAME}?start=CodeiBots_{file.file_id}"
-        cap += f"<b>\n\n📙 ➔ <a href={url}>{text}</a></b>"
-    return cap
-
-async def navigation_buttons(btn,message, total_pages, offset,Text_mode=False):#navigation btns
+async def navigation_buttons(btn,message, total_pages, offset):#navigation btns
     req = message.from_user.id if message.from_user else 0
     offset = int(offset)
-    mode = "ʙᴛɴ" if Text_mode else "ᴛᴇxᴛ"
     offsetpageno = int(math.ceil(int(offset)/10))
     if total_pages == 1 :
         btn.append([
-            InlineKeyboardButton(text=f"📙 {mode}",callback_data=f"text_mode#{req}#{offset}#{Text_mode}"),
-            InlineKeyboardButton(text=f" 1 / {total_pages}",callback_data="callback_none")]
+            InlineKeyboardButton(text=f" 1 / 1 ",callback_data="callback_none")]
         )
     elif offsetpageno == total_pages :
         btn.append([
-            InlineKeyboardButton(text="⌫ ʙᴀᴄᴋ",callback_data=f"next_{req}_{offset-20}_{Text_mode}"),
+            InlineKeyboardButton(text="⏪ Back",callback_data=f"next_{req}_{offset-20}"),
             InlineKeyboardButton(text=f" {offsetpageno} / {total_pages}",callback_data="callback_none")]
         )
     elif offset == 10 :
         btn.append([
-            InlineKeyboardButton(text=f"📙 {mode}",callback_data=f"text_mode#{req}#{offset}#{Text_mode}"),
             InlineKeyboardButton(text=f" 1 / {total_pages}",callback_data="callback_none"),
-            InlineKeyboardButton(text="ɴᴇxᴛ ⌦ ",callback_data=f"next_{req}_{offset}_{Text_mode}")]
+            InlineKeyboardButton(text="Next ⏩ ",callback_data=f"next_{req}_{offset}")]
         )
     else:
         btn.append([
-            InlineKeyboardButton(text="⌫ ʙᴀᴄᴋ",callback_data=f"next_{req}_{offset-20}_{Text_mode}"),
+            InlineKeyboardButton(text="⏪ Back",callback_data=f"next_{req}_{offset-20}"),
             InlineKeyboardButton(text=f"{offsetpageno} / {total_pages}",callback_data="callback_none"),
-            InlineKeyboardButton(text="ɴᴇxᴛ ⌦",callback_data=f"next_{req}_{offset}_{Text_mode}") ]
+            InlineKeyboardButton(text="Next ⏩",callback_data=f"next_{req}_{offset}") ]
         )  
-    
     return btn
-
-def imdb_btn(results, user_id):#IMDB result btns
-    keyboard = []
-    results  = [movie.title() for movie in results]
-    for i, movie in enumerate(results):
-        trimmed_movie_name = movie[:30] 
-        button_data = f"add_filter#{user_id}#mainpage#{trimmed_movie_name}"
-        button = InlineKeyboardButton(text=movie, callback_data=button_data)
-        keyboard.append([button])
-    keyboard.append([
-        InlineKeyboardButton(text="Close", callback_data=f"close_data#{user_id}")
-    ])
-    return keyboard
 
 @Client.on_callback_query(filters.regex(r"^next"))
 async def next_page(bot, query):
-    if (total_splits := len(query.data.split("_"))) == 3:
-        await query.answer(script.OLD_ALRT_TXT.format(query.from_user.first_name), show_alert=True)
-        return
     try:
-        _,req, offset,tm = query.data.split("_")
-        text_mode = True if tm == "True" else False
+        _, req, offset = query.data.split("_")
         offset = int(offset)
         req = int(req)
-
-        search = await db.retrieve_latest_search(query.from_user.id)
-
-        if req != query.from_user.id:
-            return await query.answer(script.ALRT_TXT.format(query.from_user.first_name), show_alert=True)
-        
     except ValueError:
-        logger.error("ERROR 1 ! NEXT_PAGE")
+        logger.exception('ERROR: #NEXT BUTTON')
         return 
-    
+
+    search = await db.retrieve_latest_search(query.from_user.id)
+
+    if req != query.from_user.id:
+        return await query.answer(script.ALRT_TXT.format(query.from_user.first_name), show_alert=True)
+
     try:
         offset = int(offset)
     except ValueError:
@@ -333,54 +195,46 @@ async def next_page(bot, query):
     if not files:
         return
 
-    btn = await result_btn(files, req, bot, search,text_mode)
-
+    btn = await result_btn(files, req, search)
     query.text = search
-
-    btn = await navigation_buttons(btn, query, total_pages, n_offset,text_mode)
+    btn = await navigation_buttons(btn, query, total_pages, n_offset)
     try:
-        if not text_mode:
-            await query.edit_message_reply_markup(reply_markup=InlineKeyboardMarkup(btn))
-        else:
-            cap = f"<b>Hey {query.from_user.mention},\n\nFᴏᴜɴᴅ Rᴇꜱᴜʟᴛꜱ Fᴏʀ Yᴏᴜʀ\nSearch: </b>{search.title()}"
-            cap = await result_text(files,cap)
-            await query.message.edit_text(cap, reply_markup=InlineKeyboardMarkup(btn))
+        await query.edit_message_reply_markup(reply_markup=InlineKeyboardMarkup(btn))
+    except pyrogram.errors.exceptions.flood_420.FloodWait as e:
+        await query.answer("Flood Wait 15s ⌛")
+    except pyrogram.errors.exceptions.bad_request_400.QueryIdInvalid as e:
+        logger.error("Query ID is invalid or expired.")
+        return  # Don't proceed further if the query ID is invalid
     except MessageNotModified:
-            await query.answer() 
-    except Exception as e:
-        logger.error("ERROR 2 ! NEXT_PAGE: %s", e)
+        pass
     await query.answer()
 
 @Client.on_callback_query(filters.regex(r"^select_lang"))
 async def select_language(bot, query):
-    _, userid,tm= query.data.split("#")
-    text_mode = True if tm == "True" else False
+    _, userid= query.data.split("#")
     if int(userid) not in [query.from_user.id, 0]:
         return await query.answer(script.ALRT_TXT.format(query.from_user.first_name), show_alert=True)
     btn = [[
-        InlineKeyboardButton("⇃  ᴄʜᴏᴏsᴇ ʟᴀɴɢᴜᴀɢᴇ  ⇂", callback_data=f"callback_none")
+        InlineKeyboardButton("English", callback_data=f"add_filter#{userid}#english"),
+        InlineKeyboardButton("Hindi", callback_data=f"add_filter#{userid}#hindi")
     ],[
-        InlineKeyboardButton("Eɴɢʟɪꜱʜ", callback_data=f"add_filter#{userid}#english#{text_mode}"),
-        InlineKeyboardButton("Hɪɴᴅɪ", callback_data=f"add_filter#{userid}#hindi#{text_mode}")
+        InlineKeyboardButton("Tamil", callback_data=f"add_filter#{userid}#tamil"),
+        InlineKeyboardButton("Telgue", callback_data=f"add_filter#{userid}#telugu")
     ],[
-        InlineKeyboardButton("Tᴀᴍɪʟ", callback_data=f"add_filter#{userid}#tamil#{text_mode}"),
-        InlineKeyboardButton("Tᴇʟᴜɢᴜ", callback_data=f"add_filter#{userid}#telugu#{text_mode}")
+        InlineKeyboardButton("Marathi", callback_data=f"add_filter#{userid}#mar"),
+        InlineKeyboardButton("Malayalam", callback_data=f"add_filter#{userid}#mal")
     ],[
-        InlineKeyboardButton("Mᴀʀᴀᴛʜɪ", callback_data=f"add_filter#{userid}#mar#{text_mode}"),
-        InlineKeyboardButton("Mᴀʟᴀʏᴀʟᴀᴍ", callback_data=f"add_filter#{userid}#mal#{text_mode}")
+        InlineKeyboardButton("Kannada", callback_data=f"add_filter#{userid}#kan"),
+        InlineKeyboardButton("Dual Audio", callback_data=f"add_filter#{userid}#dual")
     ],[
-        InlineKeyboardButton("Kᴀɴɴᴀᴅᴀ", callback_data=f"add_filter#{userid}#kan#{text_mode}"),
-        InlineKeyboardButton("Dᴜᴀʟ Aᴜᴅɪᴏ", callback_data=f"add_filter#{userid}#dual#{text_mode}")
+        InlineKeyboardButton("Multi Audio", callback_data=f"add_filter#{userid}#multi"),
+        InlineKeyboardButton("Subtitles", callback_data=f"add_filter#{userid}#sub")
     ],[
-        InlineKeyboardButton("Mᴜʟᴛɪ Aᴜᴅɪᴏ", callback_data=f"add_filter#{userid}#multi#{text_mode}"),
-        InlineKeyboardButton("ꜱᴜʙᴛɪᴛʟᴇꜱ", callback_data=f"add_filter#{userid}#sub#{text_mode}")
-    ],[
-        InlineKeyboardButton("Cʟᴇᴀʀ", callback_data=f"add_filter#{userid}#clearlanguage#{text_mode}"),
-        InlineKeyboardButton("Bᴀᴄᴋ", callback_data=f"add_filter#{userid}#mainpage#{text_mode}")
+        InlineKeyboardButton("Clear", callback_data=f"add_filter#{userid}#clearlanguage"),
+        InlineKeyboardButton("Back", callback_data=f"add_filter#{userid}#mainpage")
     ]]
     try:
-        cap = f"<b>Hey {query.from_user.mention},\n\nSᴇʟᴇᴄᴛ Aɴ Lᴀɴɢᴜᴀɢᴇ:</b>"
-        await query.message.edit_text(text = cap,
+        await query.edit_message_reply_markup(
             reply_markup=InlineKeyboardMarkup(btn)
         )
     except MessageNotModified:
@@ -389,28 +243,24 @@ async def select_language(bot, query):
     
 @Client.on_callback_query(filters.regex(r"^select_quality"))
 async def select_quality(bot, query):
-    _, userid,tm= query.data.split("#")
-    text_mode = True if tm == "True" else False
+    _, userid= query.data.split("#")
     if int(userid) not in [query.from_user.id, 0]:
         return await query.answer(script.ALRT_TXT.format(query.from_user.first_name), show_alert=True)
-    cap = f"<b>Hey {query.from_user.mention},\n\nSᴇʟᴇᴄᴛ Aɴ Qᴜᴀʟɪᴛʏ:</b>"
     btn = [[
-        InlineKeyboardButton("⇃  ᴄʜᴏᴏsᴇ ϙᴜᴀʟɪᴛʏ  ⇂", callback_data=f"callback_none")
+        InlineKeyboardButton("HD/Rips", callback_data=f"add_filter#{userid}#rip"),
+        InlineKeyboardButton("360P", callback_data=f"add_filter#{userid}#360p")
     ],[
-        InlineKeyboardButton("HD/Rips", callback_data=f"add_filter#{userid}#rip#{text_mode}"),
-        InlineKeyboardButton("360P", callback_data=f"add_filter#{userid}#360p#{text_mode}")
+        InlineKeyboardButton("480P", callback_data=f"add_filter#{userid}#480p"),
+        InlineKeyboardButton("720P", callback_data=f"add_filter#{userid}#720p")
     ],[
-        InlineKeyboardButton("480P", callback_data=f"add_filter#{userid}#480p#{text_mode}"),
-        InlineKeyboardButton("720P", callback_data=f"add_filter#{userid}#720p#{text_mode}")
+        InlineKeyboardButton("1080P", callback_data=f"add_filter#{userid}#1080p"),
+        InlineKeyboardButton("4K", callback_data=f"add_filter#{userid}#4k")
     ],[
-        InlineKeyboardButton("1080P", callback_data=f"add_filter#{userid}#1080p#{text_mode}"),
-        InlineKeyboardButton("4K", callback_data=f"add_filter#{userid}#4k#{text_mode}")
-    ],[
-        InlineKeyboardButton("Clear", callback_data=f"add_filter#{userid}#clearquality#{text_mode}"),
-        InlineKeyboardButton("Back", callback_data=f"add_filter#{userid}#mainpage#{text_mode}")
+        InlineKeyboardButton("Clear", callback_data=f"add_filter#{userid}#clearquality"),
+        InlineKeyboardButton("Back", callback_data=f"add_filter#{userid}#mainpage")
     ]]
     try:
-        await query.message.edit_text(text = cap,
+        await query.edit_message_reply_markup(
             reply_markup=InlineKeyboardMarkup(btn)
         )
     except MessageNotModified:
@@ -419,37 +269,33 @@ async def select_quality(bot, query):
 
 @Client.on_callback_query(filters.regex(r"^select_season"))
 async def select_season(bot, query):
-    _, userid,tm= query.data.split("#")
-    text_mode = True if tm == "True" else False
+    _, userid= query.data.split("#")
     if int(userid) not in [query.from_user.id, 0]:
         return await query.answer(script.ALRT_TXT.format(query.from_user.first_name), show_alert=True)
     btn = [[
-        InlineKeyboardButton("⇃  ᴄʜᴏᴏsᴇ ꜱᴇᴀꜱᴏɴ  ⇂", callback_data=f"callback_none")
+        InlineKeyboardButton("Season 01", callback_data=f"add_filter#{userid}#s01"),
+        InlineKeyboardButton("Season 02", callback_data=f"add_filter#{userid}#s02")
     ],[
-        InlineKeyboardButton("Season 01", callback_data=f"add_filter#{userid}#s01#{text_mode}"),
-        InlineKeyboardButton("Season 02", callback_data=f"add_filter#{userid}#s02#{text_mode}")
+        InlineKeyboardButton("Season 03", callback_data=f"add_filter#{userid}#s03"), 
+        InlineKeyboardButton("Season 04", callback_data=f"add_filter#{userid}#s04")
     ],[
-        InlineKeyboardButton("Season 03", callback_data=f"add_filter#{userid}#s03#{text_mode}"), 
-        InlineKeyboardButton("Season 04", callback_data=f"add_filter#{userid}#s04#{text_mode}")
+        InlineKeyboardButton("Season 05", callback_data=f"add_filter#{userid}#s05"),
+        InlineKeyboardButton("Season 06", callback_data=f"add_filter#{userid}#s06")
     ],[
-        InlineKeyboardButton("Season 05", callback_data=f"add_filter#{userid}#s05#{text_mode}"),
-        InlineKeyboardButton("Season 06", callback_data=f"add_filter#{userid}#s06#{text_mode}")
+        InlineKeyboardButton("Season 07", callback_data=f"add_filter#{userid}#s07"), 
+        InlineKeyboardButton("Season 08", callback_data=f"add_filter#{userid}#s08")
     ],[
-        InlineKeyboardButton("Season 07", callback_data=f"add_filter#{userid}#s07#{text_mode}"), 
-        InlineKeyboardButton("Season 08", callback_data=f"add_filter#{userid}#s08#{text_mode}")
+        InlineKeyboardButton("Season 09", callback_data=f"add_filter#{userid}#s09"),
+        InlineKeyboardButton("Season 10", callback_data=f"add_filter#{userid}#s10")
     ],[
-        InlineKeyboardButton("Season 09", callback_data=f"add_filter#{userid}#s09#{text_mode}"),
-        InlineKeyboardButton("Season 10", callback_data=f"add_filter#{userid}#s10#{text_mode}")
+        InlineKeyboardButton("Season 11", callback_data=f"add_filter#{userid}#s11"), 
+        InlineKeyboardButton("Season 12", callback_data=f"add_filter#{userid}#s12")
     ],[
-        InlineKeyboardButton("Season 11", callback_data=f"add_filter#{userid}#s11#{text_mode}"), 
-        InlineKeyboardButton("Season 12", callback_data=f"add_filter#{userid}#s12#{text_mode}")
-    ],[
-        InlineKeyboardButton("Clear", callback_data=f"add_filter#{userid}#clearseason#{text_mode}"),
-        InlineKeyboardButton("Back", callback_data=f"add_filter#{userid}#mainpage#{text_mode}")
+        InlineKeyboardButton("Clear", callback_data=f"add_filter#{userid}#clearseason"),
+        InlineKeyboardButton("Back", callback_data=f"add_filter#{userid}#mainpage")
     ]]
     try:
-        cap = f"<b>Hey {query.from_user.mention},\n\nSᴇʟᴇᴄᴛ Aɴ Sᴇᴀꜱᴏɴ:</b>"
-        await query.message.edit_text(text = cap,
+        await query.edit_message_reply_markup(
             reply_markup=InlineKeyboardMarkup(btn)
         )
     except MessageNotModified:
@@ -458,17 +304,18 @@ async def select_season(bot, query):
 
 @Client.on_callback_query(filters.regex(r"^add_filter"))
 async def filtering_results(bot, query): 
-
-    text_mode = False
     user_id = query.from_user.id
     data_parts = query.data.split("#")
-    
-    if data_parts[3] not in ["True","False"]:
+
+    if len(data_parts) == 4: #IMDB RESULT
         _, userid, the_filter, search = data_parts
         search = await process_text(search)
     else:
-        _, userid, the_filter,tm = data_parts
-        text_mode = True if tm == "True" else False
+        _, userid, the_filter = data_parts
+        if the_filter == "imdbclse":
+            await query.answer(f"🤖 Closing IMDb Results")
+            await query.message.delete()
+            
         search = await db.retrieve_latest_search(user_id)
 
     if int(userid) != user_id:
@@ -479,33 +326,23 @@ async def filtering_results(bot, query):
     
     if the_filter in ["clearlanguage", "clearquality", "clearseason"]:
         search = clear_filter(search, the_filter)
-
     elif the_filter != "mainpage":
         search = f"{search} {the_filter}"
-        _, search = detail_extraction(search)
+        details, search = detail_extraction(search)
 
     files, offset, total_pages = await search_db(search, offset=0)
 
     query.text = search
-    
     if files:
         await db.store_search(user_id, search)
-        
-        btn = await result_btn(files, user_id,bot,search,text_mode)
-        btn = await navigation_buttons(btn, query, total_pages, offset,text_mode)
-
+        btn = await result_btn(files, user_id,search)
+        btn = await navigation_buttons(btn, query, total_pages, offset)
         try:
             cap = f"<b>Hey {query.from_user.mention},\n\nFᴏᴜɴᴅ Rᴇꜱᴜʟᴛꜱ Fᴏʀ Yᴏᴜʀ\nSearch: </b>{search.title()}"
-            if text_mode:
-                cap = await result_text(files,cap)
-
-            if data_parts[3] not in ["True","False"]:
-
+            if len(data_parts) == 4:
                 await query.answer(f"🤖 Fetching Results")
                 await query.message.delete()
-
                 result_msg = await query.message.reply_text(cap, reply_markup=InlineKeyboardMarkup(btn))
-
                 await asyncio.sleep(DLT)
                 await result_msg.delete()
             else:
@@ -513,64 +350,16 @@ async def filtering_results(bot, query):
                     text=cap,
                     reply_markup=InlineKeyboardMarkup(btn)
                 )
-
                 if the_filter in ["clearlanguage", "clearquality", "clearseason"]:
                     await query.answer(f"🤖 Removed {the_filter[5:].title()} Filter")
-
                 elif the_filter != "mainpage":
                     await query.answer(f"🤖 Results For : {the_filter.title()}")
-                    
         except MessageNotModified:
-            await query.answer() 
-        except Exception as e:
-            logger.error("ERROR 1 ! THE_FILTER: %s", e)
+            pass
     else:
         if len(data_parts) == 4:
             await bot.send_message(chat_id=NO_RES_CNL, text=f"<b>iMDb:</b> <code>{search}</code>")
-        try: 
-            return await query.answer(f"⚠️ Nᴏ Fɪʟᴇs Fᴏᴜɴᴅ Iɴ Dᴀᴛᴀʙᴀsᴇ.", show_alert=True)
-        except:
-            await query.answer() 
-
-@Client.on_callback_query(filters.regex(r"^text_mode"))
-async def add_Text_mode(bot, query):
-
-    user_id = query.from_user.id
-    data_parts = query.data.split("#")
-
-    _, userid, offset ,tm= data_parts
-    text_mode = not (True if tm == "True" else False)
-
-    if int(userid) != user_id:
-        return await query.answer(script.ALRT_TXT.format(query.from_user.first_name), show_alert=True)
-    
-    search = await db.retrieve_latest_search(user_id)
-
-    if not search:
-        return await query.answer(script.OLD_ALRT_TXT.format(query.from_user.first_name), show_alert=True)
-    
-    files, offset, total_pages = await search_db(search, offset=int(offset)-10)
-
-    if files:
-        await db.store_search(user_id, search)
-        btn = await result_btn(files, user_id,bot,search,text_mode=text_mode)
-        btn = await navigation_buttons(btn, query, total_pages, offset,text_mode)
-        try:
-            cap = f"<b>Hey {query.from_user.mention},\n\nFᴏᴜɴᴅ Rᴇꜱᴜʟᴛꜱ Fᴏʀ Yᴏᴜʀ\nSearch: </b>{search.title()}"
-            if text_mode:
-                cap = await result_text(files,cap)
-            result_msg = await query.message.edit_text(cap, reply_markup=InlineKeyboardMarkup(btn))
-            await asyncio.sleep(DLT)
-            await result_msg.delete()
-        except MessageNotModified:
-            await query.answer() 
-        except Exception as e:
-            logger.error("ERROR 1 ! TEXT_MODE : %s", e)
-    else:
-        try: 
-            return await query.answer(f"⚠️ Nᴏ Fɪʟᴇs Fᴏᴜɴᴅ Iɴ Dᴀᴛᴀʙᴀsᴇ.", show_alert=True)
-        except:
-            await query.answer() 
+        return await query.answer(f"ꜱᴏʀʀʏ, ɴᴏ ғɪʟᴇꜱ ғᴏᴜɴᴅ ɪɴ ᴅᴀᴛᴀʙᴀꜱᴇ ғᴏʀ ʏᴏᴜʀ ϙᴜᴇʀʏ 🔍", show_alert=True)
 
 #UTILITY
 async def process_text(text_caption): #text is filter and processed
@@ -720,11 +509,6 @@ def is_invalid_message(msg): #checks if the message is invalid ?
         return True
     return False
 
-async def no_resultx(msg,text="<i>No Results Found Please Provide Correct Title!</i>"):#no result message
-    k = await msg.reply_text(f"{text}")
-    await asyncio.sleep(7)
-    await k.delete()
-    return
 
 async def imdb_S1(search):
     try:
