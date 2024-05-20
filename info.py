@@ -73,8 +73,8 @@ WELCOME_PICS = environ.get("WELCOME_PICS", "https://telegra.ph/file/4b873b46bb48
 
 # DATABASE_URI = environ.get('DATABASE_URI', "mongodb+srv://shadow:shadow506@cluster0.srfnz9s.mongodb.net/?retryWrites=true&w=majority")#u
 # DATABASE_URI = environ.get('DATABASE_URI', "mongodb+srv://VegaMoviesibot:VegaMoviesibot@cluster0.kzx22pz.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0")#s
-DATABASE_URI = environ.get('DATABASE_URI', "mongodb+srv://Makima:Makima@cluster0.d4ucrlw.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0")#m
-# DATABASE_URI = environ.get('DATABASE_URI', "mongodb+srv://MoviesiBotV6:MoviesiBotV5@cluster0.zs9smub.mongodb.net/?retryWrites=true&w=majority")#t
+DATABASE_URI = environ.get('DATABASE_URI', "mongodb+srv://makima:makima@cluster0.covyf0w.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0")#m
+# DATABASE_URI = environ.get('DATABASE_URI', "mongodb+srv://Testing:Testing@cluster0.6fjlhzr.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0")#t
 
 DATABASE_NAME = environ.get('DATABASE_NAME', "Cluster0")
 COLLECTION_NAME = environ.get('COLLECTION_NAME', 'MoviesiBotV4')
