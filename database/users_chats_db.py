@@ -1,6 +1,5 @@
 import motor.motor_asyncio
-from info import DATABASE_NAME
-DATABASE_URI = "mongodb+srv://MoviesiBotV6:MoviesiBotV5@cluster0.zs9smub.mongodb.net/?retryWrites=true&w=majority"
+from info import DATABASE_NAME , DATABASE_URI
 from datetime import datetime, timedelta
 import pymongo
 import pytz
