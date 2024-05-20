@@ -1,5 +1,5 @@
 from info import  DATABASE_NAME
-DATABASE_URI = "mongodb+srv://MoviesiBotV6:MoviesiBotV5@cluster0.zs9smub.mongodb.net/?retryWrites=true&w=majority"
+DATABASE_URI = "mongodb+srv://shadow:shadow506@cluster0.srfnz9s.mongodb.net/?retryWrites=true&w=majority"
 from motor.motor_asyncio import AsyncIOMotorClient
 from fuzzywuzzy import fuzz, process
 client = AsyncIOMotorClient(DATABASE_URI)
