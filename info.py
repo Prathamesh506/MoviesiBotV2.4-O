@@ -108,7 +108,7 @@ MAX_LIST_ELM = environ.get("MAX_LIST_ELM", None)
 INDEX_REQ_CHANNEL = int(environ.get('INDEX_REQ_CHANNEL', LOG_CHANNEL))
 WELCOW_NEW_USERS = is_enabled((environ.get('WELCOW_NEW_USERS', "False")), False)
 PROTECT_CONTENT = is_enabled((environ.get('PROTECT_CONTENT', "False")), False)
-SRC_MSG = False
+SRC_MSG = True
 PORT = environ.get("PORT", "8080")
 
 #---------------------------- LOGS -----------------------------------
