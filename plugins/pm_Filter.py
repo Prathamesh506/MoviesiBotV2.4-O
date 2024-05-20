@@ -20,7 +20,7 @@ from plugins.iwatch import watch_movies_filter
 from utils import get_size, is_subscribed, temp, check_verification, get_token
 from info import ADMINS, AUTH_CHANNEL, NO_RES_CNL,GRP_LINK, CUSTOM_FILE_CAPTION, IS_VERIFY, HOW_TO_VERIFY, DLT,PROTECT_CONTENT,UPIQRPIC
 from database.users_chats_db import db
-from database.watch import search_movie_db
+from database.watch import store_movies_from_text,does_movie_exxists,search_movie_db
 from database.ia_filterdb import Media, get_file_details,search_db,send_filex
 
 lock = asyncio.Lock()
@@ -36,57 +36,54 @@ SPELL_CHECK = {}
 @Client.on_message((filters.group | filters.private) & filters.text & filters.incoming)
 async def auto_filter(client, msg):
 
-    if msg.text is None or msg.text.startswith(("/", "#")):
+    if msg.text is None or msg.text.startswith(("/", "#")) or is_invalid_message(msg) or contains_url(msg.text):
         return
 
     ptext = await process_text(msg.text)
-
     search_details, search = detail_extraction(ptext, type=True)
     files = []
+ 
+    files, offset, total_pages = await search_db(search.lower(), offset=0)
+    if files:
+        await db.store_search(msg.from_user.id, search)
 
-    if is_invalid_message(msg) or contains_url(msg.text):
-        return
+    else:     
+        as_msg = await msg.reply_text("<b>Auto Correcting ⚡</b>")
 
-    else:
-        files, offset, total_pages = await search_db(search.lower(), offset=0)
-        if files:
-            await db.store_search(msg.from_user.id, search)
+        temp_detail = search_details.copy()
 
-        else:     
-            as_msg = await msg.reply_text("<b>Auto Correcting ⚡</b>")
-
-            temp_detail = search_details.copy()
-
-            temp_detail['title'] = await search_movie_db(temp_detail['title'].lower())
-            if temp_detail['title'] is not None:
-                temp_search = str_to_string(temp_detail)
-                files, offset, total_pages = await search_db(temp_search.lower(), offset=0)
-                if files:
-                    search = temp_search
-                    await db.store_search(msg.from_user.id, search)
-                    await as_msg.delete()
-
-            if not files:
-                try:
-                    await as_msg.delete()
-                    search_details['title'], imdb_res_list = await imdb_S1(search_details['title'].lower())
-                    if search_details['title']:
-                        search_details['title'] = await process_text(search_details['title'])
-                        tempsearch = str_to_string(search_details)
-                        files, offset, total_pages = await search_db(tempsearch.lower(), offset=0)
-                        if files:
-                            search = tempsearch
-                            await as_msg.delete()
-                            await db.store_search(msg.from_user.id, search)
-                except Exception as e:
-                    logger.exception(f'ERROR: #IMDB AUTOCORRECT \n{e}')
-                    pass
+        temp_detail['title'] = await search_movie_db(temp_detail['title'].lower())
+        if temp_detail['title'] is not None:
+            temp_search = str_to_string(temp_detail)
+            files, offset, total_pages = await search_db(temp_search.lower(), offset=0)
+            if files:
+                search = temp_search
+                await db.store_search(msg.from_user.id, search)
+                await as_msg.delete()
+                
+        if not files:
+            try:
+                await as_msg.delete()
+                search_details['title'] = await imdb_S1(search_details['title'].lower())
+                if search_details['title']:
+                    print(f"{search_details['title']}")
+                    search_details['title'] = await process_text(search_details['title'])
+                    tempsearch = str_to_string(search_details)
+                    files, offset, total_pages = await search_db(tempsearch.lower(), offset=0)
+                    if files:
+                        search = tempsearch
+                        await as_msg.delete()
+                        await db.store_search(msg.from_user.id, search)
+            except Exception as e:
+                logger.exception(f'ERROR: #IMDB AUTOCORRECT \n{e}')
+                pass
 
     if files:
         btn = await result_btn(files, msg.from_user.id, search)
         btn = await navigation_buttons(btn, msg, total_pages, offset)
         cap = f"<b>Hey {msg.from_user.mention},\n\nFᴏᴜɴᴅ Rᴇꜱᴜʟᴛꜱ Fᴏʀ Yᴏᴜʀ\nSearch:</b> {search.title()}"
         result_msg = await msg.reply_text(cap, reply_markup=InlineKeyboardMarkup(btn))
+        await popularity_store(search)
 
     if not files:
    
@@ -122,7 +119,7 @@ async def result_btn(files, user_id, search):
     
     if batch_btn:
         additional_btns = [
-            [InlineKeyboardButton(f'S{season} All Episodes & Combined File ✅', url=batch_url)]
+            [InlineKeyboardButton(f'🗂 | Sᴇᴀꜱᴏɴ {season} - Cᴏᴍʙɪɴᴇᴅ - Bᴀᴛᴄʜ Fɪʟᴇs ', url=batch_url)]
         ]
 
     else:
@@ -132,9 +129,9 @@ async def result_btn(files, user_id, search):
 
     common_btns = [
         [
-            InlineKeyboardButton("Language", callback_data=f"select_language#{user_id}"),
-            InlineKeyboardButton("Quality", callback_data=f"select_quality#{user_id}"),
-            InlineKeyboardButton("Season", callback_data=f"select_season#{user_id}")
+            InlineKeyboardButton("Lᴀɴɢᴜᴀɢᴇ", callback_data=f"select_language#{user_id}"),
+            InlineKeyboardButton("Qᴜᴀʟɪᴛʏ", callback_data=f"select_quality#{user_id}"),
+            InlineKeyboardButton("Sᴇᴀꜱᴏɴ", callback_data=f"select_season#{user_id}")
         ]
     ]
     btn = common_btns + btn    
@@ -215,23 +212,25 @@ async def select_language(bot, query):
     if int(userid) not in [query.from_user.id, 0]:
         return await query.answer(script.ALRT_TXT.format(query.from_user.first_name), show_alert=True)
     btn = [[
-        InlineKeyboardButton("English", callback_data=f"add_filter#{userid}#english"),
-        InlineKeyboardButton("Hindi", callback_data=f"add_filter#{userid}#hindi")
+        InlineKeyboardButton("⇃  ᴄʜᴏᴏsᴇ ʟᴀɴɢᴜᴀɢᴇ  ⇂", callback_data=f"callback_none")
     ],[
-        InlineKeyboardButton("Tamil", callback_data=f"add_filter#{userid}#tamil"),
-        InlineKeyboardButton("Telgue", callback_data=f"add_filter#{userid}#telugu")
+        InlineKeyboardButton("Eɴɢʟɪꜱʜ", callback_data=f"add_filter#{userid}#english"),
+        InlineKeyboardButton("Hɪɴᴅɪ", callback_data=f"add_filter#{userid}#hindi")
     ],[
-        InlineKeyboardButton("Marathi", callback_data=f"add_filter#{userid}#mar"),
-        InlineKeyboardButton("Malayalam", callback_data=f"add_filter#{userid}#mal")
+        InlineKeyboardButton("Tᴀᴍɪʟ", callback_data=f"add_filter#{userid}#tamil"),
+        InlineKeyboardButton("Tᴇʟᴜɢᴜ", callback_data=f"add_filter#{userid}#telugu")
     ],[
-        InlineKeyboardButton("Kannada", callback_data=f"add_filter#{userid}#kan"),
-        InlineKeyboardButton("Dual Audio", callback_data=f"add_filter#{userid}#dual")
+        InlineKeyboardButton("Mᴀʀᴀᴛʜɪ", callback_data=f"add_filter#{userid}#mar"),
+        InlineKeyboardButton("Mᴀʟᴀʏᴀʟᴀᴍ", callback_data=f"add_filter#{userid}#mal")
     ],[
-        InlineKeyboardButton("Multi Audio", callback_data=f"add_filter#{userid}#multi"),
-        InlineKeyboardButton("Subtitles", callback_data=f"add_filter#{userid}#sub")
+        InlineKeyboardButton("Kᴀɴɴᴀᴅᴀ", callback_data=f"add_filter#{userid}#kan"),
+        InlineKeyboardButton("Dᴜᴀʟ Aᴜᴅɪᴏ", callback_data=f"add_filter#{userid}#dual")
     ],[
-        InlineKeyboardButton("Clear", callback_data=f"add_filter#{userid}#clearlanguage"),
-        InlineKeyboardButton("Back", callback_data=f"add_filter#{userid}#mainpage")
+        InlineKeyboardButton("Mᴜʟᴛɪ Aᴜᴅɪᴏ", callback_data=f"add_filter#{userid}#multi"),
+        InlineKeyboardButton("ꜱᴜʙᴛɪᴛʟᴇꜱ", callback_data=f"add_filter#{userid}#sub")
+    ],[
+        InlineKeyboardButton("Cʟᴇᴀʀ", callback_data=f"add_filter#{userid}#clearlanguage"),
+        InlineKeyboardButton("Bᴀᴄᴋ", callback_data=f"add_filter#{userid}#mainpage")
     ]]
     try:
         await query.edit_message_reply_markup(
@@ -240,13 +239,49 @@ async def select_language(bot, query):
     except MessageNotModified:
         pass
     await query.answer()
-    
+
+@Client.on_callback_query(filters.regex(r"^select_lang"))
+async def select_language(bot, query):
+    _, userid= query.data.split("#")
+    if int(userid) not in [query.from_user.id, 0]:
+        return await query.answer(script.ALRT_TXT.format(query.from_user.first_name), show_alert=True)
+    btn = [[
+        InlineKeyboardButton("⇃  ᴄʜᴏᴏsᴇ ʟᴀɴɢᴜᴀɢᴇ  ⇂", callback_data=f"callback_none")
+    ],[
+        InlineKeyboardButton("Eɴɢʟɪꜱʜ", callback_data=f"add_filter#{userid}#english"),
+        InlineKeyboardButton("Hɪɴᴅɪ", callback_data=f"add_filter#{userid}#hindi")
+    ],[
+        InlineKeyboardButton("Tᴀᴍɪʟ", callback_data=f"add_filter#{userid}#tamil"),
+        InlineKeyboardButton("Tᴇʟᴜɢᴜ", callback_data=f"add_filter#{userid}#telugu")
+    ],[
+        InlineKeyboardButton("Mᴀʀᴀᴛʜɪ", callback_data=f"add_filter#{userid}#mar"),
+        InlineKeyboardButton("Mᴀʟᴀʏᴀʟᴀᴍ", callback_data=f"add_filter#{userid}#mal")
+    ],[
+        InlineKeyboardButton("Kᴀɴɴᴀᴅᴀ", callback_data=f"add_filter#{userid}#kan"),
+        InlineKeyboardButton("Dᴜᴀʟ Aᴜᴅɪᴏ", callback_data=f"add_filter#{userid}#dual")
+    ],[
+        InlineKeyboardButton("Mᴜʟᴛɪ Aᴜᴅɪᴏ", callback_data=f"add_filter#{userid}#multi"),
+        InlineKeyboardButton("ꜱᴜʙᴛɪᴛʟᴇꜱ", callback_data=f"add_filter#{userid}#sub")
+    ],[
+        InlineKeyboardButton("Cʟᴇᴀʀ", callback_data=f"add_filter#{userid}#clearlanguage"),
+        InlineKeyboardButton("Bᴀᴄᴋ", callback_data=f"add_filter#{userid}#mainpage")
+    ]]
+    try:
+        await query.edit_message_reply_markup(
+            reply_markup=InlineKeyboardMarkup(btn)
+        )
+    except MessageNotModified:
+        pass
+    await query.answer()
+
 @Client.on_callback_query(filters.regex(r"^select_quality"))
 async def select_quality(bot, query):
     _, userid= query.data.split("#")
     if int(userid) not in [query.from_user.id, 0]:
         return await query.answer(script.ALRT_TXT.format(query.from_user.first_name), show_alert=True)
     btn = [[
+        InlineKeyboardButton("⇃  ᴄʜᴏᴏsᴇ ϙᴜᴀʟɪᴛʏ  ⇂", callback_data=f"callback_none")
+    ],[
         InlineKeyboardButton("HD/Rips", callback_data=f"add_filter#{userid}#rip"),
         InlineKeyboardButton("360P", callback_data=f"add_filter#{userid}#360p")
     ],[
@@ -273,6 +308,8 @@ async def select_season(bot, query):
     if int(userid) not in [query.from_user.id, 0]:
         return await query.answer(script.ALRT_TXT.format(query.from_user.first_name), show_alert=True)
     btn = [[
+        InlineKeyboardButton("⇃  ᴄʜᴏᴏsᴇ ꜱᴇᴀꜱᴏɴ  ⇂", callback_data=f"callback_none")
+    ],[
         InlineKeyboardButton("Season 01", callback_data=f"add_filter#{userid}#s01"),
         InlineKeyboardButton("Season 02", callback_data=f"add_filter#{userid}#s02")
     ],[
@@ -509,24 +546,23 @@ def is_invalid_message(msg): #checks if the message is invalid ?
         return True
     return False
 
-
 async def imdb_S1(search):
     try:
         imdb_list = search_movie(search)
 
         if not imdb_list:
-            return None, None
+            return None
 
         imdb_list = [await process_text(str(movie)) for movie in imdb_list]
         imdb_list = list(set(imdb_list))
         match_movie, score = process.extractOne(search.lower(), imdb_list)
         if int(score) >= 75:
-            return match_movie, imdb_list
+            return match_movie
         else:
-            return None, imdb_list
+            return None
 
     except Exception as e:
-        return None ,None
+        return None 
     
 def search_movie(query, results=10):
     try:
@@ -545,7 +581,36 @@ def search_movie(query, results=10):
     except Exception as e:
         print("An error occurred:", e)
         return None
+
+#TREANDING MOVIES
+async def popularity_store(query):
+    try:
+        # Check if the movie exists in the database
+        if await does_movie_exxists(query.lower()):
+            movie = f"2,{query.lower()},trending,1"
+            await store_movies_from_text(movie)
+            return
+    except Exception as e:
+        print(f"ERROR 1: TRENDING MOVIES\n{e}")
+
+    try:
+        # Search for the movie on IMDb
+        imdb_result,_ = await imdb_S1(query.lower())
         
+        if imdb_result:
+            imdb_result = await process_text(imdb_result)
+
+        
+        # Calculate similarity score between query and IMDb result
+        score = fuzz.token_sort_ratio(query.lower(), imdb_result.lower())
+        
+        if score >= 95:
+            input_str = f"2,{imdb_result.lower()},trending,1"
+            await store_movies_from_text(input_str)
+    except Exception as e:
+        print(f"ERROR 2: TRENDING MOVIES\n{e}")
+        return
+           
 def find_matching_movies(input_name, movie_list):
     try:
         matches = process.extract(input_name, movie_list, scorer=fuzz.ratio, limit=5)
