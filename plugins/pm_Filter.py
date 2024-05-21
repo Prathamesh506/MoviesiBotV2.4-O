@@ -42,41 +42,55 @@ async def auto_filter(client, msg):
     ptext = await process_text(msg.text)
     search_details, search = detail_extraction(ptext, type=True)
     files = []
- 
-    files, offset, total_pages = await search_db(search.lower(), offset=0)
-    if files:
-        await db.store_search(msg.from_user.id, search)
 
-    else:     
-        as_msg = await msg.reply_text("<b>Auto Correcting ⚡</b>")
-
-        temp_detail = search_details.copy()
-
-        temp_detail['title'] = await search_movie_db(temp_detail['title'].lower())
-        if temp_detail['title'] is not None:
-            temp_search = str_to_string(temp_detail)
-            files, offset, total_pages = await search_db(temp_search.lower(), offset=0)
-            if files:
-                search = temp_search
-                await db.store_search(msg.from_user.id, search)
-                await as_msg.delete()
-                
+    #BASED ON PRIVIOUS SEARCH FILTER ADD ON
+    if not search_details['title'] and not search_details['year']:
+        last_search = await db.retrieve_latest_search(msg.from_user.id)
+        if last_search is None:
+            await no_resultx(msg, text="<i>Provide a Correct Title❗</i>")
+            return
+        search = f"{last_search} {search}"
+        search_details, search = detail_extraction(search)
+        files, offset, total_pages = await search_db(search.lower(), offset=0)
         if not files:
-            try:
-                await as_msg.delete()
-                search_details['title'] = await imdb_S1(search_details['title'].lower())
-                if search_details['title']:
-                    print(f"{search_details['title']}")
-                    search_details['title'] = await process_text(search_details['title'])
-                    tempsearch = str_to_string(search_details)
-                    files, offset, total_pages = await search_db(tempsearch.lower(), offset=0)
-                    if files:
-                        search = tempsearch
-                        await as_msg.delete()
-                        await db.store_search(msg.from_user.id, search)
-            except Exception as e:
-                logger.exception(f'ERROR: #IMDB AUTOCORRECT \n{e}')
-                pass
+            await no_resultx(msg, text=f"<i>No Files Found in Database\n<b>For Your Search:</b> {search.title()}</i>")
+            return
+        await db.store_search(msg.from_user.id, search)
+    else: 
+        files, offset, total_pages = await search_db(search.lower(), offset=0)
+        if files:
+            await db.store_search(msg.from_user.id, search)
+
+        else:     
+            as_msg = await msg.reply_text("<b>Auto Correcting ⚡</b>")
+
+            temp_detail = search_details.copy()
+
+            temp_detail['title'] = await search_movie_db(temp_detail['title'].lower())
+            if temp_detail['title'] is not None:
+                temp_search = str_to_string(temp_detail)
+                files, offset, total_pages = await search_db(temp_search.lower(), offset=0)
+                if files:
+                    search = temp_search
+                    await db.store_search(msg.from_user.id, search)
+                    await as_msg.delete()
+                    
+            if not files:
+                try:
+                    await as_msg.delete()
+                    search_details['title'] = await imdb_S1(search_details['title'].lower())
+                    if search_details['title']:
+                        print(f"{search_details['title']}")
+                        search_details['title'] = await process_text(search_details['title'])
+                        tempsearch = str_to_string(search_details)
+                        files, offset, total_pages = await search_db(tempsearch.lower(), offset=0)
+                        if files:
+                            search = tempsearch
+                            await as_msg.delete()
+                            await db.store_search(msg.from_user.id, search)
+                except Exception as e:
+                    logger.exception(f'ERROR: #IMDB AUTOCORRECT \n{e}')
+                    pass
 
     if files:
         btn = await result_btn(files, msg.from_user.id, search)
@@ -581,6 +595,12 @@ def search_movie(query, results=10):
     except Exception as e:
         print("An error occurred:", e)
         return None
+
+async def no_resultx(msg,text="<i>No Results Found Please Provide Correct Title!</i>"):#no result message
+    k = await msg.reply_text(f"{text}")
+    await asyncio.sleep(7)
+    await k.delete()
+    return
 
 #TREANDING MOVIES
 async def popularity_store(query):
