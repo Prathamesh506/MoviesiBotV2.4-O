@@ -615,7 +615,7 @@ async def popularity_store(query):
 
     try:
         # Search for the movie on IMDb
-        imdb_result,_ = await imdb_S1(query.lower())
+        imdb_result = await imdb_S1(query.lower())
         
         if imdb_result:
             imdb_result = await process_text(imdb_result)
