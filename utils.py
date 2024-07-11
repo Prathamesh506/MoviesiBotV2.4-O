@@ -367,7 +367,7 @@ async def get_verify_shorted_link(num, link):
                   }
         try:
             async with aiohttp.ClientSession() as session:
-                 async with await asyncio.wait_for(session.get(url, params=params, raise_for_status=True, ssl=False), timeout=35) as response:
+                 async with await asyncio.wait_for(session.get(url, params=params, raise_for_status=True, ssl=False), timeout=20) as response:
                     data = await response.json()
                     if data["status"] == "success":
                         return data["shortenedUrl"]
