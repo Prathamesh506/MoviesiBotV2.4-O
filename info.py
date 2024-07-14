@@ -19,6 +19,7 @@ API_ID = "3704207"
 API_HASH = environ.get("API_HASH", "8d20e46f5413139329f2ec753f7c482a")
 
 BOT_TOKEN = environ.get("BOT_TOKEN", "6804042543:AAHsAypo4f7s-mN--uWK6o5pxAs-gsKXB68")#u
+BOT_TOKEN = environ.get("BOT_TOKEN", "7316351575:AAGQ-J9JU1DJvPPkVho5CcIevWeJcKYWCbI")#u2
 # BOT_TOKEN = environ.get("BOT_TOKEN", "7189786967:AAEEAAkdroqKWYiiRZnGWDL-sPtZdUPFAW8")#s
 # BOT_TOKEN = environ.get("BOT_TOKEN", "7195878471:AAGjpjZCZgvsMrIViQB3cxrUv8A7_fX8870")#m
 # BOT_TOKEN = environ.get("BOT_TOKEN", "6583753281:AAFtg5TYcGEToa99k0hbOYrrkZXJIXWQXHk")#t
@@ -77,7 +78,8 @@ DATABASE_URI = environ.get('DATABASE_URI', "mongodb+srv://shadow:shadow506@clust
 # DATABASE_URI = environ.get('DATABASE_URI', "mongodb+srv://Testing:Testing@cluster0.6fjlhzr.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0")#t
 
 DATABASE_NAME = environ.get('DATABASE_NAME', "Cluster0")
-COLLECTION_NAME = environ.get('COLLECTION_NAME', 'MoviesiBotV4')
+# COLLECTION_NAME = environ.get('COLLECTION_NAME', 'MoviesiBotV4')
+COLLECTION_NAME = environ.get('COLLECTION_NAME', 'MoviesiBotV4-2')#U2
 
 
 #-------------------------VERIFY AND SHORTNER--------------------------
