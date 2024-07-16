@@ -513,26 +513,26 @@ async def verify_month(bot, message):
 
     await message.reply_text(response_message)
 
-# @Client.on_message(filters.command('deleteall') & filters.user(ADMINS))
-# async def delete_all_index(bot, message):
-#     await message.reply_text(
-#         'Tʜɪs ᴡɪʟʟ ᴅᴇʟᴇᴛᴇ ᴀʟʟ ɪɴᴅᴇxᴇᴅ ғɪʟᴇs.\nDᴏ ʏᴏᴜ ᴡᴀɴᴛ ᴛᴏ ᴄᴏɴᴛɪɴᴜᴇ ?',
-#         reply_markup=InlineKeyboardMarkup(
-#             [
-#                 [
-#                     InlineKeyboardButton(
-#                         text="Yᴇs", callback_data="autofilter_delete_all"
-#                     )
-#                 ],
-#                 [
-#                     InlineKeyboardButton(
-#                         text="Cᴀɴᴄᴇʟ", callback_data=f"close_data#{message.from_user.id}"
-#                     )
-#                 ],
-#             ]
-#         ),
-#         quote=True,
-#     )
+@Client.on_message(filters.command('deleteall') & filters.user(ADMINS))
+async def delete_all_index(bot, message):
+    await message.reply_text(
+        'Tʜɪs ᴡɪʟʟ ᴅᴇʟᴇᴛᴇ ᴀʟʟ ɪɴᴅᴇxᴇᴅ ғɪʟᴇs.\nDᴏ ʏᴏᴜ ᴡᴀɴᴛ ᴛᴏ ᴄᴏɴᴛɪɴᴜᴇ ?',
+        reply_markup=InlineKeyboardMarkup(
+            [
+                [
+                    InlineKeyboardButton(
+                        text="Yᴇs", callback_data="autofilter_delete_all"
+                    )
+                ],
+                [
+                    InlineKeyboardButton(
+                        text="Cᴀɴᴄᴇʟ", callback_data=f"close_data#{message.from_user.id}"
+                    )
+                ],
+            ]
+        ),
+        quote=True,
+    )
     
 # @Client.on_callback_query(filters.regex(r'^autofilter_delete_all'))
 # async def delete_all_index_confirm(bot, message):
