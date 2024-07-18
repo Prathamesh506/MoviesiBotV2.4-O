@@ -18,19 +18,13 @@ User id: </b><code>{}</code>
 <i></i>
 
 """
-pay_msg = f"""<b>› PREMIUM PLANS !</b>
+pay_msg = f"""<b>PREMIUM PLANS ✨</b>
 
-₹19 - Get Verified for <b>Week</b>
-₹29 - Get Verified for <b>Month</b>
-₹79 - Get Verified for <b>3 Months</b>
-₹139 - Get Verified for <b>6 months</b>
-₹269 - Get Verified for <b>Year</b></i>
+₹99 - Get Verified for <b>3 months</b>
+₹199 - Get Verified for <b>6 months</b>
+₹299 - Get Verified for <b>1 Year</b>
 
-<b>UPI ID: </b><code>{UPI_ID}</code><i>
-
-You can make payments using either the <b>UPI ID </b>or by scanning the <b>QR code</b>.
-
-<b>Note: </b>Don't forget to send payment screenshot to <a href="http://t.me/{OWNER_USERNAME}">Admins</a> for plan activation. ☞ @{OWNER_USERNAME}</i>"""
+<b>To Buy Dm: @AizeniBot</b>"""
 
 @Client.on_message(pyrogram.filters.private & pyrogram.filters.command(["premium"]))
 def premium_Plans(bot, update):
