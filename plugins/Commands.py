@@ -49,11 +49,12 @@ async def start(client, message):
             InlineKeyboardButton('〆   ᴀᴅᴅ ᴍᴇ ᴛᴏ ʏᴏᴜʀ ɢʀᴏᴜᴘ   〆', url=f"http://t.me/{temp.U_NAME}?startgroup=true")
             ],[
                     InlineKeyboardButton('⍟ ᴀʙᴏᴜᴛ', callback_data="about_bot"),
-                    InlineKeyboardButton('⚡ ᴡᴀᴛᴄʜ', callback_data="back_watch_start")
+                    InlineKeyboardButton('✨ ᴍʏ ᴘʟᴀɴ ', callback_data=f"user_plans#{message.from_user.id}")
             ],[      
-                    InlineKeyboardButton('⎚ ᴜᴘᴅᴀᴛᴇs', url="https://t.me/VegaLatest"),
-                    InlineKeyboardButton('♨ ɢʀᴏᴜᴘ', url=GRP_LINK)
+                    InlineKeyboardButton('🎬 ɢʀᴏᴜᴘ', url=GRP_LINK),
+                    InlineKeyboardButton('♨ ᴍᴏᴠɪᴇs', callback_data="back_watch_start")
         ]]
+        
         reply_markup = InlineKeyboardMarkup(buttons)
         await message.reply_photo(
             photo=random.choice(PICS),
@@ -94,14 +95,14 @@ async def start(client, message):
     
     #other ultility cmds
     if len(message.command) == 2 and message.command[1] in ["subscribe", "error", "okay", "help"]:
-        buttons = buttons = [[
+        buttons = [[
             InlineKeyboardButton('〆   ᴀᴅᴅ ᴍᴇ ᴛᴏ ʏᴏᴜʀ ɢʀᴏᴜᴘ   〆', url=f"http://t.me/{temp.U_NAME}?startgroup=true")
             ],[
                     InlineKeyboardButton('⍟ ᴀʙᴏᴜᴛ', callback_data="about_bot"),
-                    InlineKeyboardButton('⚡ ᴡᴀᴛᴄʜ', callback_data="back_watch_start")
+                    InlineKeyboardButton('✨ ᴍʏ ᴘʟᴀɴ ', callback_data=f"user_plans#{message.from_user.id}")
             ],[      
-                    InlineKeyboardButton('⎚ ᴜᴘᴅᴀᴛᴇs', url="https://t.me/VegaLatest"),
-                    InlineKeyboardButton('♨ ɢʀᴏᴜᴘ', url=GRP_LINK)
+                    InlineKeyboardButton('🎬 ɢʀᴏᴜᴘ', url=GRP_LINK),
+                    InlineKeyboardButton('♨ ᴍᴏᴠɪᴇs', callback_data="back_watch_start")
         ]]
         reply_markup = InlineKeyboardMarkup(buttons)
         await message.reply_photo(
@@ -130,12 +131,12 @@ async def start(client, message):
         if IS_VERIFY and not await check_verification(client, message.from_user.id):
                 pw_msg = await message.reply_text("Please Wait..")
                 btn = [[
-                    InlineKeyboardButton("Vᴇʀɪғʏ", url=await get_token(client, message.from_user.id, f"https://telegram.me/{temp.U_NAME}?start=", "all_eps")),
-                    InlineKeyboardButton("Hᴏᴡ Tᴏ Vᴇʀɪғʏ", url=HOW_TO_VERIFY)
+                    InlineKeyboardButton("Verify Now", url=await get_token(client, message.from_user.id, f"https://telegram.me/{temp.U_NAME}?start=", "all_eps")),
+                    InlineKeyboardButton("Hᴏᴡ Tᴏ Verify", url=HOW_TO_VERIFY)
                 ]]
                 await pw_msg.delete()
                 verify_btn = await message.reply_text(
-                    text="<b>Yᴏᴜ ᴀʀᴇ ɴᴏᴛ ᴠᴇʀɪғɪᴇᴅ!\nKɪɴᴅʟʏ ᴠᴇʀɪғʏ ᴛᴏ ᴄᴏɴᴛɪɴᴜᴇ Sᴏ ᴛʜᴀᴛ ʏᴏᴜ ᴄᴀɴ ɢᴇᴛ ᴀᴄᴄᴇss ᴛᴏ ᴜɴʟɪᴍɪᴛᴇᴅ ᴍᴏᴠɪᴇs ᴜɴᴛɪʟ 16 ʜᴏᴜʀs ғʀᴏᴍ ɴᴏᴡ !</b>\n<i>or just buy /premium Membership</i>",
+                    text="<b>⚠️ You Are Not Verified!</b> \nPlease complete the verification process to gain access to unlimited movies for the next 16 hours.",
                     protect_content=True if PROTECT_CONTENT else False,
                     reply_markup=InlineKeyboardMarkup(btn)
                 )
@@ -164,11 +165,11 @@ async def start(client, message):
                 link =  f"https://telegram.me/{temp.U_NAME}?start="
                 url = f"{link}all_eps_files-{message.from_user.id}"
                 btn = [[
-                    InlineKeyboardButton("Gᴇᴛ Fɪʟᴇ",url=url)
+                    InlineKeyboardButton("Get File",url=url)
                 ]]
                 await verify_user(client, userid, token)
                 await message.reply_text(
-                    text=f"<b>Hᴇʏ {message.from_user.mention}, Yᴏᴜ ᴀʀᴇ sᴜᴄᴄᴇssғᴜʟʟʏ ᴠᴇʀɪғɪᴇᴅ !\nNᴏᴡ ʏᴏᴜ ʜᴀᴠᴇ ᴜɴʟɪᴍɪᴛᴇᴅ ᴀᴄᴄᴇss ғᴏʀ ᴀʟʟ ᴍᴏᴠɪᴇs ᴛɪʟʟ ᴛʜᴇ ɴᴇxᴛ ᴠᴇʀɪғɪᴄᴀᴛɪᴏɴ ᴡʜɪᴄʜ ɪs ᴀғᴛᴇʀ 16 ʜᴏᴜʀs ғʀᴏᴍ ɴᴏᴡ.</b><i>\nuse /plan for more info</i>",
+                    text=f"<b>Successfully verified! ✅</b> \nYou now have unlimited access to all movies until your next verification in 16 hours. Use /plan for more info.",
                     protect_content=True if PROTECT_CONTENT else False,
                     reply_markup=InlineKeyboardMarkup(btn)
                 )
@@ -178,14 +179,14 @@ async def start(client, message):
                     InlineKeyboardButton("Get File", url=f"https://telegram.me/{temp.U_NAME}?start=files_{fileid}")
                 ]]
                 await message.reply_text(
-                    text=f"<b>Hᴇʏ {message.from_user.mention}, Yᴏᴜ ᴀʀᴇ sᴜᴄᴄᴇssғᴜʟʟʏ ᴠᴇʀɪғɪᴇᴅ !\nNᴏᴡ ʏᴏᴜ ʜᴀᴠᴇ ᴜɴʟɪᴍɪᴛᴇᴅ ᴀᴄᴄᴇss ғᴏʀ ᴀʟʟ ᴍᴏᴠɪᴇs ᴛɪʟʟ ᴛʜᴇ ɴᴇxᴛ ᴠᴇʀɪғɪᴄᴀᴛɪᴏɴ ᴡʜɪᴄʜ ɪs ᴀғᴛᴇʀ 16 ʜᴏᴜʀs ғʀᴏᴍ ɴᴏᴡ.</b><i>\nuse /plan for more info</i>",
+                    text=f"<b>Successfully verified! ✅</b> \nYou now have unlimited access to all movies until your next verification in 16 hours. Use /plan for more info.",
                     protect_content=True if PROTECT_CONTENT else False,
                     reply_markup=InlineKeyboardMarkup(btn)
                 )
                 return   
         else:
             return await message.reply_text(
-                text="<b>Iɴᴠᴀʟɪᴅ ʟɪɴᴋ ᴏʀ Exᴘɪʀᴇᴅ ʟɪɴᴋ !</b>",
+                text="<b>❌ Invalid link or expired link!</b>",
                 protect_content=True if PROTECT_CONTENT else False
             )
 
@@ -200,12 +201,12 @@ async def start(client, message):
             if IS_VERIFY and not await check_verification(client, message.from_user.id):
                 pw_msg = await message.reply_text("Please Wait..")
                 btn = [[
-                    InlineKeyboardButton("Vᴇʀɪғʏ", url=await get_token(client, message.from_user.id, f"https://telegram.me/{temp.U_NAME}?start=", file_id)),
-                    InlineKeyboardButton("Hᴏᴡ Tᴏ Vᴇʀɪғʏ", url=HOW_TO_VERIFY)
+                    InlineKeyboardButton("Verify Now", url=await get_token(client, message.from_user.id, f"https://telegram.me/{temp.U_NAME}?start=", file_id)),
+                    InlineKeyboardButton("Hᴏᴡ Tᴏ Verify", url=HOW_TO_VERIFY)
                 ]]
                 await pw_msg.delete()
                 verify_btn = await message.reply_text(
-                    text="<b>Yᴏᴜ ᴀʀᴇ ɴᴏᴛ ᴠᴇʀɪғɪᴇᴅ!\nKɪɴᴅʟʏ ᴠᴇʀɪғʏ ᴛᴏ ᴄᴏɴᴛɪɴᴜᴇ Sᴏ ᴛʜᴀᴛ ʏᴏᴜ ᴄᴀɴ ɢᴇᴛ ᴀᴄᴄᴇss ᴛᴏ ᴜɴʟɪᴍɪᴛᴇᴅ ᴍᴏᴠɪᴇs ᴜɴᴛɪʟ 16 ʜᴏᴜʀs ғʀᴏᴍ ɴᴏᴡ !</b>\n<i>or just buy /premium Membership</i>",
+                    text="<b>⚠️ You Are Not Verified!</b> \nPlease complete the verification process to gain access to unlimited movies for the next 16 hours.",
                     protect_content=True if PROTECT_CONTENT else False,
                     reply_markup=InlineKeyboardMarkup(btn)
                 )
@@ -232,7 +233,7 @@ async def start(client, message):
             return
         except:
             pass
-        return await message.reply('Nᴏ sᴜᴄʜ ғɪʟᴇ ᴇxɪsᴛ.')
+        return await message.reply('❌ No such file exists.')
     
     files = files_[0]
     title = files.file_name
@@ -249,12 +250,12 @@ async def start(client, message):
     if IS_VERIFY and not await check_verification(client, message.from_user.id):
         pw_msg = await message.reply_text("Please Wait..")
         btn = [[
-            InlineKeyboardButton("Vᴇʀɪғʏ", url=await get_token(client, message.from_user.id, f"https://telegram.me/{temp.U_NAME}?start=", file_id)),
-            InlineKeyboardButton("Hᴏᴡ Tᴏ Vᴇʀɪғʏ", url=HOW_TO_VERIFY)
+            InlineKeyboardButton("Verify Now", url=await get_token(client, message.from_user.id, f"https://telegram.me/{temp.U_NAME}?start=", file_id)),
+            InlineKeyboardButton("Hᴏᴡ Tᴏ Verify", url=HOW_TO_VERIFY)
         ]]
         await pw_msg.delete()
         verify_btn=await message.reply_text(
-            text="<b>Yᴏᴜ ᴀʀᴇ ɴᴏᴛ ᴠᴇʀɪғɪᴇᴅ!\nKɪɴᴅʟʏ ᴠᴇʀɪғʏ ᴛᴏ ᴄᴏɴᴛɪɴᴜᴇ Sᴏ ᴛʜᴀᴛ ʏᴏᴜ ᴄᴀɴ ɢᴇᴛ ᴀᴄᴄᴇss ᴛᴏ ᴜɴʟɪᴍɪᴛᴇᴅ ᴍᴏᴠɪᴇs ᴜɴᴛɪʟ 16 ʜᴏᴜʀs ғʀᴏᴍ ɴᴏᴡ !</b>\n<i>or just buy /premium Membership</i>",
+            text="<b>⚠️ You Are Not Verified!</b> \nPlease complete the verification process to gain access to unlimited movies for the next 16 hours.",
             protect_content=True if PROTECT_CONTENT else False,
             reply_markup=InlineKeyboardMarkup(btn)
         )
