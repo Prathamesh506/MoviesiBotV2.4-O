@@ -117,7 +117,7 @@ async def user_stas(bot, update):
 def pay_btn(bot, update):
   bot = bot.get_me()
   buttons = [[
-   pyrogram.types.InlineKeyboardButton("ϙʀ ᴄᴏᴅᴇ ▣", callback_data="sendqrcode"),
+   # pyrogram.types.InlineKeyboardButton("ϙʀ ᴄᴏᴅᴇ ▣", callback_data="sendqrcode"),
    pyrogram.types.InlineKeyboardButton("Back ",callback_data="bckpre" ),
    ]]
   return pyrogram.types.InlineKeyboardMarkup(buttons)
@@ -126,7 +126,7 @@ def pay_btn2(bot, update):
   bot = bot.get_me()
   userid= update.from_user.id
   buttons = [[
-   pyrogram.types.InlineKeyboardButton("ϙʀ ᴄᴏᴅᴇ ▣", callback_data="sendqrcode"),
+   # pyrogram.types.InlineKeyboardButton("ϙʀ ᴄᴏᴅᴇ ▣", callback_data="sendqrcode"),
    pyrogram.types.InlineKeyboardButton("Close ",callback_data=f"close_data#{userid}" ),
    ]]
   return pyrogram.types.InlineKeyboardMarkup(buttons)
