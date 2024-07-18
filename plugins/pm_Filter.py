@@ -1037,10 +1037,10 @@ async def cb_handler(client: Client, query: CallbackQuery):
             InlineKeyboardButton('〆   ᴀᴅᴅ ᴍᴇ ᴛᴏ ʏᴏᴜʀ ɢʀᴏᴜᴘ   〆', url=f"http://t.me/{temp.U_NAME}?startgroup=true")
             ],[
                     InlineKeyboardButton('⍟ ᴀʙᴏᴜᴛ', callback_data="about_bot"),
-                    InlineKeyboardButton('✨ ᴍʏ ᴘʟᴀɴ ', callback_data=f"user_plans#{message.from_user.id}")
+                    InlineKeyboardButton('♨ ᴍᴏᴠɪᴇs', callback_data="back_watch_start")
             ],[      
                     InlineKeyboardButton('🎬 ɢʀᴏᴜᴘ', url=GRP_LINK),
-                    InlineKeyboardButton('♨ ᴍᴏᴠɪᴇs', callback_data="back_watch_start")
+                    InlineKeyboardButton('🔅 ᴜᴘᴅᴀᴛᴇs', url="https://t.me/VegaLatest")
         ]]
         await query.edit_message_text(
                     text=script.START_TXT.format(query.from_user.mention, temp.B_NAME),
