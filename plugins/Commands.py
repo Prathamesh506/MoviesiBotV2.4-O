@@ -455,28 +455,29 @@ async def deletemultiplefiles(bot, message):
         parse_mode=enums.ParseMode.HTML
     )
 
-# @Client.on_message((filters.command(["request", "Request"]) | filters.regex("#request") | filters.regex("#Request")))
-# async def requests(bot, message):
-#     if REQST_CHANNEL:
-#         reporter = str(message.from_user.id)
-#         mention = message.from_user.mention
-#         content = message.text[9:].title()
-#         if len(content) < 3: 
-#             await message.reply_text("<b>Follow the proper Format</b> \n\nEg: #request Fighter 2024")
-#             return
-#         btn = []
-#         #development
-#         btn.insert(0, [
-#                             InlineKeyboardButton('✅',callback_data=f'req_oprt#req_pstd#{reporter}#{content}'),
-#                             InlineKeyboardButton("❌", callback_data=f'req_oprt#req_noprt#{reporter}#{content}')
-#                         ])
-#         rp = await bot.send_message(chat_id=REQST_CHANNEL, text=f"<b>Requested By :</b> {mention} \n\n<b>Request :</b><code> {content}</code>\n\n<i>Your request will be fulfilled shortly.</i>", reply_markup=InlineKeyboardMarkup(btn))
-#         btn2 = [[
-#                             InlineKeyboardButton('Vɪᴇᴡ Rᴇᴏ̨ᴜᴇsᴛ 📃', url=f"{rp.link}")
-#                         ]]
-#         await message.reply_text("<b>Yᴏᴜʀ ʀᴇᴏ̨ᴜᴇsᴛ ʜᴀs ʙᴇᴇɴ ᴀᴅᴅᴇᴅ! Pʟᴇᴀsᴇ ᴡᴀɪᴛ ғᴏʀ sᴏᴍᴇ ᴛɪᴍᴇ.</b>", reply_markup=InlineKeyboardMarkup(btn2))
-#     else:
-#         return
+@Client.on_message((filters.command(["request", "Request"]) | filters.regex("#request") | filters.regex("#Request")))
+async def requests(bot, message):
+    if REQST_CHANNEL:
+        reporter = str(message.from_user.id)
+        mention = message.from_user.mention
+        content = message.text[9:].title()
+        content = re.sub(r'\b(vegamoviesibot|vegamoviesxbot|makima99bot)\b', '', content.lower())
+        if len(content) < 3: 
+            await message.reply_text("<b>Follow the proper Format</b> \n\nEg: #request Fighter 2024")
+            return
+        btn = []
+        #development
+        btn.insert(0, [
+                            InlineKeyboardButton('✅',callback_data=f'req_oprt#req_pstd#{reporter}#{content}'),
+                            InlineKeyboardButton("❌", callback_data=f'req_oprt#req_noprt#{reporter}#{content}')
+                        ])
+        rp = await bot.send_message(chat_id=REQST_CHANNEL, text=f"<b>Requested By :</b> {mention} \n\n<b>Request :</b><code> {content}</code>\n\n<i>Your request will be fulfilled shortly.</i>", reply_markup=InlineKeyboardMarkup(btn))
+        btn2 = [[
+                            InlineKeyboardButton('Vɪᴇᴡ Rᴇᴏ̨ᴜᴇsᴛ 📃', url=f"{rp.link}")
+                        ]]
+        await message.reply_text("<b>Yᴏᴜʀ ʀᴇᴏ̨ᴜᴇsᴛ ʜᴀs ʙᴇᴇɴ ᴀᴅᴅᴇᴅ! Pʟᴇᴀsᴇ ᴡᴀɪᴛ ғᴏʀ sᴏᴍᴇ ᴛɪᴍᴇ.</b>", reply_markup=InlineKeyboardMarkup(btn2))
+    else:
+        return
 
 #RESTART 
 @Client.on_message(filters.command("restart") & filters.user(ADMINS))
@@ -513,26 +514,26 @@ async def verify_month(bot, message):
 
     await message.reply_text(response_message)
 
-@Client.on_message(filters.command('deleteall') & filters.user(ADMINS))
-async def delete_all_index(bot, message):
-    await message.reply_text(
-        'Tʜɪs ᴡɪʟʟ ᴅᴇʟᴇᴛᴇ ᴀʟʟ ɪɴᴅᴇxᴇᴅ ғɪʟᴇs.\nDᴏ ʏᴏᴜ ᴡᴀɴᴛ ᴛᴏ ᴄᴏɴᴛɪɴᴜᴇ ?',
-        reply_markup=InlineKeyboardMarkup(
-            [
-                [
-                    InlineKeyboardButton(
-                        text="Yᴇs", callback_data="autofilter_delete_all"
-                    )
-                ],
-                [
-                    InlineKeyboardButton(
-                        text="Cᴀɴᴄᴇʟ", callback_data=f"close_data#{message.from_user.id}"
-                    )
-                ],
-            ]
-        ),
-        quote=True,
-    )
+# @Client.on_message(filters.command('deleteall') & filters.user(ADMINS))
+# async def delete_all_index(bot, message):
+#     await message.reply_text(
+#         'Tʜɪs ᴡɪʟʟ ᴅᴇʟᴇᴛᴇ ᴀʟʟ ɪɴᴅᴇxᴇᴅ ғɪʟᴇs.\nDᴏ ʏᴏᴜ ᴡᴀɴᴛ ᴛᴏ ᴄᴏɴᴛɪɴᴜᴇ ?',
+#         reply_markup=InlineKeyboardMarkup(
+#             [
+#                 [
+#                     InlineKeyboardButton(
+#                         text="Yᴇs", callback_data="autofilter_delete_all"
+#                     )
+#                 ],
+#                 [
+#                     InlineKeyboardButton(
+#                         text="Cᴀɴᴄᴇʟ", callback_data=f"close_data#{message.from_user.id}"
+#                     )
+#                 ],
+#             ]
+#         ),
+#         quote=True,
+#     )
     
 # @Client.on_callback_query(filters.regex(r'^autofilter_delete_all'))
 # async def delete_all_index_confirm(bot, message):
