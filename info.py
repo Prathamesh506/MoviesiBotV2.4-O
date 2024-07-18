@@ -11,19 +11,64 @@ def is_enabled(value, default):
     else:
         return default
 
+####################################################################################################################################################################
+####################################################################################################################################################################
+
+#--------------------------- ULTRON -----------------------------------
+
+# BOT_TOKEN = environ.get("BOT_TOKEN", "7247107038:AAFBLYr-63-TNVSp3HBUlNHzKfrhk1wmg_o")
+
+# DATABASE_URI = environ.get('DATABASE_URI', "mongodb+srv://shadow:shadow506@cluster0.srfnz9s.mongodb.net/?retryWrites=true&w=majority")
+
+# PICS = (environ.get('PICS', 'https://telegra.ph/file/96aa21c66eec5a24b9644.jpg https://telegra.ph/file/84bd10861f905d72adcaf.jpg https://telegra.ph/file/d315eaa802cdb2f790a5a.jpg https://telegra.ph/file/a25ea7f7a746ac1c544e3.jpg https://telegra.ph/file/40d555da9059bb1b0fcd7.jpg https://telegra.ph/file/2efd3b607301d692a634b.jpg https://telegra.ph/file/6e66b7dd8b9b30ace0f93.jpg https://telegra.ph/file/a320d989754c8dea12b02.png')).split()
+
+
+#--------------------------- OPTIMUS -----------------------------------
+
+# BOT_TOKEN = environ.get("BOT_TOKEN", "7229261743:AAEcDqJZkF9KVwDaBpV3iUdekLL21WLKD7k")
+
+# DATABASE_URI = environ.get('DATABASE_URI', "mongodb+srv://Optimus:Optimus@cluster0.uztjyky.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0")
+
+# PICS = (environ.get('PICS', 'https://telegra.ph/file/6e7b046bdf205092f798b.jpg')).split()
+
+
+#--------------------------- SCARLET WITCH -----------------------------------
+
+
+# BOT_TOKEN = environ.get("BOT_TOKEN", "7212030742:AAF7q_xOqG-4M-h5Bp3wz-KdwRCcQW7rzjE")
+
+# DATABASE_URI = environ.get('DATABASE_URI', "mongodb+srv://scarlet:scarlet@cluster0.iibbctz.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0")
+
+
+# PICS = (environ.get('PICS', 'https://telegra.ph/file/9203de86a8e55d14fa304.jpg https://telegra.ph/file/b9ed75fcef91d7edd629b.jpg https://telegra.ph/file/931798c653da0fa85b182.jpg https://telegra.ph/file/45162159d9b57fe6b270c.jpg ')).split()
+
+
+#--------------------------- MAKIMA -----------------------------------
+
+# BOT_TOKEN = environ.get("BOT_TOKEN", "7195878471:AAGjpjZCZgvsMrIViQB3cxrUv8A7_fX8870")
+
+# DATABASE_URI = environ.get('DATABASE_URI', "mongodb+srv://makima:makima@cluster0.covyf0w.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0")
+
+# PICS = (environ.get('PICS', 'https://telegra.ph/file/7ad2ddfeedf7396acb82f.jpg')).split()
+
+
+#--------------------------- TESTING -----------------------------------
+
+# BOT_TOKEN = environ.get("BOT_TOKEN", "6583753281:AAFtg5TYcGEToa99k0hbOYrrkZXJIXWQXHk")
+
+# DATABASE_URI = environ.get('DATABASE_URI', "mongodb+srv://Testing:Testing@cluster0.6fjlhzr.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0")
+
+# PICS = (environ.get('PICS', 'https://telegra.ph/file/6e7b046bdf205092f798b.jpg')).split()
+
+####################################################################################################################################################################
+####################################################################################################################################################################
+
 
 #------------------ BOT DETAILS ----------------------------------------
     
 SESSION = environ.get('SESSION', 'MoviesiBotV4')
 API_ID = "3704207"
 API_HASH = environ.get("API_HASH", "8d20e46f5413139329f2ec753f7c482a")
-
-BOT_TOKEN = environ.get("BOT_TOKEN", "6804042543:AAHsAypo4f7s-mN--uWK6o5pxAs-gsKXB68")#u
-BOT_TOKEN = environ.get("BOT_TOKEN", "7316351575:AAGQ-J9JU1DJvPPkVho5CcIevWeJcKYWCbI")#u2
-# BOT_TOKEN = environ.get("BOT_TOKEN", "7189786967:AAEEAAkdroqKWYiiRZnGWDL-sPtZdUPFAW8")#s
-# BOT_TOKEN = environ.get("BOT_TOKEN", "7195878471:AAGjpjZCZgvsMrIViQB3cxrUv8A7_fX8870")#m
-# BOT_TOKEN = environ.get("BOT_TOKEN", "6583753281:AAFtg5TYcGEToa99k0hbOYrrkZXJIXWQXHk")#t
-
 
 #------------------- ADMINS & AUTH_USERS -------------------------------
 
@@ -55,15 +100,7 @@ CHANNELS = [int(ch) if id_pattern.search(ch) else ch for ch in environ.get('CHAN
 #MULTI FILE AUTO DELETE
 DELETE_CHANNELS = [int(ch) if id_pattern.search(ch) else ch for ch in environ.get('CHANNELS', '-1001997311406 -1001908988097 -1001977939308 -1002052107035 -1002031777198 -1002120266966').split()] 
 
-
 #-------------------------- IMAGES -------------------------------
-
-#START BTN PICS
-PICS = (environ.get('PICS', 'https://telegra.ph/file/96aa21c66eec5a24b9644.jpg https://telegra.ph/file/84bd10861f905d72adcaf.jpg https://telegra.ph/file/d315eaa802cdb2f790a5a.jpg https://telegra.ph/file/a25ea7f7a746ac1c544e3.jpg https://telegra.ph/file/40d555da9059bb1b0fcd7.jpg https://telegra.ph/file/2efd3b607301d692a634b.jpg https://telegra.ph/file/6e66b7dd8b9b30ace0f93.jpg https://telegra.ph/file/a320d989754c8dea12b02.png')).split()#u
-
-# PICS = (environ.get('PICS', 'https://telegra.ph/file/9203de86a8e55d14fa304.jpg https://telegra.ph/file/b9ed75fcef91d7edd629b.jpg https://telegra.ph/file/931798c653da0fa85b182.jpg https://telegra.ph/file/45162159d9b57fe6b270c.jpg ')).split()#S
-
-# PICS = (environ.get('PICS', 'https://telegra.ph/file/7ad2ddfeedf7396acb82f.jpg')).split()#M
 
 IMDB_IMG = environ.get("IMDB_IMG", "https://telegra.ph/file/4b873b46bb4861f78ce6d.jpg")
 WATCH_IMG = environ.get("WATCH_IMG", "https://telegra.ph/file/b9ed75fcef91d7edd629b.jpg")
@@ -71,15 +108,8 @@ WELCOME_PICS = environ.get("WELCOME_PICS", "https://telegra.ph/file/4b873b46bb48
 
 #-------------------------- DATABASE MONGODB -------------------------
 
-
-DATABASE_URI = environ.get('DATABASE_URI', "mongodb+srv://shadow:shadow506@cluster0.srfnz9s.mongodb.net/?retryWrites=true&w=majority")#u
-# DATABASE_URI = environ.get('DATABASE_URI', "mongodb+srv://VegaMoviesibot:VegaMoviesibot@cluster0.kzx22pz.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0")#s
-# DATABASE_URI = environ.get('DATABASE_URI', "mongodb+srv://makima:makima@cluster0.covyf0w.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0")#m
-# DATABASE_URI = environ.get('DATABASE_URI', "mongodb+srv://Testing:Testing@cluster0.6fjlhzr.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0")#t
-
 DATABASE_NAME = environ.get('DATABASE_NAME', "Cluster0")
-# COLLECTION_NAME = environ.get('COLLECTION_NAME', 'MoviesiBotV4')
-COLLECTION_NAME = environ.get('COLLECTION_NAME', 'MoviesiBotV4-2')#U2
+COLLECTION_NAME = environ.get('COLLECTION_NAME', 'MoviesiBotV4')
 
 
 #-------------------------VERIFY AND SHORTNER--------------------------
@@ -90,11 +120,8 @@ SHORTLINKS = is_enabled((environ.get('SHORTLINKS', 'False')), False)
 # SHORTLINK_URL = environ.get('SHORTLINK_URL', 'afly.in')
 # SHORTLINK_API = environ.get('SHORTLINK_API', '77e4228021224fb293f6be6afc41d10c01087800')
 
-
 SHORTLINK_URL = environ.get('SHORTLINK_URL', 'easysky.in')
-# SHORTLINK_API = environ.get('SHORTLINK_API', 'a1a45bfd3be9e758537846a3617b24c5d8be7d34')#ultraplix
 SHORTLINK_API = environ.get('SHORTLINK_API', 'aeefe7b8bdf0d505ecf7c778f067fa1c4c65df04')#cinearcade
-
 
 #SECOUNDY BACKUP SHORTNER IN CASE OF PRIMARY WEB FAILUAR
 SHORTLINK_URL_BKUP = environ.get('SHORTLINK_URL_BKUP', 'tnshort.net')
