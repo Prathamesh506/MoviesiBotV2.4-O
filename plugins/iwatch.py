@@ -96,7 +96,7 @@ async def watch_movies_lst(bot, query):
         trimmed_movie_name = title[:30]
         button_data = f"add_filter#{user_id}#mainpage#{trimmed_movie_name}"
         if cat == "trending":
-            button_text = f"[ {s_no} ] {title.title()}"
+            button_text = f"{title.title()}"
         else:
             button_text = f"{s_no}. {title.title()} ( {rating} )"
         button = InlineKeyboardButton(text=button_text, callback_data=button_data)
@@ -148,7 +148,7 @@ async def next_page_watch(bot, query):
         trimmed_movie_name = title[:30]
         button_data = f"add_filter#{user_id}#mainpage#{trimmed_movie_name}"
         if cat == "trending":
-            button_text = f"[ {s_no} ] {title.title()}"
+            button_text = f"{title.title()}"
         else:
             button_text = f"{s_no}. {title.title()} ( {rating} )"
         button = InlineKeyboardButton(text=button_text, callback_data=button_data)
