@@ -16,7 +16,7 @@ def is_enabled(value, default):
 
 #--------------------------- ULTRON -----------------------------------
 
-BOT_TOKEN = environ.get("BOT_TOKEN", "7247107038:AAFBLYr-63-TNVSp3HBUlNHzKfrhk1wmg_o")
+BOT_TOKEN = environ.get("BOT_TOKEN", "7247107038:AAFMRijILhwy9ESt2t9e6kFTY7JQk4XwTew")
 
 DATABASE_URI = environ.get('DATABASE_URI', "mongodb+srv://shadow:shadow506@cluster0.srfnz9s.mongodb.net/?retryWrites=true&w=majority")
 
