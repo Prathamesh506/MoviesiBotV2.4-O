@@ -88,7 +88,8 @@ GRP_LINK = environ.get('GRP1', 'https://t.me/+D-ijrG90oYw3NWNl')
 SUP_LINK = environ.get('SUP_LINK', 'https://t.me/TeamiVega') 
 UPDATES =environ.get('UPDATES', 'CineArcade') 
 
-auth_channel = "-1002086574998"
+# auth_channel = "-1002086574998"
+auth_channel = "-1002217702204"#OPTIMUS
 LOG_CHANNEL = int(environ.get('LOG_CHANNEL', '-1002131280557'))
 NO_RES_CNL = int(environ.get('NO_RES_CNL', '-1002137535594')) 
 support_chat_id = environ.get('support_chat_id',"-1002044884739")
