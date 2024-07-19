@@ -25,22 +25,22 @@ def is_enabled(value, default):
 
 #--------------------------- OPTIMUS -----------------------------------
 
-BOT_TOKEN = environ.get("BOT_TOKEN", "7229261743:AAEcDqJZkF9KVwDaBpV3iUdekLL21WLKD7k")
+# BOT_TOKEN = environ.get("BOT_TOKEN", "7229261743:AAEcDqJZkF9KVwDaBpV3iUdekLL21WLKD7k")
 
-DATABASE_URI = environ.get('DATABASE_URI', "mongodb+srv://Optimus:Optimus@cluster0.uztjyky.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0")
+# DATABASE_URI = environ.get('DATABASE_URI', "mongodb+srv://Optimus:Optimus@cluster0.uztjyky.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0")
 
-PICS = (environ.get('PICS', 'https://telegra.ph/file/6d0ac3a97740c0d9b4932.jpg https://telegra.ph/file/e2c6fcd43ec729f63572a.jpg https://telegra.ph/file/a6328a8ea1ed1bfbe0e6d.jpg https://telegra.ph/file/e08b02941d5738d6b934b.jpg https://telegra.ph/file/4df4f4f20c19bd00f9908.jpg')).split()
-
-
-# #--------------------------- SCARLET WITCH -----------------------------------
+# PICS = (environ.get('PICS', 'https://telegra.ph/file/6d0ac3a97740c0d9b4932.jpg https://telegra.ph/file/e2c6fcd43ec729f63572a.jpg https://telegra.ph/file/a6328a8ea1ed1bfbe0e6d.jpg https://telegra.ph/file/e08b02941d5738d6b934b.jpg https://telegra.ph/file/4df4f4f20c19bd00f9908.jpg')).split()
 
 
-# BOT_TOKEN = environ.get("BOT_TOKEN", "7212030742:AAE6iH-MyuJaTZneH3awOizG8V8ExXM0mMA")
-
-# DATABASE_URI = environ.get('DATABASE_URI', "mongodb+srv://scarlet:scarlet@cluster0.iibbctz.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0")
+# #--------------------------- SCARLET WITCH ( old )-----------------------------------
 
 
-# PICS = (environ.get('PICS', 'https://telegra.ph/file/9203de86a8e55d14fa304.jpg https://telegra.ph/file/b9ed75fcef91d7edd629b.jpg https://telegra.ph/file/931798c653da0fa85b182.jpg https://telegra.ph/file/45162159d9b57fe6b270c.jpg ')).split()
+BOT_TOKEN = environ.get("BOT_TOKEN", "7189786967:AAFHHQ23HfVgsYgbFsMruKgf6jUYtSztS1k")
+
+DATABASE_URI = environ.get('DATABASE_URI', "mongodb+srv://scarlet:scarlet@cluster0.iibbctz.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0")
+
+
+PICS = (environ.get('PICS', 'https://telegra.ph/file/9203de86a8e55d14fa304.jpg https://telegra.ph/file/b9ed75fcef91d7edd629b.jpg https://telegra.ph/file/931798c653da0fa85b182.jpg https://telegra.ph/file/45162159d9b57fe6b270c.jpg ')).split()
 
 
 #--------------------------- MAKIMA -----------------------------------
