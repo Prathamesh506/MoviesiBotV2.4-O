@@ -35,21 +35,21 @@ def is_enabled(value, default):
 #--------------------------- SCARLET WITCH -----------------------------------
 
 
-# BOT_TOKEN = environ.get("BOT_TOKEN", "7212030742:AAE6iH-MyuJaTZneH3awOizG8V8ExXM0mMA")
+BOT_TOKEN = environ.get("BOT_TOKEN", "7212030742:AAE6iH-MyuJaTZneH3awOizG8V8ExXM0mMA")
 
-# DATABASE_URI = environ.get('DATABASE_URI', "mongodb+srv://scarlet:scarlet@cluster0.iibbctz.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0")
+DATABASE_URI = environ.get('DATABASE_URI', "mongodb+srv://scarlet:scarlet@cluster0.iibbctz.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0")
 
 
-# PICS = (environ.get('PICS', 'https://telegra.ph/file/9203de86a8e55d14fa304.jpg https://telegra.ph/file/b9ed75fcef91d7edd629b.jpg https://telegra.ph/file/931798c653da0fa85b182.jpg https://telegra.ph/file/45162159d9b57fe6b270c.jpg ')).split()
+PICS = (environ.get('PICS', 'https://telegra.ph/file/9203de86a8e55d14fa304.jpg https://telegra.ph/file/b9ed75fcef91d7edd629b.jpg https://telegra.ph/file/931798c653da0fa85b182.jpg https://telegra.ph/file/45162159d9b57fe6b270c.jpg ')).split()
 
 
 #--------------------------- MAKIMA -----------------------------------
 
-BOT_TOKEN = environ.get("BOT_TOKEN", "7195878471:AAGjpjZCZgvsMrIViQB3cxrUv8A7_fX8870")
+# BOT_TOKEN = environ.get("BOT_TOKEN", "7195878471:AAGjpjZCZgvsMrIViQB3cxrUv8A7_fX8870")
 
-DATABASE_URI = environ.get('DATABASE_URI', "mongodb+srv://makima:makima@cluster0.covyf0w.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0")
+# DATABASE_URI = environ.get('DATABASE_URI', "mongodb+srv://makima:makima@cluster0.covyf0w.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0")
 
-PICS = (environ.get('PICS', 'https://telegra.ph/file/7ad2ddfeedf7396acb82f.jpg')).split()
+# PICS = (environ.get('PICS', 'https://telegra.ph/file/7ad2ddfeedf7396acb82f.jpg')).split()
 
 
 #--------------------------- TESTING -----------------------------------
