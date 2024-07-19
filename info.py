@@ -84,7 +84,7 @@ UPIQRPIC = "https://telegra.ph/file/6eaf67a6b34db55957412.jpg"
 
 #--------------------- DATABSES & CHANNLS ----------------------
 
-GRP_LINK = environ.get('GRP1', 'https://t.me/+Oia9FbI8Vag0MDQ1') 
+GRP_LINK = environ.get('GRP1', 'https://t.me/+D-ijrG90oYw3NWNl') 
 SUP_LINK = environ.get('SUP_LINK', 'https://t.me/TeamiVega') 
 UPDATES =environ.get('UPDATES', 'CineArcade') 
 
