@@ -20,7 +20,6 @@ User id: </b><code>{}</code>
 """
 pay_msg = f"""<b>PREMIUM PLANS ✨</b>
 
-₹19 - Get Verified for a <b>Week</b>
 ₹29 - Get Verified for a <b>Month</b>
 ₹79 - Get Verified for 3 <b>Months</b>
 ₹139 - Get Verified for <b>6 months</b>
