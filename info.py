@@ -16,8 +16,6 @@ def is_enabled(value, default):
 
 # --------------------------- ULTRON -----------------------------------
 
-# auth_channel = "-1002217702204"#CINECIRCLE
-
 # BOT_TOKEN = environ.get("BOT_TOKEN", "7247107038:AAFMRijILhwy9ESt2t9e6kFTY7JQk4XwTew")
 
 # DATABASE_URI = environ.get('DATABASE_URI', "mongodb+srv://shadow:shadow506@cluster0.srfnz9s.mongodb.net/?retryWrites=true&w=majority")
@@ -27,8 +25,6 @@ def is_enabled(value, default):
 
 # #--------------------------- OPTIMUS -----------------------------------
 
-# auth_channel = "-1002217702204"#CINECIRCLE
-
 # BOT_TOKEN = environ.get("BOT_TOKEN", "7229261743:AAEcDqJZkF9KVwDaBpV3iUdekLL21WLKD7k")
 
 # DATABASE_URI = environ.get('DATABASE_URI', "mongodb+srv://Optimus:Optimus@cluster0.yye5o.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0")
@@ -37,8 +33,6 @@ def is_enabled(value, default):
 
 
 # #--------------------------- SCARLET WITCH -----------------------------------
-
-# auth_channel = "-1002086574998"#VEGAMOVIESX
 
 # BOT_TOKEN = environ.get("BOT_TOKEN", "7212030742:AAE6iH-MyuJaTZneH3awOizG8V8ExXM0mMA")
 
@@ -61,8 +55,6 @@ PICS = (environ.get('PICS', 'https://telegra.ph/file/7ad2ddfeedf7396acb82f.jpg')
 
 #--------------------------- TESTING -----------------------------------
 
-# auth_channel = "-1002086574998"#VEGAMOVIESX
-
 # BOT_TOKEN = environ.get("BOT_TOKEN", "6583753281:AAFtg5TYcGEToa99k0hbOYrrkZXJIXWQXHk")
 
 # DATABASE_URI = environ.get('DATABASE_URI', "mongodb+srv://Testing:Testing@cluster0.6fjlhzr.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0")
@@ -74,7 +66,8 @@ PICS = (environ.get('PICS', 'https://telegra.ph/file/7ad2ddfeedf7396acb82f.jpg')
 
 
 #------------------ BOT DETAILS ----------------------------------------
-    
+
+auth_channel = "-1002217702204"    
 SESSION = environ.get('SESSION', 'MoviesiBotV4')
 API_ID = "3704207"
 API_HASH = environ.get("API_HASH", "8d20e46f5413139329f2ec753f7c482a")
