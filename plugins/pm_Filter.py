@@ -759,7 +759,7 @@ async def verify_msg(query, client,file_id):
     ]]
     await pw_msg.delete()
     verify_btn = await query.message.reply_text(
-        text="<b>⚠️ You Are Not Verified!</b> \nPlease complete the verification process to gain access to unlimited movies for the next 16 hours.",
+        text="<b>⚠️ You Are Not Verified!</b> \nPlease complete the verification process to gain access to unlimited movies for the next 16 hours or Buy /premium",
         protect_content=False,
         reply_markup=InlineKeyboardMarkup(btn)
     )
