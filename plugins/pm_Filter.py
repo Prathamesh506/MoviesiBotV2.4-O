@@ -1043,7 +1043,7 @@ async def cb_handler(client: Client, query: CallbackQuery):
                     InlineKeyboardButton('🔅 ᴜᴘᴅᴀᴛᴇs', url="https://t.me/VegaLatest")
         ]]
         await query.edit_message_text(
-                    text=script.START_TXT.format(query.from_user.mention, temp.B_NAME),
+                    text=script.START_TXT.format(temp.B_NAME),
                     reply_markup=InlineKeyboardMarkup(buttons)
                 )
     
