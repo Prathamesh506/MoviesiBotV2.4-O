@@ -1,8 +1,8 @@
 class script(object):
 
-    START_TXT = """Hey <b>{}</b>,
+    START_TXT = """Hey <b{}</b>,
     
-{} Is at your service!
+<B>{}</B> Is at your service!
 
 Send the name of any movie, series, or anime to get the files. Use /watch for recommendations!"""
 
