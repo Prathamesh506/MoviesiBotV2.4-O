@@ -20,9 +20,11 @@ User id: </b><code>{}</code>
 """
 pay_msg = f"""<b>PREMIUM PLANS ✨</b>
 
-₹99 - Get Verified for <b>3 months</b>
-₹199 - Get Verified for <b>6 months</b>
-₹299 - Get Verified for <b>1 Year</b>
+₹19 - Get Verified for a <b>Week</b>
+₹29 - Get Verified for a <b>Month</b>
+₹79 - Get Verified for 3 <b>Months</b>
+₹139 - Get Verified for <b>6 months</b>
+₹269 - Get Verified for <b>Year</b>
 
 <b>To Buy Dm: @AizeniBot</b>"""
 
