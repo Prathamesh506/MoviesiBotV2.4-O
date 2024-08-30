@@ -135,7 +135,7 @@ async def start(client, message):
                 ]]
                 await pw_msg.delete()
                 verify_btn = await message.reply_text(
-                    text="<b>⚠️ You Are Not Verified!</b> \nPlease complete the verification process to gain access to unlimited movies for the next 16 hours.",
+                    text="<b>⚠️ You Are Not Verified!</b> \nPlease complete the verification process to gain access to unlimited movies for the next 16 hours or Buy /premium",
                     protect_content=True if PROTECT_CONTENT else False,
                     reply_markup=InlineKeyboardMarkup(btn)
                 )
@@ -205,7 +205,7 @@ async def start(client, message):
                 ]]
                 await pw_msg.delete()
                 verify_btn = await message.reply_text(
-                    text="<b>⚠️ You Are Not Verified!</b> \nPlease complete the verification process to gain access to unlimited movies for the next 16 hours.",
+                    text="<b>⚠️ You Are Not Verified!</b> \nPlease complete the verification process to gain access to unlimited movies for the next 16 hours or Buy /premium",
                     protect_content=True if PROTECT_CONTENT else False,
                     reply_markup=InlineKeyboardMarkup(btn)
                 )
@@ -254,7 +254,7 @@ async def start(client, message):
         ]]
         await pw_msg.delete()
         verify_btn=await message.reply_text(
-            text="<b>⚠️ You Are Not Verified!</b> \nPlease complete the verification process to gain access to unlimited movies for the next 16 hours.",
+            text="<b>⚠️ You Are Not Verified!</b> \nPlease complete the verification process to gain access to unlimited movies for the next 16 hours or Buy /premium",
             protect_content=True if PROTECT_CONTENT else False,
             reply_markup=InlineKeyboardMarkup(btn)
         )
