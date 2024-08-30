@@ -93,7 +93,7 @@ UPIQRPIC = "https://telegra.ph/file/6eaf67a6b34db55957412.jpg"
 
 #--------------------- DATABSES & CHANNLS ----------------------
 
-GRP_LINK = environ.get('GRP1', 'https://t.me/+D-ijrG90oYw3NWNl') 
+GRP_LINK = environ.get('GRP1', 'https://t.me/+g_nMaCAxGRI4ZWY1') 
 SUP_LINK = environ.get('SUP_LINK', 'https://t.me/TeamiVega') 
 UPDATES =environ.get('UPDATES', 'CineArcade') 
 LOG_CHANNEL = int(environ.get('LOG_CHANNEL', '-1002131280557'))
