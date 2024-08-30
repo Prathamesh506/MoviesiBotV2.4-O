@@ -13,5 +13,5 @@ SPELL_CHECK = {}
 
 @Client.on_message((filters.group | filters.private) & filters.text & filters.incoming)
 async def auto_filter(client, msg):
-    await msg.reply_text("<b>We’ve Moved to: @Scarleti2Bot</b>")
+    await msg.reply_text("<b>We’ve Moved to: @@Makimai2Bot</b>")
     return
