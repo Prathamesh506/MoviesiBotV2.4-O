@@ -1,10 +1,11 @@
 class script(object):
 
-    START_TXT = """𝚑𝚎𝚢👋, <b>{}
+    START_TXT = """Welcome to <b>{}</b> Bot! 🍿
 
-{}, ɪs ᴀᴛ ʏᴏᴜʀ sᴇʀᴠɪᴄᴇ!
+Send the name of any movie, series, or anime to get the files instantly. 
+Use /watch for personalized recommendations!
 
-ғᴇᴇʟ ғʀᴇᴇ ᴛᴏ ʀᴇϙᴜᴇsᴛ ᴀɴʏ ᴍᴏᴠɪᴇs, ɪ'ʟʟ ᴘʀᴏᴠɪᴅᴇ ᴛʜᴇᴍ. ʏᴏᴜ ᴄᴀɴ ᴀᴅᴅ ᴍᴇ ᴛᴏ ʏᴏᴜʀ ɢʀᴏᴜᴘ ᴏʀ ᴊᴏɪɴ ᴏᴜʀs.‌</b>"""
+<b>made by: @cineArcade</b>"""
 
     COMD_TXT = """ʜᴇʟᴘ: Aᴅᴍɪɴ Mᴏᴅs
 <b>ɴᴏᴛᴇ:</b>
