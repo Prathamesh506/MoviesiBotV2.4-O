@@ -16,6 +16,8 @@ def is_enabled(value, default):
 
 # --------------------------- ULTRON -----------------------------------
 
+# auth_channel = "-1002217702204"#CINECIRCLE
+
 # BOT_TOKEN = environ.get("BOT_TOKEN", "7247107038:AAFMRijILhwy9ESt2t9e6kFTY7JQk4XwTew")
 
 # DATABASE_URI = environ.get('DATABASE_URI', "mongodb+srv://shadow:shadow506@cluster0.srfnz9s.mongodb.net/?retryWrites=true&w=majority")
@@ -24,6 +26,8 @@ def is_enabled(value, default):
 
 
 #--------------------------- OPTIMUS -----------------------------------
+
+auth_channel = "-1002217702204"#CINECIRCLE
 
 BOT_TOKEN = environ.get("BOT_TOKEN", "7229261743:AAEcDqJZkF9KVwDaBpV3iUdekLL21WLKD7k")
 
@@ -34,6 +38,7 @@ PICS = (environ.get('PICS', 'https://telegra.ph/file/6d0ac3a97740c0d9b4932.jpg h
 
 # #--------------------------- SCARLET WITCH -----------------------------------
 
+# auth_channel = "-1002086574998"#VEGAMOVIESX
 
 # BOT_TOKEN = environ.get("BOT_TOKEN", "7212030742:AAE6iH-MyuJaTZneH3awOizG8V8ExXM0mMA")
 
@@ -45,6 +50,8 @@ PICS = (environ.get('PICS', 'https://telegra.ph/file/6d0ac3a97740c0d9b4932.jpg h
 
 # #--------------------------- MAKIMA -----------------------------------
 
+# auth_channel = "-1002150192720"#i2 Movies
+
 # BOT_TOKEN = environ.get("BOT_TOKEN", "7195878471:AAGjpjZCZgvsMrIViQB3cxrUv8A7_fX8870")
 
 # DATABASE_URI = environ.get('DATABASE_URI', "mongodb+srv://Optimus:Optimus@cluster0.yye5o.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0")
@@ -53,6 +60,8 @@ PICS = (environ.get('PICS', 'https://telegra.ph/file/6d0ac3a97740c0d9b4932.jpg h
 
 
 #--------------------------- TESTING -----------------------------------
+
+# auth_channel = "-1002086574998"#VEGAMOVIESX
 
 # BOT_TOKEN = environ.get("BOT_TOKEN", "6583753281:AAFtg5TYcGEToa99k0hbOYrrkZXJIXWQXHk")
 
@@ -87,9 +96,6 @@ UPIQRPIC = "https://telegra.ph/file/6eaf67a6b34db55957412.jpg"
 GRP_LINK = environ.get('GRP1', 'https://t.me/+D-ijrG90oYw3NWNl') 
 SUP_LINK = environ.get('SUP_LINK', 'https://t.me/TeamiVega') 
 UPDATES =environ.get('UPDATES', 'CineArcade') 
-
-# auth_channel = "-1002086574998"
-auth_channel = "-1002217702204"#OPTIMUS
 LOG_CHANNEL = int(environ.get('LOG_CHANNEL', '-1002131280557'))
 NO_RES_CNL = int(environ.get('NO_RES_CNL', '-1002137535594')) 
 support_chat_id = environ.get('support_chat_id',"-1002044884739")
