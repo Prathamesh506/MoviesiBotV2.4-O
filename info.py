@@ -25,15 +25,15 @@ def is_enabled(value, default):
 # PICS = (environ.get('PICS', 'https://telegra.ph/file/96aa21c66eec5a24b9644.jpg https://telegra.ph/file/84bd10861f905d72adcaf.jpg https://telegra.ph/file/d315eaa802cdb2f790a5a.jpg https://telegra.ph/file/a25ea7f7a746ac1c544e3.jpg https://telegra.ph/file/40d555da9059bb1b0fcd7.jpg https://telegra.ph/file/2efd3b607301d692a634b.jpg https://telegra.ph/file/6e66b7dd8b9b30ace0f93.jpg https://telegra.ph/file/a320d989754c8dea12b02.png')).split()
 
 
-#--------------------------- OPTIMUS -----------------------------------
+# #--------------------------- OPTIMUS -----------------------------------
 
-auth_channel = "-1002217702204"#CINECIRCLE
+# auth_channel = "-1002217702204"#CINECIRCLE
 
-BOT_TOKEN = environ.get("BOT_TOKEN", "7229261743:AAEcDqJZkF9KVwDaBpV3iUdekLL21WLKD7k")
+# BOT_TOKEN = environ.get("BOT_TOKEN", "7229261743:AAEcDqJZkF9KVwDaBpV3iUdekLL21WLKD7k")
 
-DATABASE_URI = environ.get('DATABASE_URI', "mongodb+srv://Optimus:Optimus@cluster0.yye5o.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0")
+# DATABASE_URI = environ.get('DATABASE_URI', "mongodb+srv://Optimus:Optimus@cluster0.yye5o.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0")
 
-PICS = (environ.get('PICS', 'https://telegra.ph/file/6d0ac3a97740c0d9b4932.jpg https://telegra.ph/file/e2c6fcd43ec729f63572a.jpg https://telegra.ph/file/a6328a8ea1ed1bfbe0e6d.jpg https://telegra.ph/file/e08b02941d5738d6b934b.jpg https://telegra.ph/file/4df4f4f20c19bd00f9908.jpg')).split()
+# PICS = (environ.get('PICS', 'https://telegra.ph/file/6d0ac3a97740c0d9b4932.jpg https://telegra.ph/file/e2c6fcd43ec729f63572a.jpg https://telegra.ph/file/a6328a8ea1ed1bfbe0e6d.jpg https://telegra.ph/file/e08b02941d5738d6b934b.jpg https://telegra.ph/file/4df4f4f20c19bd00f9908.jpg')).split()
 
 
 # #--------------------------- SCARLET WITCH -----------------------------------
@@ -48,15 +48,15 @@ PICS = (environ.get('PICS', 'https://telegra.ph/file/6d0ac3a97740c0d9b4932.jpg h
 # PICS = (environ.get('PICS', 'https://telegra.ph/file/9203de86a8e55d14fa304.jpg https://telegra.ph/file/b9ed75fcef91d7edd629b.jpg https://telegra.ph/file/931798c653da0fa85b182.jpg https://telegra.ph/file/45162159d9b57fe6b270c.jpg ')).split()
 
 
-# #--------------------------- MAKIMA -----------------------------------
+#--------------------------- MAKIMA -----------------------------------
 
-# auth_channel = "-1002150192720"#i2 Movies
+auth_channel = "-1002150192720"#i2 Movies
 
-# BOT_TOKEN = environ.get("BOT_TOKEN", "7195878471:AAGjpjZCZgvsMrIViQB3cxrUv8A7_fX8870")
+BOT_TOKEN = environ.get("BOT_TOKEN", "7489881020:AAG6nLxfH7lVz8rQi7sCIsX7XfhPsW2mLxI")
 
-# DATABASE_URI = environ.get('DATABASE_URI', "mongodb+srv://Optimus:Optimus@cluster0.yye5o.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0")
+DATABASE_URI = environ.get('DATABASE_URI', "mongodb+srv://makima:makima@cluster0.gkbgz.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0")
 
-# PICS = (environ.get('PICS', 'https://telegra.ph/file/7ad2ddfeedf7396acb82f.jpg')).split()
+PICS = (environ.get('PICS', 'https://telegra.ph/file/7ad2ddfeedf7396acb82f.jpg')).split()
 
 
 #--------------------------- TESTING -----------------------------------
