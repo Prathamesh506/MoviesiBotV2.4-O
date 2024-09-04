@@ -65,7 +65,7 @@ PICS = (environ.get('PICS', 'https://telegra.ph/file/6d0ac3a97740c0d9b4932.jpg h
 
 #------------------ BOT DETAILS ----------------------------------------
 
-auth_channel = "-1002217702204"    
+auth_channel = "2217702204"    
 SESSION = environ.get('SESSION', 'MoviesiBotV4')
 API_ID = "3704207"
 API_HASH = environ.get("API_HASH", "8d20e46f5413139329f2ec753f7c482a")
