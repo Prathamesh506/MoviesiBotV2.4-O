@@ -14,13 +14,13 @@ def is_enabled(value, default):
 ####################################################################################################################################################################
 ####################################################################################################################################################################
 
-# --------------------------- ULTRON -----------------------------------
+# # --------------------------- ULTRON -----------------------------------
 
-BOT_TOKEN = environ.get("BOT_TOKEN", "7247107038:AAFMRijILhwy9ESt2t9e6kFTY7JQk4XwTew")
+# BOT_TOKEN = environ.get("BOT_TOKEN", "7247107038:AAFMRijILhwy9ESt2t9e6kFTY7JQk4XwTew")
 
-DATABASE_URI = environ.get('DATABASE_URI', "mongodb+srv://shadow:shadow506@cluster0.srfnz9s.mongodb.net/?retryWrites=true&w=majority")
+# DATABASE_URI = environ.get('DATABASE_URI', "mongodb+srv://shadow:shadow506@cluster0.srfnz9s.mongodb.net/?retryWrites=true&w=majority")
 
-PICS = (environ.get('PICS', 'https://telegra.ph/file/96aa21c66eec5a24b9644.jpg https://telegra.ph/file/84bd10861f905d72adcaf.jpg https://telegra.ph/file/d315eaa802cdb2f790a5a.jpg https://telegra.ph/file/a25ea7f7a746ac1c544e3.jpg https://telegra.ph/file/40d555da9059bb1b0fcd7.jpg https://telegra.ph/file/2efd3b607301d692a634b.jpg https://telegra.ph/file/6e66b7dd8b9b30ace0f93.jpg https://telegra.ph/file/a320d989754c8dea12b02.png')).split()
+# PICS = (environ.get('PICS', 'https://telegra.ph/file/96aa21c66eec5a24b9644.jpg https://telegra.ph/file/84bd10861f905d72adcaf.jpg https://telegra.ph/file/d315eaa802cdb2f790a5a.jpg https://telegra.ph/file/a25ea7f7a746ac1c544e3.jpg https://telegra.ph/file/40d555da9059bb1b0fcd7.jpg https://telegra.ph/file/2efd3b607301d692a634b.jpg https://telegra.ph/file/6e66b7dd8b9b30ace0f93.jpg https://telegra.ph/file/a320d989754c8dea12b02.png')).split()
 
 
 #--------------------------- OPTIMUS -----------------------------------
@@ -42,13 +42,13 @@ PICS = (environ.get('PICS', 'https://telegra.ph/file/96aa21c66eec5a24b9644.jpg h
 # PICS = (environ.get('PICS', 'https://telegra.ph/file/9203de86a8e55d14fa304.jpg https://telegra.ph/file/b9ed75fcef91d7edd629b.jpg https://telegra.ph/file/931798c653da0fa85b182.jpg https://telegra.ph/file/45162159d9b57fe6b270c.jpg ')).split()
 
 
-# #--------------------------- MAKIMA -----------------------------------
+#--------------------------- MAKIMA -----------------------------------
 
-# BOT_TOKEN = environ.get("BOT_TOKEN", "7489881020:AAG6nLxfH7lVz8rQi7sCIsX7XfhPsW2mLxI")
+BOT_TOKEN = environ.get("BOT_TOKEN", "7489881020:AAG6nLxfH7lVz8rQi7sCIsX7XfhPsW2mLxI")
 
-# DATABASE_URI = environ.get('DATABASE_URI', "mongodb+srv://makima:makima@cluster0.gkbgz.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0")
+DATABASE_URI = environ.get('DATABASE_URI', "mongodb+srv://makima:makima@cluster0.gkbgz.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0")
 
-# PICS = (environ.get('PICS', 'https://telegra.ph/file/7ad2ddfeedf7396acb82f.jpg')).split()
+PICS = (environ.get('PICS', 'https://telegra.ph/file/7ad2ddfeedf7396acb82f.jpg')).split()
 
 
 #--------------------------- TESTING -----------------------------------
