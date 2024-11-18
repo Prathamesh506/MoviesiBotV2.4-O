@@ -118,8 +118,11 @@ SHORTLINKS = is_enabled((environ.get('SHORTLINKS', 'False')), False)
 # SHORTLINK_URL = environ.get('SHORTLINK_URL', 'afly.in')
 # SHORTLINK_API = environ.get('SHORTLINK_API', '77e4228021224fb293f6be6afc41d10c01087800')
 
-SHORTLINK_URL = environ.get('SHORTLINK_URL', 'easysky.in')
-SHORTLINK_API = environ.get('SHORTLINK_API', 'aeefe7b8bdf0d505ecf7c778f067fa1c4c65df04')#cinearcade
+# SHORTLINK_URL = environ.get('SHORTLINK_URL', 'easysky.in')
+# SHORTLINK_API = environ.get('SHORTLINK_API', 'aeefe7b8bdf0d505ecf7c778f067fa1c4c65df04')#cinearcade
+
+SHORTLINK_URL = environ.get('SHORTLINK_URL', 'speedlinkurl.com')
+SHORTLINK_API = environ.get('SHORTLINK_API', '0c47e283bd68d181c80853d13db10a12eb720ea7')#cinearcade
 
 #SECOUNDY BACKUP SHORTNER IN CASE OF PRIMARY WEB FAILUAR
 SHORTLINK_URL_BKUP = environ.get('SHORTLINK_URL_BKUP', 'tnshort.net')
